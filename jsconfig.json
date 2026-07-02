@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "module": "commonjs",
+    "experimentalDecorators": true
+  },
+  "exclude": [
+    "node_modules",
+    ".vscode",
+    "library",
+    "local",
+    "settings",
+    "temp"
+  ],
+  "createdAt": "2026-07-02T19:07:46.517"
+}

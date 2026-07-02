@@ -1,0 +1,18 @@
+{
+  "ver": "1.0.27",
+  "uuid": "c860ee20-7d0e-4a94-b357-8840c7993043",
+  "importer": "effect",
+  "compiledShaders": [
+    {
+      "glsl1": {
+        "vert": "\nprecision highp float;\nuniform mat4 cc_matViewProj;\nattribute vec3 a_position;\nattribute vec2 a_uv0;\nattribute vec4 a_color;\nvarying vec2 v_uv0;\nvarying vec4 v_color;\nvoid main () {\n  gl_Position = cc_matViewProj * vec4(a_position, 1.0);\n  v_uv0 = a_uv0;\n  v_color = a_color;\n}",
+        "frag": "\nprecision highp float;\nuniform sampler2D texture;\nuniform vec4 blurParams;\nvarying vec2 v_uv0;\nvarying vec4 v_color;\nvec4 sampleBlur(vec2 offset) {\n  vec4 c = vec4(1.0);\n  vec4 texture_tmp = texture2D(texture, v_uv0 + offset);\n  #if CC_USE_ALPHA_ATLAS_texture\n      texture_tmp.a *= texture2D(texture, v_uv0 + offset + vec2(0, 0.5)).r;\n  #endif\n  #if INPUT_IS_GAMMA\n    c.rgb *= (texture_tmp.rgb * texture_tmp.rgb);\n    c.a *= texture_tmp.a;\n  #else\n    c *= texture_tmp;\n  #endif\n  return c;\n}\nvoid main () {\n  float blurRadius = blurParams.x;\n  vec2 texelSize = blurParams.yz;\n  vec2 p = texelSize * blurRadius;\n  vec4 color = vec4(0.0);\n  color += sampleBlur(vec2(0.0, 0.0)) * 0.20;\n  color += sampleBlur(vec2( p.x, 0.0)) * 0.12;\n  color += sampleBlur(vec2(-p.x, 0.0)) * 0.12;\n  color += sampleBlur(vec2(0.0,  p.y)) * 0.12;\n  color += sampleBlur(vec2(0.0, -p.y)) * 0.12;\n  color += sampleBlur(vec2( p.x,  p.y)) * 0.08;\n  color += sampleBlur(vec2(-p.x,  p.y)) * 0.08;\n  color += sampleBlur(vec2( p.x, -p.y)) * 0.08;\n  color += sampleBlur(vec2(-p.x, -p.y)) * 0.08;\n  color *= v_color;\n  gl_FragColor = color;\n}"
+      },
+      "glsl3": {
+        "vert": "\nprecision highp float;\nuniform CCGlobal {\n  mat4 cc_matView;\n  mat4 cc_matViewInv;\n  mat4 cc_matProj;\n  mat4 cc_matProjInv;\n  mat4 cc_matViewProj;\n  mat4 cc_matViewProjInv;\n  vec4 cc_cameraPos;\n  vec4 cc_time;\n  mediump vec4 cc_screenSize;\n  mediump vec4 cc_screenScale;\n};\nin vec3 a_position;\nin vec2 a_uv0;\nin vec4 a_color;\nout vec2 v_uv0;\nout vec4 v_color;\nvoid main () {\n  gl_Position = cc_matViewProj * vec4(a_position, 1.0);\n  v_uv0 = a_uv0;\n  v_color = a_color;\n}",
+        "frag": "\nprecision highp float;\nuniform sampler2D texture;\nuniform ARGS {\n  vec4 blurParams;\n};\nin vec2 v_uv0;\nin vec4 v_color;\nvec4 sampleBlur(vec2 offset) {\n  vec4 c = vec4(1.0);\n  vec4 texture_tmp = texture(texture, v_uv0 + offset);\n  #if CC_USE_ALPHA_ATLAS_texture\n      texture_tmp.a *= texture(texture, v_uv0 + offset + vec2(0, 0.5)).r;\n  #endif\n  #if INPUT_IS_GAMMA\n    c.rgb *= (texture_tmp.rgb * texture_tmp.rgb);\n    c.a *= texture_tmp.a;\n  #else\n    c *= texture_tmp;\n  #endif\n  return c;\n}\nvoid main () {\n  float blurRadius = blurParams.x;\n  vec2 texelSize = blurParams.yz;\n  vec2 p = texelSize * blurRadius;\n  vec4 color = vec4(0.0);\n  color += sampleBlur(vec2(0.0, 0.0)) * 0.20;\n  color += sampleBlur(vec2( p.x, 0.0)) * 0.12;\n  color += sampleBlur(vec2(-p.x, 0.0)) * 0.12;\n  color += sampleBlur(vec2(0.0,  p.y)) * 0.12;\n  color += sampleBlur(vec2(0.0, -p.y)) * 0.12;\n  color += sampleBlur(vec2( p.x,  p.y)) * 0.08;\n  color += sampleBlur(vec2(-p.x,  p.y)) * 0.08;\n  color += sampleBlur(vec2( p.x, -p.y)) * 0.08;\n  color += sampleBlur(vec2(-p.x, -p.y)) * 0.08;\n  color *= v_color;\n  gl_FragColor = color;\n}"
+      }
+    }
+  ],
+  "subMetas": {}
+}

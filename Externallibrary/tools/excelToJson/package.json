@@ -1,0 +1,13 @@
+{
+    "name": "excel-to-json-visual-tool",
+    "version": "1.0.0",
+    "private": true,
+    "scripts": {
+        "gen": "node index.js",
+        "ui": "node visual-server.js",
+        "start": "node visual-server.js"
+    },
+    "dependencies": {
+        "node-xlsx": "^0.24.0"
+    }
+}

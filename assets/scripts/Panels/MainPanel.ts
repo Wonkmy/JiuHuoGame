@@ -1,0 +1,133 @@
+import { ITEM_DEFS, ItemDef, ItemInstance, ROUND_TARGETS_INFO, TargetInfo } from "../GameCodes/Datas/GameData";
+import { createMarketItems } from "../GameCodes/GameRules";
+import GameContext from "../GameCodes/GameRules";
+import GameMain from "../GameMain";
+import { ConstValue } from "../Global/ConstValue";
+import { BaseUI } from "../UIManager/BaseUI";
+import ItemCell from "../UIManager/ItemCell";
+import { UIManager } from "../UIManager/UIManager";
+import MainPanelRuntime from "./MainPanelRuntime";
+import TipPanel from "./TipPanel";
+import YiJiaPanel from "./YiJiaPanel";
+
+const {ccclass, property} = cc._decorator;
+
+@ccclass
+export default class MainPanel extends BaseUI {
+    public static instance:MainPanel = null!;
+    protected static className = "MainPanel";
+    totalMoney:number = 0;
+
+    btn_YJ:cc.Node = null!;
+    btn_ReRoll:cc.Node = null!;
+
+    targetInfo:TargetInfo = null!;
+
+    marketItemContainer:cc.Node = null!;
+
+    onLoad(): void {
+        MainPanel.instance = this;
+    }
+
+    override onShow(): void {
+        this.targetInfo = ROUND_TARGETS_INFO[GameMain.instance.mainRuntime.ctx.CurLevel]
+        this.btn_YJ = this.node.getChildByName("btn_YJ");
+        this.btn_ReRoll = this.node.getChildByName("btn_ReRoll");
+        this.marketItemContainer = this.node.getChildByName("ItemContainers").getChildByName("sview").getChildByName("view").getChildByName("content")
+        this.totalMoney = ConstValue.defaultMoney;
+        this.onCreateItems();
+
+        this.btn_YJ.on(cc.Node.EventType.TOUCH_END,this.onYiJia ,this)
+        this.btn_ReRoll.on(cc.Node.EventType.TOUCH_END,this.onReRoll ,this)
+    }
+
+    private onCreateItems(){
+        this.marketItemContainer.removeAllChildren();
+
+        let allItemInstance = createMarketItems(()=>GameMain.instance.mainRuntime.ctx.getUid())// 生成摊位上的老旧物品
+        this.upgradeTotalMoney();
+        this.upgradeTargetInfo();
+
+        let count:number = Math.round(allItemInstance.length / 3);
+        this.marketItemContainer.height = count * 271 + (count + 1) * 30;
+        for (let i = 0; i < allItemInstance.length; i++) {
+            const itemIns:ItemInstance = allItemInstance[i];
+            cc.resources.load("prefab/itemCell", cc.Prefab, (err, prefab: cc.Prefab) => {
+                if (err) {
+                    console.error("load itemCell prefab error:", err);
+                    return;
+                }
+                GameMain.instance.mainRuntime.initItemInsCell(prefab,itemIns,true,this.marketItemContainer);
+            })
+        }
+    }
+
+    /**
+     * 开始进入议价界面
+     */
+    private onYiJia(){
+        if(GameMain.instance.mainRuntime.inventoryItemInstance.length<=0){
+            UIManager.getInstance().openUI(TipPanel,0,(ui:TipPanel)=>{
+                ui.onShow();
+                ui.showTip("请购买至少一件老物件")
+            })
+        }else{
+        UIManager.getInstance().closeUI(MainPanel);
+            UIManager.getInstance().openUI(YiJiaPanel,0,(ui:YiJiaPanel)=>{
+                ui.onShow();
+            })
+        }
+    }
+
+    /**
+     * 重新刷新当前店铺物品，需要花费高额预算（后期看广告的盈利点）
+     */
+    private onReRoll(){
+        if(this.totalMoney >= ConstValue.REROLL_COST){
+            this.totalMoney -= ConstValue.REROLL_COST;
+            this.upgradeTotalMoney();
+            this.onCreateItems();
+        }else{
+            UIManager.getInstance().openUI(TipPanel,0,(ui:TipPanel)=>{
+                ui.onShow();
+                ui.showTip("预算不够了")
+            })
+        }
+    }
+
+    onBuyItemInstance(_itemIns:ItemInstance){
+        if(this.totalMoney >=  _itemIns.buyPrice){
+            this.totalMoney -=  _itemIns.buyPrice;
+            this.upgradeTotalMoney();
+            GameMain.instance.mainRuntime.inventoryItemInstance.push(_itemIns);
+            return true;
+        }else{
+            UIManager.getInstance().openUI(TipPanel,0,(ui:TipPanel)=>{
+                ui.onShow();
+                ui.showTip("预算不够了")
+            })
+        }
+        return false;
+    }
+
+    private upgradeTotalMoney(){
+        this.node.getChildByName("totalMoney").getChildByName("content").getComponent(cc.Label).string = "总预算:￥ "+ String(this.totalMoney);
+    }
+
+    private upgradeTargetInfo(){
+        this.node.getChildByName("targetName").getComponent(cc.Label).string = String(this.targetInfo.marketName);
+        this.node.getChildByName("target").getChildByName("content").getComponent(cc.Label).string = "目标收益:￥ "+ String(this.targetInfo.target);
+    }
+}
+
+
+export interface BuffData{
+    id: number;
+    name: string;
+    buffType: number;
+    buffKind: number;
+    des: string;
+    effects: string;
+    bDuration: number;
+    isOverlay: number;
+}
