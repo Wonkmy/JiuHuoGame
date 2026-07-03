@@ -1,4 +1,4 @@
-import { ITEM_DEFS, ItemDef, ItemInstance, ROUND_TARGETS_INFO, TargetInfo } from "../GameCodes/Datas/GameData";
+import { ITEM_DEFS, ItemDef, ItemInstance } from "../GameCodes/Datas/GameData";
 import { createMarketItems } from "../GameCodes/GameRules";
 import GameContext from "../GameCodes/GameRules";
 import GameMain from "../GameMain";
@@ -21,8 +21,6 @@ export default class MainPanel extends BaseUI {
     btn_YJ:cc.Node = null!;
     btn_ReRoll:cc.Node = null!;
 
-    targetInfo:TargetInfo = null!;
-
     marketItemContainer:cc.Node = null!;
 
     onLoad(): void {
@@ -30,7 +28,6 @@ export default class MainPanel extends BaseUI {
     }
 
     override onShow(): void {
-        this.targetInfo = ROUND_TARGETS_INFO[GameMain.instance.mainRuntime.ctx.CurLevel]
         this.btn_YJ = this.node.getChildByName("btn_YJ");
         this.btn_ReRoll = this.node.getChildByName("btn_ReRoll");
         this.marketItemContainer = this.node.getChildByName("ItemContainers").getChildByName("sview").getChildByName("view").getChildByName("content")
@@ -46,8 +43,7 @@ export default class MainPanel extends BaseUI {
 
         let allItemInstance = createMarketItems(()=>GameMain.instance.mainRuntime.ctx.getUid())// 生成摊位上的老旧物品
         this.upgradeTotalMoney();
-        this.upgradeTargetInfo();
-
+        this.node.getChildByName("targetName").getComponent(cc.Label).string = String(GameMain.instance.mainRuntime.ctx.targetInfo.marketName);
         let count:number = Math.round(allItemInstance.length / 3);
         this.marketItemContainer.height = count * 271 + (count + 1) * 30;
         for (let i = 0; i < allItemInstance.length; i++) {
@@ -69,7 +65,7 @@ export default class MainPanel extends BaseUI {
         if(GameMain.instance.mainRuntime.inventoryItemInstance.length<=0){
             UIManager.getInstance().openUI(TipPanel,0,(ui:TipPanel)=>{
                 ui.onShow();
-                ui.showTip("请购买至少一件老物件")
+                ui.showTip("请购买至少一件老物件",null)
             })
         }else{
         UIManager.getInstance().closeUI(MainPanel);
@@ -90,7 +86,7 @@ export default class MainPanel extends BaseUI {
         }else{
             UIManager.getInstance().openUI(TipPanel,0,(ui:TipPanel)=>{
                 ui.onShow();
-                ui.showTip("预算不够了")
+                ui.showTip("预算不够了",null)
             })
         }
     }
@@ -104,7 +100,7 @@ export default class MainPanel extends BaseUI {
         }else{
             UIManager.getInstance().openUI(TipPanel,0,(ui:TipPanel)=>{
                 ui.onShow();
-                ui.showTip("预算不够了")
+                ui.showTip("预算不够了",null)
             })
         }
         return false;
@@ -112,11 +108,6 @@ export default class MainPanel extends BaseUI {
 
     private upgradeTotalMoney(){
         this.node.getChildByName("totalMoney").getChildByName("content").getComponent(cc.Label).string = "总预算:￥ "+ String(this.totalMoney);
-    }
-
-    private upgradeTargetInfo(){
-        this.node.getChildByName("targetName").getComponent(cc.Label).string = String(this.targetInfo.marketName);
-        this.node.getChildByName("target").getChildByName("content").getComponent(cc.Label).string = "目标收益:￥ "+ String(this.targetInfo.target);
     }
 }
 

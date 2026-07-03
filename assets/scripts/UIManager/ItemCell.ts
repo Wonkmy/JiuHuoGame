@@ -20,7 +20,7 @@ export default class ItemCell extends cc.Component {
         })
         this.node.getChildByName("buy_price").getChildByName("buyPrice").getComponent(cc.Label).string = "购买价:￥" + String(_itemIns.buyPrice);
         this.node.getChildByName("item_name").getComponent(cc.Label).string = String("古董物品") + _itemIns.uid;
-        this.btn_Buy.on(cc.Node.EventType.TOUCH_START,this.onBuy,this)
+        this.btn_Buy.on(cc.Node.EventType.TOUCH_END,this.onBuy,this)
     }
 
     onBuy(){

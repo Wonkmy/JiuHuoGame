@@ -7,7 +7,7 @@
 
 import GameMain from "../GameMain";
 import { ConstValue } from "../Global/ConstValue";
-import { AppraiseKind, ExpertDef, ITEM_DEFS, ItemDef, ItemInstance } from "./Datas/GameData";
+import { AppraiseKind, ExpertDef, ITEM_DEFS, ItemDef, ItemInstance,TargetInfo } from "./Datas/GameData";
 
 export default class GameContext{
     UID:number = 0;
@@ -16,6 +16,7 @@ export default class GameContext{
 
     curSelected:ItemInstance = null!;
     ownedExperts: ExpertDef[] = [];
+    targetInfo:TargetInfo = null!;// 目标收益
 
     getUid():string{
         return `old_${this.UID++}`;

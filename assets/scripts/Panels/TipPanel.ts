@@ -20,15 +20,29 @@ export default class TipPanel extends BaseUI {
         this.flyTxt = this.node.getChildByName("flyTxt").getComponentInChildren(cc.Label);
     }
 
-    showTip(txt:string)
+    showTip(txt:string,callBack:any,externAnim:boolean = false)
     {
         this.flyTxt.string = txt;
         this.node.active = true;
-        cc.tween(this.flyTxt.node.parent)
-            .by(1,{y:100})
+        if(externAnim){
+            this.node.getChildByName("splash").opacity = 190;
+            cc.tween(this.flyTxt.node.parent)
+            .to(0.25,{scale:1.35},{easing:'inBack'})
+            .to(0.25,{scale:1.0},{easing:'outBack'})
+            .to(0.3,{y:this.flyTxt.node.parent.y + 50})
+            .delay(1)
             .call(()=>{
+                callBack();
                 UIManager.getInstance().closeUI(TipPanel);
             })
             .start()
+        }else{
+            cc.tween(this.flyTxt.node.parent)
+                .by(1,{y:100})
+                .call(()=>{
+                    UIManager.getInstance().closeUI(TipPanel);
+                })
+                .start()
+        }
     }
 }

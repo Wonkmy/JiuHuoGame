@@ -1,17 +1,11 @@
-// Learn TypeScript:
-//  - https://docs.cocos.com/creator/2.4/manual/en/scripting/typescript.html
-// Learn Attribute:
-//  - https://docs.cocos.com/creator/2.4/manual/en/scripting/reference/attributes.html
-// Learn life-cycle callbacks:
-//  - https://docs.cocos.com/creator/2.4/manual/en/scripting/life-cycle-callbacks.html
-
-import { ItemInstance } from "../GameCodes/Datas/GameData";
+import { ItemInstance,TargetInfo,ROUND_TARGETS_INFO } from "../GameCodes/Datas/GameData";
 import { appraise } from "../GameCodes/GameRules";
 import GameMain from "../GameMain";
 import { BaseUI } from "../UIManager/BaseUI";
 import ItemCellYJ from "../UIManager/ItemCellYJ";
 import MainPanel from "./MainPanel";
-
+import { UIManager } from "../UIManager/UIManager";
+import TipPanel from "./TipPanel";
 const {ccclass, property} = cc._decorator;
 
 @ccclass
@@ -26,9 +20,21 @@ export default class YiJiaPanel extends BaseUI {
 
     @property({type:cc.Node})
     canshi_Node:cc.Node = null!;
+    @property({type:cc.Node})
+    open_Node:cc.Node = null!;
+    @property({type:cc.Node})
+    repair_Node:cc.Node = null!;
 
     override onShow(): void {
+        this.node.getChildByName("target").getChildByName("content").active=false;
+        UIManager.getInstance().openUI(TipPanel,0,(ui:TipPanel)=>{
+            ui.onShow();
+            ui.showTip("目标收益:￥ "+ String(GameMain.instance.mainRuntime.ctx.targetInfo.target),()=>{
+                this.upgradeTargetInfo();
+            },true)
+        })
         this.upgradeTotalMoney()
+
         let count:number = GameMain.instance.mainRuntime.inventoryItemInstance.length;
         if(count<=1){
             this.inventoryContainer.width = 722;
@@ -56,6 +62,8 @@ export default class YiJiaPanel extends BaseUI {
             this.showMainItem(itemCellYj)
         })
         this.canshi_Node.on(cc.Node.EventType.TOUCH_END,this.onCashi ,this)
+        this.open_Node.on(cc.Node.EventType.TOUCH_END,this.onOpen ,this)
+        this.repair_Node.on(cc.Node.EventType.TOUCH_END,this.onRepair ,this)
     }
 
     private onCashi(){
@@ -64,6 +72,14 @@ export default class YiJiaPanel extends BaseUI {
         console.log(res);// 鉴赏结果，这里先打印出来。后面做飘字
     }
 
+    private onOpen(){
+        let res = appraise('open')
+        this.node.getChildByName("estimateMoney").getComponent(cc.Label).string = "当前估值:" + String(GameMain.instance.mainRuntime.ctx.curSelected.estimate)
+    }
+    private onRepair(){
+        let res = appraise('repair')
+        this.node.getChildByName("estimateMoney").getComponent(cc.Label).string = "当前估值:" + String(GameMain.instance.mainRuntime.ctx.curSelected.estimate)
+    }
     private showMainItem(itemCellYj: ItemCellYJ){
         if(itemCellYj==null){
             cc.resources.load("arts/items/" + GameMain.instance.mainRuntime.inventoryItemInstance[0].image, cc.SpriteFrame, (err, spriteFrame: cc.SpriteFrame) => {
@@ -99,5 +115,10 @@ export default class YiJiaPanel extends BaseUI {
 
     private upgradeTotalMoney(){
         this.node.getChildByName("totalMoney").getComponent(cc.Label).string = "总预算:￥ "+ String(MainPanel.instance.totalMoney);
+    }
+
+    private upgradeTargetInfo(){
+        this.node.getChildByName("target").getChildByName("content").active=true;
+        this.node.getChildByName("target").getChildByName("content").getComponent(cc.Label).string = "目标收益:￥ "+ String(GameMain.instance.mainRuntime.ctx.targetInfo.target);
     }
 }

@@ -1,9 +1,10 @@
-import { ItemInstance } from "../GameCodes/Datas/GameData";
+import { ItemInstance,ROUND_TARGETS_INFO } from "../GameCodes/Datas/GameData";
 import GameContext from "../GameCodes/GameRules";
 import { ConstValue } from "../Global/ConstValue";
 import ItemCell from "../UIManager/ItemCell";
 import ItemCellYJ from "../UIManager/ItemCellYJ";
 import MainPanel from "./MainPanel";
+import GameMain from "../GameMain";
 
 export default class MainPanelRuntime{
     mainPanel:MainPanel = null!;
@@ -13,6 +14,7 @@ export default class MainPanelRuntime{
         this.mainPanel = mp;
         this.ctx = new GameContext();
         this.ctx.totalPoints = ConstValue.TotalPoints;
+        this.ctx.targetInfo = ROUND_TARGETS_INFO[this.ctx.CurLevel]// 获得当前的目标收益
     }
 
     initItemInsCell(prefab: cc.Prefab,itemIns:ItemInstance,showBuyBtn:boolean,_parent:cc.Node){
