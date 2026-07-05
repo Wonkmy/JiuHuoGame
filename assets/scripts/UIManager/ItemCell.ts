@@ -7,7 +7,8 @@ const {ccclass, property} = cc._decorator;
 export default class ItemCell extends cc.Component {
     btn_Buy:cc.Node = null!;
     itemIns:ItemInstance = null!;
-    init(_itemIns:ItemInstance,showBuyBtn:boolean){
+    isBuyed:boolean = false;
+    init(_itemIns:ItemInstance){
         this.btn_Buy = this.node.getChildByName("buy_price").getChildByName("btn_Buy");
         this.itemIns = _itemIns;
         cc.resources.load("arts/items/"+ this.itemIns.image,cc.SpriteFrame,(err,spriteFrame:cc.SpriteFrame)=>{
@@ -18,14 +19,19 @@ export default class ItemCell extends cc.Component {
             let sprite:cc.Sprite = this.node.getChildByName("view").getComponent(cc.Sprite);
             sprite.spriteFrame = spriteFrame;
         })
-        this.node.getChildByName("buy_price").getChildByName("buyPrice").getComponent(cc.Label).string = "购买价:￥" + String(_itemIns.buyPrice);
-        this.node.getChildByName("item_name").getComponent(cc.Label).string = String("古董物品") + _itemIns.uid;
-        this.btn_Buy.on(cc.Node.EventType.TOUCH_END,this.onBuy,this)
+        this.node.getChildByName("buy_price").getChildByName("buyPrice").getComponent(cc.Label).string = "￥"+String(_itemIns.buyPrice);
+        this.node.getChildByName("material").getChildByName("txt").getComponent(cc.Label).string = String(_itemIns.material);
+        this.node.getChildByName("era").getChildByName("txt").getComponent(cc.Label).string = String(_itemIns.era);
+        this.btn_Buy.on(cc.Node.EventType.TOUCH_END,this.onBuy,this);
     }
 
     onBuy(){
+        if(this.isBuyed){
+            return;
+        }
         let success = MainPanel.instance.onBuyItemInstance(this.itemIns)
         if(success){
+            this.isBuyed = true;
             this.btn_Buy.color = cc.Color.GRAY;
             this.btn_Buy.off(cc.Node.EventType.TOUCH_START,this.onBuy,this)
         }

@@ -11,7 +11,7 @@ export type ItemCategory =
 export type ItemEra = '清末' | '民国' | '建国初' | '七八十年代' | '九十年代' | '当代旧物';
 
 // 物品材质，用于展示信息、专家加成、“同材质”组合判定
-export type ItemMaterial = '瓷' | '纸' | '金属' | '木' | '布皮' | '杂项';
+export type ItemMaterial = '瓷' | '纸' | '金' | '木' | '布' | '杂';
 export type AppraiseKind = 'wipe' | 'open' | 'repair';
 // 物品基础配置，写死在配置表里，不会在单局中变化
 export interface ItemDef {
@@ -74,14 +74,14 @@ export interface TargetInfo{
 
 // 每一轮目标收入
 export const ROUND_TARGETS_INFO:TargetInfo[] = [
-    {marketName:"潘家园1摊位", target:500},
-    {marketName:"潘家园2摊位", target:800},
-    {marketName:"琉璃厂1摊位", target:1500},
-    {marketName:"琉璃厂4摊位", target:2500},
-    {marketName:"琉璃厂5摊位", target:5000},
-    {marketName:"琉璃厂6摊位", target:12000},
-    {marketName:"琉璃厂7摊位", target:15000},
-    {marketName:"琉璃厂8摊位", target:20000},
+    {marketName:"捡漏1摊位", target:500},
+    {marketName:"捡漏2摊位", target:800},
+    {marketName:"捡漏3摊位", target:1500},
+    {marketName:"捡漏4摊位", target:2500},
+    {marketName:"捡漏5摊位", target:5000},
+    {marketName:"捡漏6摊位", target:12000},
+    {marketName:"捡漏7摊位", target:15000},
+    {marketName:"捡漏8摊位", target:20000},
 ];
 
 // 物品大类中文名，用于 UI 展示
@@ -108,29 +108,29 @@ export const ITEM_DEFS: ItemDef[] = [
     { id: 'item_10', name: '旧圆鼓凳', category: 'wood', era: '清末', material: '木', baseValue: 380, rarity: 3, image: 'item_10' },
     { id: 'item_11', name: '三斗柜', category: 'wood', era: '建国初', material: '木', baseValue: 330, rarity: 2, image: 'item_11' },
     { id: 'item_12', name: '多宝格架', category: 'wood', era: '七八十年代', material: '木', baseValue: 260, rarity: 2, image: 'item_12' },
-    { id: 'item_13', name: '铜香炉', category: 'bronze', era: '民国', material: '金属', baseValue: 480, rarity: 4, image: 'item_13' },
-    { id: 'item_14', name: '仿古爵杯', category: 'bronze', era: '当代旧物', material: '金属', baseValue: 160, rarity: 1, image: 'item_14' },
-    { id: 'item_15', name: '八卦铜镜', category: 'bronze', era: '民国', material: '金属', baseValue: 300, rarity: 2, image: 'item_15' },
-    { id: 'item_16', name: '铜方鼎', category: 'bronze', era: '当代旧物', material: '金属', baseValue: 220, rarity: 1, image: 'item_16' },
-    { id: 'item_17', name: '铜花觚', category: 'bronze', era: '民国', material: '金属', baseValue: 350, rarity: 3, image: 'item_17' },
-    { id: 'item_18', name: '老铜壶', category: 'bronze', era: '建国初', material: '金属', baseValue: 240, rarity: 2, image: 'item_18' },
+    { id: 'item_13', name: '铜香炉', category: 'bronze', era: '民国', material: '金', baseValue: 480, rarity: 4, image: 'item_13' },
+    { id: 'item_14', name: '仿古爵杯', category: 'bronze', era: '当代旧物', material: '金', baseValue: 160, rarity: 1, image: 'item_14' },
+    { id: 'item_15', name: '八卦铜镜', category: 'bronze', era: '民国', material: '金', baseValue: 300, rarity: 2, image: 'item_15' },
+    { id: 'item_16', name: '铜方鼎', category: 'bronze', era: '当代旧物', material: '金', baseValue: 220, rarity: 1, image: 'item_16' },
+    { id: 'item_17', name: '铜花觚', category: 'bronze', era: '民国', material: '金', baseValue: 350, rarity: 3, image: 'item_17' },
+    { id: 'item_18', name: '老铜壶', category: 'bronze', era: '建国初', material: '金', baseValue: 240, rarity: 2, image: 'item_18' },
     { id: 'item_19', name: '旧画卷', category: 'painting', era: '民国', material: '纸', baseValue: 300, rarity: 3, image: 'item_19' },
     { id: 'item_20', name: '线装残书', category: 'painting', era: '清末', material: '纸', baseValue: 360, rarity: 4, image: 'item_20' },
     { id: 'item_21', name: '草木手抄本', category: 'painting', era: '民国', material: '纸', baseValue: 260, rarity: 2, image: 'item_21' },
-    { id: 'item_22', name: '旧砚台', category: 'painting', era: '建国初', material: '杂项', baseValue: 240, rarity: 2, image: 'item_22' },
+    { id: 'item_22', name: '旧砚台', category: 'painting', era: '建国初', material: '杂', baseValue: 240, rarity: 2, image: 'item_22' },
     { id: 'item_23', name: '瓷笔筒', category: 'painting', era: '七八十年代', material: '瓷', baseValue: 190, rarity: 1, image: 'item_23' },
-    { id: 'item_24', name: '铜笔筒', category: 'painting', era: '民国', material: '金属', baseValue: 310, rarity: 3, image: 'item_24' },
-    { id: 'item_25', name: '海鸥旁轴相机', category: 'cameraWatch', era: '七八十年代', material: '金属', baseValue: 290, rarity: 2, image: 'item_25' },
-    { id: 'item_26', name: '黑皮单反相机', category: 'cameraWatch', era: '九十年代', material: '金属', baseValue: 340, rarity: 2, image: 'item_26' },
-    { id: 'item_27', name: '双反老相机', category: 'cameraWatch', era: '民国', material: '金属', baseValue: 760, rarity: 5, image: 'item_27' },
-    { id: 'item_28', name: '钢带机械表', category: 'cameraWatch', era: '九十年代', material: '金属', baseValue: 260, rarity: 2, image: 'item_28' },
-    { id: 'item_29', name: '皮带老腕表', category: 'cameraWatch', era: '七八十年代', material: '金属', baseValue: 420, rarity: 3, image: 'item_29' },
-    { id: 'item_30', name: '花瓷热水瓶', category: 'cameraWatch', era: '七八十年代', material: '杂项', baseValue: 120, rarity: 1, image: 'item_30' },
-    { id: 'item_31', name: '布老虎', category: 'folkToy', era: '民国', material: '布皮', baseValue: 300, rarity: 3, image: 'item_31' },
+    { id: 'item_24', name: '铜笔筒', category: 'painting', era: '民国', material: '金', baseValue: 310, rarity: 3, image: 'item_24' },
+    { id: 'item_25', name: '海鸥旁轴相机', category: 'cameraWatch', era: '七八十年代', material: '金', baseValue: 290, rarity: 2, image: 'item_25' },
+    { id: 'item_26', name: '黑皮单反相机', category: 'cameraWatch', era: '九十年代', material: '金', baseValue: 340, rarity: 2, image: 'item_26' },
+    { id: 'item_27', name: '双反老相机', category: 'cameraWatch', era: '民国', material: '金', baseValue: 760, rarity: 5, image: 'item_27' },
+    { id: 'item_28', name: '钢带机械表', category: 'cameraWatch', era: '九十年代', material: '金', baseValue: 260, rarity: 2, image: 'item_28' },
+    { id: 'item_29', name: '皮带老腕表', category: 'cameraWatch', era: '七八十年代', material: '金', baseValue: 420, rarity: 3, image: 'item_29' },
+    { id: 'item_30', name: '花瓷热水瓶', category: 'cameraWatch', era: '七八十年代', material: '杂', baseValue: 120, rarity: 1, image: 'item_30' },
+    { id: 'item_31', name: '布老虎', category: 'folkToy', era: '民国', material: '布', baseValue: 300, rarity: 3, image: 'item_31' },
     { id: 'item_32', name: '瓷娃娃摆件', category: 'folkToy', era: '七八十年代', material: '瓷', baseValue: 180, rarity: 1, image: 'item_32' },
     { id: 'item_33', name: '彩漆陀螺', category: 'folkToy', era: '建国初', material: '木', baseValue: 220, rarity: 2, image: 'item_33' },
     { id: 'item_34', name: '纸风车', category: 'folkToy', era: '九十年代', material: '纸', baseValue: 90, rarity: 1, image: 'item_34' },
-    { id: 'item_35', name: '旧马灯', category: 'folkToy', era: '民国', material: '金属', baseValue: 280, rarity: 2, image: 'item_35' },
+    { id: 'item_35', name: '旧马灯', category: 'folkToy', era: '民国', material: '金', baseValue: 280, rarity: 2, image: 'item_35' },
     { id: 'item_36', name: '竹鸟笼', category: 'folkToy', era: '建国初', material: '木', baseValue: 250, rarity: 2, image: 'item_36' },
 ];
 
@@ -145,14 +145,14 @@ export const EXPERT_DEFS: ExpertDef[] = [
     { id: 'expert_07', name: '秦探子', title: '假货猎人', desc: '看走眼时至少保本', effect: 'fakeGuard', value: 1, image: 'expert_07' },
     { id: 'expert_08', name: '白姨', title: '瓷器补彩', desc: '修复过的瓷器再 +15%', effect: 'categoryBonus', target: 'porcelain', value: 0.15, image: 'expert_08' },
     { id: 'expert_09', name: '严师傅', title: '钟表匠', desc: '相机表卖价 +20%', effect: 'categoryBonus', target: 'cameraWatch', value: 0.2, image: 'expert_09' },
-    { id: 'expert_10', name: '陆师傅', title: '相机修匠', desc: '金属物品卖价 +12%', effect: 'materialBonus', target: '金属', value: 0.12, image: 'expert_10' },
+    { id: 'expert_10', name: '陆师傅', title: '相机修匠', desc: '金属物品卖价 +12%', effect: 'materialBonus', target: '金', value: 0.12, image: 'expert_10' },
     { id: 'expert_11', name: '宋先生', title: '书画藏家', desc: '旧书画卖价 +20%', effect: 'categoryBonus', target: 'painting', value: 0.2, image: 'expert_11' },
     { id: 'expert_12', name: '马老板', title: '铜器商', desc: '铜器杂项卖价 +20%', effect: 'categoryBonus', target: 'bronze', value: 0.2, image: 'expert_12' },
     { id: 'expert_13', name: '冯木匠', title: '木器师傅', desc: '木器家具卖价 +18%', effect: 'categoryBonus', target: 'wood', value: 0.18, image: 'expert_13' },
     { id: 'expert_14', name: '茶客老梁', title: '茶馆买手', desc: '低价买入物品 +18%', effect: 'cheapBonus', value: 0.18, image: 'expert_14' },
     { id: 'expert_15', name: '丁伙计', title: '当铺伙计', desc: '组合倍率额外 +0.15', effect: 'comboBonus', value: 0.15, image: 'expert_15' },
-    { id: 'expert_16', name: '梅婶', title: '旧市摊主', desc: '杂项物品卖价 +14%', effect: 'materialBonus', target: '杂项', value: 0.14, image: 'expert_16' },
-    { id: 'expert_17', name: '侯车长', title: '铁路藏友', desc: '金属物品卖价 +10%', effect: 'materialBonus', target: '金属', value: 0.1, image: 'expert_17' },
+    { id: 'expert_16', name: '梅婶', title: '旧市摊主', desc: '杂项物品卖价 +14%', effect: 'materialBonus', target: '杂', value: 0.14, image: 'expert_16' },
+    { id: 'expert_17', name: '侯车长', title: '铁路藏友', desc: '金属物品卖价 +10%', effect: 'materialBonus', target: '金', value: 0.1, image: 'expert_17' },
     { id: 'expert_18', name: '阿童', title: '玩具匠', desc: '民俗玩具修复 +20%', effect: 'repairBonus', value: 0.2, image: 'expert_18' },
     { id: 'expert_19', name: '林馆员', title: '档案管理员', desc: '完全揭示物品 +10%', effect: 'revealBonus', value: 0.1, image: 'expert_19' },
     { id: 'expert_20', name: '顾先生', title: '沉默买家', desc: '上拍总价 +10%', effect: 'auctionBonus', value: 0.1, image: 'expert_20' },

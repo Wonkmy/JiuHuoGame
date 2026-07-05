@@ -9,6 +9,7 @@ import { UIManager } from "../UIManager/UIManager";
 import MainPanelRuntime from "./MainPanelRuntime";
 import TipPanel from "./TipPanel";
 import YiJiaPanel from "./YiJiaPanel";
+import BagPanel from "./BagPanel";
 
 const {ccclass, property} = cc._decorator;
 
@@ -23,6 +24,11 @@ export default class MainPanel extends BaseUI {
 
     marketItemContainer:cc.Node = null!;
 
+    totalCostMoney:number = 0;
+
+    @property({type:cc.Node})
+    openBagPanel:cc.Node = null!;
+
     onLoad(): void {
         MainPanel.instance = this;
     }
@@ -36,6 +42,11 @@ export default class MainPanel extends BaseUI {
 
         this.btn_YJ.on(cc.Node.EventType.TOUCH_END,this.onYiJia ,this)
         this.btn_ReRoll.on(cc.Node.EventType.TOUCH_END,this.onReRoll ,this)
+        this.openBagPanel.on(cc.Node.EventType.TOUCH_END, () => {
+            UIManager.getInstance().openUI(BagPanel, 0, (ui: BagPanel) => {
+                ui.onShow();
+            })
+        }, this)
     }
 
     private onCreateItems(){
@@ -45,7 +56,7 @@ export default class MainPanel extends BaseUI {
         this.upgradeTotalMoney();
         this.node.getChildByName("targetName").getComponent(cc.Label).string = String(GameMain.instance.mainRuntime.ctx.targetInfo.marketName);
         let count:number = Math.round(allItemInstance.length / 3);
-        this.marketItemContainer.height = count * 271 + (count + 1) * 30;
+        this.marketItemContainer.height = count * 216.2 + (count + 1) * 30;
         for (let i = 0; i < allItemInstance.length; i++) {
             const itemIns:ItemInstance = allItemInstance[i];
             cc.resources.load("prefab/itemCell", cc.Prefab, (err, prefab: cc.Prefab) => {
@@ -53,7 +64,7 @@ export default class MainPanel extends BaseUI {
                     console.error("load itemCell prefab error:", err);
                     return;
                 }
-                GameMain.instance.mainRuntime.initItemInsCell(prefab,itemIns,true,this.marketItemContainer);
+                GameMain.instance.mainRuntime.initItemInsCell(prefab,itemIns,this.marketItemContainer);
             })
         }
     }
@@ -70,6 +81,7 @@ export default class MainPanel extends BaseUI {
         }else{
         UIManager.getInstance().closeUI(MainPanel);
             UIManager.getInstance().openUI(YiJiaPanel,0,(ui:YiJiaPanel)=>{
+                ui.buyTotolPrice = this.totalCostMoney;
                 ui.onShow();
             })
         }
@@ -94,7 +106,12 @@ export default class MainPanel extends BaseUI {
     onBuyItemInstance(_itemIns:ItemInstance){
         if(this.totalMoney >=  _itemIns.buyPrice){
             this.totalMoney -=  _itemIns.buyPrice;
+            this.totalCostMoney +=  _itemIns.buyPrice;
             this.upgradeTotalMoney();
+            UIManager.getInstance().openUI(TipPanel,0,(ui:TipPanel)=>{
+                ui.onShow();
+                ui.showTip(`成功购买 ${_itemIns.name}。价格: ￥${_itemIns.buyPrice}`,null)
+            })
             GameMain.instance.mainRuntime.inventoryItemInstance.push(_itemIns);
             return true;
         }else{

@@ -15,7 +15,7 @@ export default class GameContext{
     totalPoints:number = 0;
 
     curSelected:ItemInstance = null!;
-    ownedExperts: ExpertDef[] = [];
+    ownedExperts: ExpertDef[] = [];// 玩家拥有的鉴定专家
     targetInfo:TargetInfo = null!;// 目标收益
 
     getUid():string{
@@ -169,27 +169,45 @@ export function playAppraiseFeedback(kind: AppraiseKind, eventText: string, diff
     }
 
 export function appraise(kind: AppraiseKind) {
-        const item:ItemInstance = GameMain.instance.mainRuntime.ctx.curSelected;
-        if (!item) return "";
-        const cost = getAppraiseCost(kind);
-        if (GameMain.instance.mainRuntime.ctx.totalPoints < cost) return "";
-        const oldEstimate = item.estimate;
-        GameMain.instance.mainRuntime.ctx.totalPoints -= cost;
-
-        if (kind === 'repair') {
-            if (!item.repaired) {
-                item.repaired = true;
-                // 修复只做简单加值，避免把业务逻辑写成复杂算法。
-                item.trueValue = Math.round(item.trueValue * (item.fake ? 0.95 : 1.22));
-            }
-        } else {
-            item.reveal = Math.min(3, item.reveal + (kind === 'open' ? 2 : 1));// 揭示度，范围 0-3，越高估值越接近真实价值
+    const item: ItemInstance = GameMain.instance.mainRuntime.ctx.curSelected;
+    if (!item) return {
+        AppraiseResult: {
+            eventText: "",
+            diff: 0,
         }
+    };
+    const cost = getAppraiseCost(kind);
+    if (GameMain.instance.mainRuntime.ctx.totalPoints < cost) return {
+        AppraiseResult: {
+            eventText: "",
+            diff: 0,
+        }
+    };
+    const oldEstimate = item.estimate;
+    GameMain.instance.mainRuntime.ctx.totalPoints -= cost;
 
-        const eventText = rollAppraiseEvent(item, kind);// 鉴赏结果
-        item.estimate = getItemSellValue(item, GameMain.instance.mainRuntime.ctx.ownedExperts, false);// 当前估值，展示给玩家看的价格，会随揭示度和鉴定事件变化
-        const diff = item.estimate - oldEstimate;
-        return {
-            eventText,diff
+    if (kind === 'repair') {
+        if (!item.repaired) {
+            item.repaired = true;
+            // 修复只做简单加值，避免把业务逻辑写成复杂算法。
+            item.trueValue = Math.round(item.trueValue * (item.fake ? 0.95 : 1.22));
+        }
+    } else {
+        item.reveal = Math.min(3, item.reveal + (kind === 'open' ? 2 : 1));// 揭示度，范围 0-3，越高估值越接近真实价值
+    }
+
+    const eventText = rollAppraiseEvent(item, kind);// 鉴赏结果
+    item.estimate = getItemSellValue(item, GameMain.instance.mainRuntime.ctx.ownedExperts, false);// 当前估值，展示给玩家看的价格，会随揭示度和鉴定事件变化
+    const diff = item.estimate - oldEstimate;
+    return {
+        AppraiseResult: {
+            eventText,
+            diff,
         }
     }
+}
+
+export interface AppraiseResult {
+    eventText: string;
+    diff: number;
+}

@@ -29,9 +29,10 @@ export default class ItemCellYJ extends cc.Component {
         this.Icon_isSelected.color = s == false?cc.Color.GRAY:cc.Color.WHITE;
     }
 
-    init(_itemIns: ItemInstance) {
+    init(_itemIns: ItemInstance,showCheckBtn:boolean){
         this.itemIns = _itemIns;
         this.Icon_isSelected = this.node.getChildByName("Icon_isSelected")
+        this.Icon_isSelected.active = showCheckBtn;
         this.Icon_isSelected.color = cc.Color.GRAY;
         this.ISSelected = false;
         cc.resources.load("arts/items/" + this.itemIns.image, cc.SpriteFrame, (err, spriteFrame: cc.SpriteFrame) => {
@@ -43,7 +44,7 @@ export default class ItemCellYJ extends cc.Component {
             sprite.spriteFrame = spriteFrame;
         })
         this.node.getChildByName("buyPrice").getComponent(cc.Label).string = "购买价:￥" + String(_itemIns.buyPrice);
-        this.node.getChildByName("item_name").getComponent(cc.Label).string = String("古董物品") + _itemIns.uid;
+        this.node.getChildByName("item_name").getComponent(cc.Label).string = _itemIns.name;
 
         this.selectBtn.on(cc.Node.EventType.TOUCH_END,this.onSelected ,this)
     }

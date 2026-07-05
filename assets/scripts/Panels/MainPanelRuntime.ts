@@ -17,20 +17,20 @@ export default class MainPanelRuntime{
         this.ctx.targetInfo = ROUND_TARGETS_INFO[this.ctx.CurLevel]// 获得当前的目标收益
     }
 
-    initItemInsCell(prefab: cc.Prefab,itemIns:ItemInstance,showBuyBtn:boolean,_parent:cc.Node){
+    initItemInsCell(prefab: cc.Prefab,itemIns:ItemInstance,_parent:cc.Node){
         let newItemCell = cc.instantiate(prefab);
         newItemCell.parent = _parent;
         newItemCell.setPosition(cc.v2(0,0));
         let itemCellScript:ItemCell = newItemCell.getComponent(ItemCell);
-        itemCellScript.init(itemIns,showBuyBtn);
+        itemCellScript.init(itemIns);
     }
 
-    initInventoryItemInsCell(prefab: cc.Prefab,itemIns:ItemInstance,_parent:cc.Node){
+    initInventoryItemInsCell(prefab: cc.Prefab,itemIns:ItemInstance,_parent:cc.Node,showCheckBtn:boolean,){
         let newItemCell = cc.instantiate(prefab);
         newItemCell.parent = _parent;
         newItemCell.setPosition(cc.v2(0,0));
         let itemCellScript:ItemCellYJ = newItemCell.getComponent(ItemCellYJ);
-        itemCellScript.init(itemIns);
+        itemCellScript.init(itemIns,showCheckBtn);
     }
 
     dispose(){

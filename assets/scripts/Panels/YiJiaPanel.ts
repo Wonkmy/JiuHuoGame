@@ -1,11 +1,12 @@
 import { ItemInstance,TargetInfo,ROUND_TARGETS_INFO } from "../GameCodes/Datas/GameData";
-import { appraise } from "../GameCodes/GameRules";
+import { appraise,AppraiseResult } from "../GameCodes/GameRules";
 import GameMain from "../GameMain";
 import { BaseUI } from "../UIManager/BaseUI";
 import ItemCellYJ from "../UIManager/ItemCellYJ";
 import MainPanel from "./MainPanel";
 import { UIManager } from "../UIManager/UIManager";
 import TipPanel from "./TipPanel";
+import ResultPanel from "./ResultPanel";
 const {ccclass, property} = cc._decorator;
 
 @ccclass
@@ -25,8 +26,14 @@ export default class YiJiaPanel extends BaseUI {
     @property({type:cc.Node})
     repair_Node:cc.Node = null!;
 
+    @property({type:cc.Node})
+    sell_Node:cc.Node = null!;
+
+    buyTotolPrice:number = 0;
+    YijiaPrice:number = 0;
+
     override onShow(): void {
-        this.node.getChildByName("target").getChildByName("content").active=false;
+        this.node.getChildByName("target").active=false;
         UIManager.getInstance().openUI(TipPanel,0,(ui:TipPanel)=>{
             ui.onShow();
             ui.showTip("目标收益:￥ "+ String(GameMain.instance.mainRuntime.ctx.targetInfo.target),()=>{
@@ -50,7 +57,7 @@ export default class YiJiaPanel extends BaseUI {
                     console.error("load itemCell prefab error:", err);
                     return;
                 }
-                GameMain.instance.mainRuntime.initInventoryItemInsCell(prefab, itemIns,this.inventoryContainer);
+                GameMain.instance.mainRuntime.initInventoryItemInsCell(prefab, itemIns,this.inventoryContainer,true);
             })
         }
 
@@ -64,21 +71,84 @@ export default class YiJiaPanel extends BaseUI {
         this.canshi_Node.on(cc.Node.EventType.TOUCH_END,this.onCashi ,this)
         this.open_Node.on(cc.Node.EventType.TOUCH_END,this.onOpen ,this)
         this.repair_Node.on(cc.Node.EventType.TOUCH_END,this.onRepair ,this)
+
+        this.sell_Node.on(cc.Node.EventType.TOUCH_END,this.onSell ,this)
     }
 
     private onCashi(){
-        let res = appraise('wipe')
-        this.node.getChildByName("estimateMoney").getComponent(cc.Label).string = "当前估值:" + String(GameMain.instance.mainRuntime.ctx.curSelected.estimate)
-        console.log(res);// 鉴赏结果，这里先打印出来。后面做飘字
+        let res: AppraiseResult = appraise('wipe').AppraiseResult;
+        this.node.getChildByName("estimateMoney").getComponent(cc.Label).string = "当前估值:￥" + String(GameMain.instance.mainRuntime.ctx.curSelected.estimate)
+        this.showDeltaPrice(res);
     }
 
     private onOpen(){
-        let res = appraise('open')
-        this.node.getChildByName("estimateMoney").getComponent(cc.Label).string = "当前估值:" + String(GameMain.instance.mainRuntime.ctx.curSelected.estimate)
-    }
+        let res: AppraiseResult = appraise('open').AppraiseResult;
+        this.node.getChildByName("estimateMoney").getComponent(cc.Label).string = "当前估值:￥" + String(GameMain.instance.mainRuntime.ctx.curSelected.estimate)
+        this.showDeltaPrice(res);
+    };
     private onRepair(){
-        let res = appraise('repair')
-        this.node.getChildByName("estimateMoney").getComponent(cc.Label).string = "当前估值:" + String(GameMain.instance.mainRuntime.ctx.curSelected.estimate)
+        let res: AppraiseResult = appraise('repair').AppraiseResult;
+        this.node.getChildByName("estimateMoney").getComponent(cc.Label).string = "当前估值:￥" + String(GameMain.instance.mainRuntime.ctx.curSelected.estimate)
+        this.showDeltaPrice(res);
+    };
+
+    private showDeltaPrice(res: AppraiseResult ){
+        UIManager.getInstance().openUI(TipPanel, 0, (ui: TipPanel) => {
+            ui.onShow();
+            let cont = res.diff > 0 ? "+" + String(res.diff) : + String(Math.abs(res.diff));
+            ui.showTip(res.eventText + "\n" + cont, null)
+        })
+    }
+
+    private onSell(){
+        if(GameMain.instance.mainRuntime.inventoryItemInstance.length <= 0)return;
+        let deleteIndex:number = -1;
+        let finalPrice:number = GameMain.instance.mainRuntime.ctx.curSelected.estimate;
+        let curShouyi:number = finalPrice - GameMain.instance.mainRuntime.ctx.curSelected.buyPrice;
+        MainPanel.instance.totalMoney += finalPrice;
+        this.YijiaPrice += finalPrice;
+        let _target = GameMain.instance.mainRuntime.ctx.targetInfo.target;
+        let _targetExtra:number = this.YijiaPrice - this.buyTotolPrice;
+        if(_targetExtra <0)_targetExtra=0;
+        if(_targetExtra >= _target){
+            this.node.getChildByName("target").getChildByName("target_slider").getChildByName("finish").active=true;
+        }
+        this.node.getChildByName("target").getChildByName("target_slider").getChildByName("fg").getComponent(cc.Sprite).fillRange = _targetExtra / _target;
+        this.node.getChildByName("target").getChildByName("target_slider").getChildByName("num").getComponent(cc.Label).string = String(_targetExtra) + "/" + String(_target);
+        this.upgradeTotalMoney();
+        // 从背包中移除选中的那个货物
+        GameMain.instance.mainRuntime.inventoryItemInstance.forEach((i)=>{
+            if(i.uid === GameMain.instance.mainRuntime.ctx.curSelected.uid){
+                deleteIndex = GameMain.instance.mainRuntime.inventoryItemInstance.indexOf(i);
+            }
+        })
+        if (deleteIndex !== -1) {
+            GameMain.instance.mainRuntime.inventoryItemInstance.splice(deleteIndex, 1);
+            this.inventoryContainer.removeAllChildren();
+            if (GameMain.instance.mainRuntime.inventoryItemInstance.length > 0) {
+                for (let i = 0; i < GameMain.instance.mainRuntime.inventoryItemInstance.length; i++) {
+                    const itemIns: ItemInstance = GameMain.instance.mainRuntime.inventoryItemInstance[i];
+                    cc.resources.load("prefab/itemCellYJ", cc.Prefab, (err, prefab: cc.Prefab) => {
+                        if (err) {
+                            console.error("load itemCell prefab error:", err);
+                            return;
+                        }
+                        GameMain.instance.mainRuntime.initInventoryItemInsCell(prefab, itemIns, this.inventoryContainer,true);
+                    })
+                }
+                this.showMainItem(null!)
+            }else{
+                // 如果背包空了，直接关闭鉴赏界面，打开结算界面
+                this.main_item.getComponent(cc.Sprite).spriteFrame = null!;
+                this.node.getChildByName("estimateMoney").active=false;
+                this.scheduleOnce(()=>{
+                    UIManager.getInstance().openUI(ResultPanel,0,(ui:ResultPanel)=>{
+                    ui.onShow();
+                    ui.setContentText(this.YijiaPrice , this.buyTotolPrice);// 结算收益 = 卖出总价 - 买入总价
+                })
+                },0.5);
+            }
+        }
     }
     private showMainItem(itemCellYj: ItemCellYJ){
         if(itemCellYj==null){
@@ -94,7 +164,7 @@ export default class YiJiaPanel extends BaseUI {
                 }, this)
                 this.inventoryContainer.children[0].getComponent(ItemCellYJ).ISSelected = true;
                 GameMain.instance.mainRuntime.ctx.curSelected = GameMain.instance.mainRuntime.inventoryItemInstance[0];
-                this.node.getChildByName("estimateMoney").getComponent(cc.Label).string = "当前估值:" + String(GameMain.instance.mainRuntime.ctx.curSelected.estimate);
+                this.node.getChildByName("estimateMoney").getComponent(cc.Label).string = "当前估值:￥" + String(GameMain.instance.mainRuntime.ctx.curSelected.estimate);
             });
         }else{
             cc.resources.load("arts/items/" + GameMain.instance.mainRuntime.ctx.curSelected.image, cc.SpriteFrame, (err, spriteFrame: cc.SpriteFrame) => {
@@ -108,7 +178,7 @@ export default class YiJiaPanel extends BaseUI {
                     n.getComponent(ItemCellYJ).ISSelected = false;
                 }, this)
                 itemCellYj.ISSelected = true
-                this.node.getChildByName("estimateMoney").getComponent(cc.Label).string = "当前估值:" + String(GameMain.instance.mainRuntime.ctx.curSelected.estimate)
+                this.node.getChildByName("estimateMoney").getComponent(cc.Label).string = "当前估值:￥" + String(GameMain.instance.mainRuntime.ctx.curSelected.estimate)
             });
         }
     }
@@ -118,7 +188,10 @@ export default class YiJiaPanel extends BaseUI {
     }
 
     private upgradeTargetInfo(){
-        this.node.getChildByName("target").getChildByName("content").active=true;
-        this.node.getChildByName("target").getChildByName("content").getComponent(cc.Label).string = "目标收益:￥ "+ String(GameMain.instance.mainRuntime.ctx.targetInfo.target);
+        this.node.getChildByName("target").active=true;
+        let _target = GameMain.instance.mainRuntime.ctx.targetInfo.target;
+        this.node.getChildByName("target").getChildByName("target_slider").getChildByName("fg").getComponent(cc.Sprite).fillRange = this.YijiaPrice / _target;
+        this.node.getChildByName("target").getChildByName("target_slider").getChildByName("num").getComponent(cc.Label).string = String(this.YijiaPrice) + "/" + String(_target);
+        this.node.getChildByName("target").getChildByName("content").getComponent(cc.Label).string = "目标收益:￥ "+ String(_target);
     }
 }

@@ -18,6 +18,9 @@ export default class TipPanel extends BaseUI {
     flyTxt:cc.Label = null!;
     override onShow(): void {
         this.flyTxt = this.node.getChildByName("flyTxt").getComponentInChildren(cc.Label);
+        this.node.getChildByName("splash").on(cc.Node.EventType.TOUCH_END, () => {
+            UIManager.getInstance().closeUI(TipPanel);
+        },this)
     }
 
     showTip(txt:string,callBack:any,externAnim:boolean = false)
@@ -38,7 +41,8 @@ export default class TipPanel extends BaseUI {
             .start()
         }else{
             cc.tween(this.flyTxt.node.parent)
-                .by(1,{y:100})
+                .by(0.5,{y:150})
+                .delay(0.75)
                 .call(()=>{
                     UIManager.getInstance().closeUI(TipPanel);
                 })
