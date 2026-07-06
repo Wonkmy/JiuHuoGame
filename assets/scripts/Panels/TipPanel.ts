@@ -23,7 +23,7 @@ export default class TipPanel extends BaseUI {
         },this)
     }
 
-    showTip(txt:string,callBack:any,externAnim:boolean = false)
+    showTip(txt:string,callBack:any,externAnim:boolean = false,delayTime:number = 0.75)
     {
         this.flyTxt.string = txt;
         this.node.active = true;
@@ -42,7 +42,7 @@ export default class TipPanel extends BaseUI {
         }else{
             cc.tween(this.flyTxt.node.parent)
                 .by(0.5,{y:150})
-                .delay(0.75)
+                .delay(delayTime)
                 .call(()=>{
                     UIManager.getInstance().closeUI(TipPanel);
                 })

@@ -7,7 +7,7 @@
 
 import GameMain from "../GameMain";
 import { ConstValue } from "../Global/ConstValue";
-import { AppraiseKind, ExpertDef, ITEM_DEFS, ItemDef, ItemInstance,TargetInfo } from "./Datas/GameData";
+import { AppraiseKind, ExpertDef, ItemDef, ItemInstance,TargetInfo, ROUND_TARGETS_INFO } from "./Datas/GameData";
 
 export default class GameContext{
     UID:number = 0;
@@ -15,17 +15,104 @@ export default class GameContext{
     totalPoints:number = 0;
 
     curSelected:ItemInstance = null!;
-    ownedExperts: ExpertDef[] = [];// 玩家拥有的鉴定专家
+    /**
+     * 玩家拥有的鉴定专家列表
+     */
+    ownedExperts: ExpertDef[] = [];
+    /**
+     * 玩家背包
+     */
+    inventoryItemInstance:ItemInstance[]=[]
     targetInfo:TargetInfo = null!;// 目标收益
 
     getUid():string{
         return `old_${this.UID++}`;
     }
+
+    resetGame(){
+        this.CurLevel = 0;
+        this.totalPoints = ConstValue.TotalPoints;
+        this.ownedExperts = [];
+        this.inventoryItemInstance = [];
+        this.curSelected = null!;
+        this.targetInfo = null!;
+    }
+
+    startRound(){
+        this.inventoryItemInstance = [];
+        this.curSelected = null!;
+        this.targetInfo = ROUND_TARGETS_INFO[this.CurLevel]// 获得当前的目标收益
+    };
 }
 
-export function createMarketItems(nextUid: () => string): ItemInstance[] {
-    const pool = [...ITEM_DEFS].sort(() => Math.random() - 0.5).slice(0, 12);
-    return pool.map(def => createItem(def, nextUid()));
+export function pickExperts(count: number, ownedExperts: ExpertDef[]): ExpertDef[] {
+    const owned = new Set(ownedExperts.map(expert => expert.id));
+    return GameMain.instance.EXPERT_DEFS
+        .filter(expert => !owned.has(expert.id))
+        .sort(() => Math.random() - 0.5)
+        .slice(0, count);
+}
+
+export function createMarketItems(nextUid: () => string,round: number = 1,excludeIds: string[] = []): ItemInstance[] {
+    const defs = pickMarketDefsByRound(round, 12,excludeIds);
+    return defs.map(def => createItem(def, nextUid()));
+}
+
+function pickMarketDefsByRound(round: number, count: number, excludeIds: string[] = []): ItemDef[] {
+    const excluded = new Set(excludeIds);
+
+    const low = GameMain.instance.ITEM_DEFS.filter(i => !excluded.has(i.id) &&i.baseValue <= 180);
+    const midLow = GameMain.instance.ITEM_DEFS.filter(i => !excluded.has(i.id) &&i.baseValue > 180 && i.baseValue <= 300);
+    const mid = GameMain.instance.ITEM_DEFS.filter(i => !excluded.has(i.id) &&i.baseValue > 300 && i.baseValue <= 450);
+    const high = GameMain.instance.ITEM_DEFS.filter(i => !excluded.has(i.id) &&i.baseValue > 450 && i.baseValue <= 620);
+    const rare = GameMain.instance.ITEM_DEFS.filter(i => !excluded.has(i.id) &&i.baseValue > 620);
+
+    const weightsByRound = [
+        [45, 35, 15, 5, 0],
+        [30, 40, 20, 8, 2],
+        [20, 35, 30, 12, 3],
+        [12, 28, 35, 20, 5],
+        [8, 20, 35, 27, 10],
+        [5, 15, 30, 35, 15],
+        [3, 10, 25, 40, 22],
+    ];
+
+    const weights = weightsByRound[Math.min(round - 1, weightsByRound.length - 1)];
+    const pools = [low, midLow, mid, high, rare];
+    const result: ItemDef[] = [];
+
+    while (result.length < count) {
+        const pool = pickPoolByWeight(pools, weights);
+        const item = pool[Math.floor(Math.random() * pool.length)];
+
+        if (item && !result.includes(item)) {
+            result.push(item);
+        }
+    }
+
+    return result;
+}
+
+function pickPoolByWeight<T>(pools: T[][], weights: number[]): T[] {
+    const valid = pools.map((pool, index) => ({ pool, weight: weights[index] || 0 }))
+        .filter(item => item.pool.length > 0 && item.weight > 0);
+
+    if (valid.length === 0) {
+        return pools.find(pool => pool.length > 0) || [];
+    }
+
+    const total = valid.reduce((sum, item) => sum + item.weight, 0);
+    let roll = Math.random() * total;
+
+    for (const item of valid) {
+        roll -= item.weight;
+
+        if (roll <= 0) {
+            return item.pool;
+        }
+    }
+
+    return valid[valid.length - 1].pool;
 }
 
 export function createItem(def: ItemDef, uid: string): ItemInstance {

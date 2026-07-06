@@ -1027,8 +1027,8 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 48,
-      "height": 48
+      "width": 47,
+      "height": 34
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -1080,7 +1080,7 @@
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
     "_spriteFrame": {
-      "__uuid__": "67d2dfea-28e6-4455-b216-89d6dedd8870"
+      "__uuid__": "72e1e2e8-6c42-4329-ace4-408ba6187479"
     },
     "_type": 0,
     "_sizeMode": 1,
@@ -1679,7 +1679,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 60,
+      "width": 68.1,
       "height": 37.8
     },
     "_anchorPoint": {
@@ -1691,7 +1691,7 @@
       "__type__": "TypedArray",
       "ctor": "Float64Array",
       "array": [
-        -54.406,
+        -50.4,
         0,
         0,
         0,
@@ -1731,8 +1731,8 @@
     ],
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
-    "_string": "刷新",
-    "_N$string": "刷新",
+    "_string": "换一批",
+    "_N$string": "换一批",
     "_fontSize": 30,
     "_lineHeight": 30,
     "_enableWrapText": true,
@@ -1745,7 +1745,7 @@
     "_N$horizontalAlign": 1,
     "_N$verticalAlign": 1,
     "_N$fontFamily": "Arial",
-    "_N$overflow": 0,
+    "_N$overflow": 2,
     "_N$cacheMode": 0,
     "_id": ""
   },

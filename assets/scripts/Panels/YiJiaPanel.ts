@@ -7,6 +7,7 @@ import MainPanel from "./MainPanel";
 import { UIManager } from "../UIManager/UIManager";
 import TipPanel from "./TipPanel";
 import ResultPanel from "./ResultPanel";
+import SmallExpertsCell from "../UIManager/SmallExpertsCell";
 const {ccclass, property} = cc._decorator;
 
 @ccclass
@@ -29,6 +30,9 @@ export default class YiJiaPanel extends BaseUI {
     @property({type:cc.Node})
     sell_Node:cc.Node = null!;
 
+    @property({type:cc.Node})
+    ownedExpertsContainers:cc.Node = null!;
+
     buyTotolPrice:number = 0;
     YijiaPrice:number = 0;
 
@@ -42,22 +46,36 @@ export default class YiJiaPanel extends BaseUI {
         })
         this.upgradeTotalMoney()
 
-        let count:number = GameMain.instance.mainRuntime.inventoryItemInstance.length;
+        let count:number = GameMain.instance.mainRuntime.ctx.inventoryItemInstance.length;
         if(count<=1){
             this.inventoryContainer.width = 722;
         }else{
             this.inventoryContainer.width = count * 200 + (count + 1) * 20;
         }
-
-
-        for (let i = 0; i < GameMain.instance.mainRuntime.inventoryItemInstance.length; i++) {
-            const itemIns: ItemInstance = GameMain.instance.mainRuntime.inventoryItemInstance[i];
+        for (let i = 0; i < GameMain.instance.mainRuntime.ctx.inventoryItemInstance.length; i++) {
+            const itemIns: ItemInstance = GameMain.instance.mainRuntime.ctx.inventoryItemInstance[i];
             cc.resources.load("prefab/itemCellYJ", cc.Prefab, (err, prefab: cc.Prefab) => {
                 if (err) {
                     console.error("load itemCell prefab error:", err);
                     return;
                 }
                 GameMain.instance.mainRuntime.initInventoryItemInsCell(prefab, itemIns,this.inventoryContainer,true);
+            })
+        }
+
+        // 将已有的专家显示在鉴赏界面
+        for (let i = 0; i < GameMain.instance.mainRuntime.ctx.ownedExperts.length; i++) {
+            const expertDef = GameMain.instance.mainRuntime.ctx.ownedExperts[i];
+            // 代码用于创建和显示专家单元格
+            cc.resources.load("prefab/SmallExpertsCell", cc.Prefab, (err, prefab: cc.Prefab) => {
+                if (err) {
+                    console.error("load SmallExpertsCell prefab error:", err);
+                    return;
+                }
+                // 初始化专家单元格
+                const expertCell = cc.instantiate(prefab);
+                expertCell.getComponent(SmallExpertsCell).init(expertDef);
+                this.ownedExpertsContainers.getChildByName("list").addChild(expertCell);
             })
         }
 
@@ -101,7 +119,7 @@ export default class YiJiaPanel extends BaseUI {
     }
 
     private onSell(){
-        if(GameMain.instance.mainRuntime.inventoryItemInstance.length <= 0)return;
+        if(GameMain.instance.mainRuntime.ctx.inventoryItemInstance.length <= 0)return;
         let deleteIndex:number = -1;
         let finalPrice:number = GameMain.instance.mainRuntime.ctx.curSelected.estimate;
         let curShouyi:number = finalPrice - GameMain.instance.mainRuntime.ctx.curSelected.buyPrice;
@@ -117,17 +135,17 @@ export default class YiJiaPanel extends BaseUI {
         this.node.getChildByName("target").getChildByName("target_slider").getChildByName("num").getComponent(cc.Label).string = String(_targetExtra) + "/" + String(_target);
         this.upgradeTotalMoney();
         // 从背包中移除选中的那个货物
-        GameMain.instance.mainRuntime.inventoryItemInstance.forEach((i)=>{
+        GameMain.instance.mainRuntime.ctx.inventoryItemInstance.forEach((i)=>{
             if(i.uid === GameMain.instance.mainRuntime.ctx.curSelected.uid){
-                deleteIndex = GameMain.instance.mainRuntime.inventoryItemInstance.indexOf(i);
+                deleteIndex = GameMain.instance.mainRuntime.ctx.inventoryItemInstance.indexOf(i);
             }
         })
         if (deleteIndex !== -1) {
-            GameMain.instance.mainRuntime.inventoryItemInstance.splice(deleteIndex, 1);
+            GameMain.instance.mainRuntime.ctx.inventoryItemInstance.splice(deleteIndex, 1);
             this.inventoryContainer.removeAllChildren();
-            if (GameMain.instance.mainRuntime.inventoryItemInstance.length > 0) {
-                for (let i = 0; i < GameMain.instance.mainRuntime.inventoryItemInstance.length; i++) {
-                    const itemIns: ItemInstance = GameMain.instance.mainRuntime.inventoryItemInstance[i];
+            if (GameMain.instance.mainRuntime.ctx.inventoryItemInstance.length > 0) {
+                for (let i = 0; i < GameMain.instance.mainRuntime.ctx.inventoryItemInstance.length; i++) {
+                    const itemIns: ItemInstance = GameMain.instance.mainRuntime.ctx.inventoryItemInstance[i];
                     cc.resources.load("prefab/itemCellYJ", cc.Prefab, (err, prefab: cc.Prefab) => {
                         if (err) {
                             console.error("load itemCell prefab error:", err);
@@ -142,6 +160,7 @@ export default class YiJiaPanel extends BaseUI {
                 this.main_item.getComponent(cc.Sprite).spriteFrame = null!;
                 this.node.getChildByName("estimateMoney").active=false;
                 this.scheduleOnce(()=>{
+                    UIManager.getInstance().closeUI(YiJiaPanel);
                     UIManager.getInstance().openUI(ResultPanel,0,(ui:ResultPanel)=>{
                     ui.onShow();
                     ui.setContentText(this.YijiaPrice , this.buyTotolPrice);// 结算收益 = 卖出总价 - 买入总价
@@ -152,7 +171,7 @@ export default class YiJiaPanel extends BaseUI {
     }
     private showMainItem(itemCellYj: ItemCellYJ){
         if(itemCellYj==null){
-            cc.resources.load("arts/items/" + GameMain.instance.mainRuntime.inventoryItemInstance[0].image, cc.SpriteFrame, (err, spriteFrame: cc.SpriteFrame) => {
+            cc.resources.load("arts/items/" + GameMain.instance.mainRuntime.ctx.inventoryItemInstance[0].image, cc.SpriteFrame, (err, spriteFrame: cc.SpriteFrame) => {
                 if (err) {
                     console.error("load item spriteFrame error:", err);
                     return;
@@ -163,7 +182,7 @@ export default class YiJiaPanel extends BaseUI {
                     n.getComponent(ItemCellYJ).ISSelected = false;
                 }, this)
                 this.inventoryContainer.children[0].getComponent(ItemCellYJ).ISSelected = true;
-                GameMain.instance.mainRuntime.ctx.curSelected = GameMain.instance.mainRuntime.inventoryItemInstance[0];
+                GameMain.instance.mainRuntime.ctx.curSelected = GameMain.instance.mainRuntime.ctx.inventoryItemInstance[0];
                 this.node.getChildByName("estimateMoney").getComponent(cc.Label).string = "当前估值:￥" + String(GameMain.instance.mainRuntime.ctx.curSelected.estimate);
             });
         }else{

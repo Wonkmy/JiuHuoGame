@@ -19,7 +19,7 @@ export default class BagPanel extends BaseUI {
         this.closeBtn.on(cc.Node.EventType.TOUCH_END, () => {
             UIManager.getInstance().closeUI(BagPanel);
         },this)
-        let count: number = GameMain.instance.mainRuntime.inventoryItemInstance.length;
+        let count: number = GameMain.instance.mainRuntime.ctx.inventoryItemInstance.length;
         if(count<=0){
             this.node.getChildByName("ItemContainers").getChildByName("empty_tip").getComponent(cc.Label).string = "背包空空如也，快去购买物品吧！";
         }else{
@@ -30,8 +30,8 @@ export default class BagPanel extends BaseUI {
         } else {
             this.inventoryContainer.width = count * 200 + (count + 1) * 20;
         }
-        for (let i = 0; i < GameMain.instance.mainRuntime.inventoryItemInstance.length; i++) {
-            const itemIns: ItemInstance = GameMain.instance.mainRuntime.inventoryItemInstance[i];
+        for (let i = 0; i < GameMain.instance.mainRuntime.ctx.inventoryItemInstance.length; i++) {
+            const itemIns: ItemInstance = GameMain.instance.mainRuntime.ctx.inventoryItemInstance[i];
             cc.resources.load("prefab/itemCellYJ", cc.Prefab, (err, prefab: cc.Prefab) => {
                 if (err) {
                     console.error("load itemCell prefab error:", err);

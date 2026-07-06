@@ -9,13 +9,13 @@ import GameMain from "../GameMain";
 export default class MainPanelRuntime{
     mainPanel:MainPanel = null!;
     ctx:GameContext = null!;
-    inventoryItemInstance:ItemInstance[]=[]
     init(mp:MainPanel){
         this.mainPanel = mp;
         this.ctx = new GameContext();
+        this.ctx.CurLevel = 0;
         this.ctx.totalPoints = ConstValue.TotalPoints;
-        this.ctx.targetInfo = ROUND_TARGETS_INFO[this.ctx.CurLevel]// 获得当前的目标收益
-    }
+        this.ctx.startRound();
+    };
 
     initItemInsCell(prefab: cc.Prefab,itemIns:ItemInstance,_parent:cc.Node){
         let newItemCell = cc.instantiate(prefab);

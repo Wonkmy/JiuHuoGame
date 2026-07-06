@@ -1,4 +1,4 @@
-import { ITEM_DEFS, ItemDef, ItemInstance } from "../GameCodes/Datas/GameData";
+import {ItemInstance } from "../GameCodes/Datas/GameData";
 import { createMarketItems } from "../GameCodes/GameRules";
 import GameContext from "../GameCodes/GameRules";
 import GameMain from "../GameMain";
@@ -49,10 +49,12 @@ export default class MainPanel extends BaseUI {
         }, this)
     }
 
-    private onCreateItems(){
+    onCreateItems(){
         this.marketItemContainer.removeAllChildren();
-
-        let allItemInstance = createMarketItems(()=>GameMain.instance.mainRuntime.ctx.getUid())// 生成摊位上的老旧物品
+        let nextuid = ()=>GameMain.instance.mainRuntime.ctx.getUid()
+        let curLevel = GameMain.instance.mainRuntime.ctx.CurLevel;
+        let excludeIds = GameMain.instance.mainRuntime.ctx.inventoryItemInstance.map(item => item.id);
+        let allItemInstance = createMarketItems(nextuid,curLevel + 1, excludeIds)// 生成摊位上的老旧物品
         this.upgradeTotalMoney();
         this.node.getChildByName("targetName").getComponent(cc.Label).string = String(GameMain.instance.mainRuntime.ctx.targetInfo.marketName);
         let count:number = Math.round(allItemInstance.length / 3);
@@ -73,7 +75,7 @@ export default class MainPanel extends BaseUI {
      * 开始进入议价界面
      */
     private onYiJia(){
-        if(GameMain.instance.mainRuntime.inventoryItemInstance.length<=0){
+        if(GameMain.instance.mainRuntime.ctx.inventoryItemInstance.length<=0){
             UIManager.getInstance().openUI(TipPanel,0,(ui:TipPanel)=>{
                 ui.onShow();
                 ui.showTip("请购买至少一件老物件",null)
@@ -112,7 +114,7 @@ export default class MainPanel extends BaseUI {
                 ui.onShow();
                 ui.showTip(`成功购买 ${_itemIns.name}。价格: ￥${_itemIns.buyPrice}`,null)
             })
-            GameMain.instance.mainRuntime.inventoryItemInstance.push(_itemIns);
+            GameMain.instance.mainRuntime.ctx.inventoryItemInstance.push(_itemIns);
             return true;
         }else{
             UIManager.getInstance().openUI(TipPanel,0,(ui:TipPanel)=>{

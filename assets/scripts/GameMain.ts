@@ -1,3 +1,4 @@
+import {ExpertDef, ItemDef } from "./GameCodes/Datas/GameData";
 import HomePanel from "./Panels/HomePanel";
 import MainPanelRuntime from "./Panels/MainPanelRuntime";
 import TipPanel from "./Panels/TipPanel";
@@ -13,6 +14,8 @@ export default class GameMain extends cc.Component {
 
     @property({type: cc.JsonAsset})
     gameConfig: cc.JsonAsset = null!;
+    ITEM_DEFS: ItemDef[] =[]
+    EXPERT_DEFS: ExpertDef[] = []
 
     mainRuntime:MainPanelRuntime = null!;
 
@@ -21,6 +24,8 @@ export default class GameMain extends cc.Component {
         cc.director.getPhysicsManager().enabled = true;
         GameMain.instance = this;
         this.mainRuntime = new MainPanelRuntime();
+        this.ITEM_DEFS = this.gameConfig.json["items"];
+        this.EXPERT_DEFS = this.gameConfig.json["experts"];
         this.gameLoader();
     }
 
@@ -34,7 +39,7 @@ export default class GameMain extends cc.Component {
     showTip(content:string){
         UIManager.getInstance().openUI(TipPanel,0,(ui:TipPanel)=>{
             ui.onShow();
-            ui.showTip(content);
+            ui.showTip(content,null);
         })
     }
 }
