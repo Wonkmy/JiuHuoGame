@@ -1,5 +1,7 @@
 import { ItemDef, ItemInstance } from "../GameCodes/Datas/GameData";
+import GameMain from "../GameMain";
 import MainPanel from "../Panels/MainPanel";
+
 
 const {ccclass, property} = cc._decorator;
 
@@ -11,7 +13,7 @@ export default class ItemCell extends cc.Component {
     init(_itemIns:ItemInstance){
         this.btn_Buy = this.node.getChildByName("buy_price").getChildByName("btn_Buy");
         this.itemIns = _itemIns;
-        cc.resources.load("arts/items/"+ this.itemIns.image,cc.SpriteFrame,(err,spriteFrame:cc.SpriteFrame)=>{
+        GameMain.instance.bundle.load("arts/items/"+ this.itemIns.image,cc.SpriteFrame,(err,spriteFrame:cc.SpriteFrame)=>{
             if(err){
                 console.error("load item spriteFrame error:",err);
                 return;

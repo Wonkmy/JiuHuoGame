@@ -1,3 +1,5 @@
+import GameMain from "../GameMain";
+
 /*
  * @Author: Fayn86
  * @Date: 2020-12-01 16:24:49
@@ -205,22 +207,22 @@ class AudioEngine extends cc.Component {
     private static audios: Audio[] = [];
     private static path: string = "";
 
-    private static Preload(path) {
+    private static Preload(path:string) {
         AudioEngine.audios = new Array<Audio>();
-        cc.resources.preloadDir(path, cc.AudioClip);
+        GameMain.instance.bundle.preloadDir(path, cc.AudioClip);
 
         this.path = path;
     }
 
-    public static Play(name, loop = false, volume = 1) {
+    public static Play(name:string, loop = false, volume = 1) {
         if (AudioEngine.audios == undefined) {
             AudioEngine.audios = new Array<Audio>();
-            cc.resources.preloadDir('audios', cc.AudioClip);
+            GameMain.instance.bundle.preloadDir('audios', cc.AudioClip);
         }
 
         let audioID;
         let a: Audio;
-        cc.resources.load((this.path != "" ? this.path + "/" + name : "audios/" + name), cc.AudioClip, (err, audio: cc.AudioClip) => {
+        GameMain.instance.bundle.load((this.path != "" ? this.path + "/" + name : "audios/" + name), cc.AudioClip, (err, audio: cc.AudioClip) => {
             audioID = cc.audioEngine.play(audio, loop, volume);
             a = new Audio(audioID, audio);
             AudioEngine.audios.push(a);

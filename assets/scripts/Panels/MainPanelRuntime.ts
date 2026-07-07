@@ -1,10 +1,11 @@
-import { ItemInstance,ROUND_TARGETS_INFO,MarketTrend } from "../GameCodes/Datas/GameData";
+import { ItemInstance,ROUND_TARGETS_INFO,MarketTrend, ExpertDef } from "../GameCodes/Datas/GameData";
 import GameContext from "../GameCodes/GameRules";
 import { ConstValue } from "../Global/ConstValue";
 import ItemCell from "../UIManager/ItemCell";
 import ItemCellYJ from "../UIManager/ItemCellYJ";
 import MainPanel from "./MainPanel";
 import GameMain from "../GameMain";
+import ExpertBagCell from "../UIManager/ExpertBagCell";
 
 export default class MainPanelRuntime{
     mainPanel:MainPanel = null!;
@@ -17,6 +18,7 @@ export default class MainPanelRuntime{
         this.ctx.CurLevel = 0;
         this.ctx.totalPoints = ConstValue.TotalPoints;
         this.ctx.startRound();
+        this.ctx.totalMoney = ConstValue.defaultMoney;
     };
 
     initItemInsCell(prefab: cc.Prefab,itemIns:ItemInstance,_parent:cc.Node){
@@ -26,8 +28,14 @@ export default class MainPanelRuntime{
         let itemCellScript:ItemCell = newItemCell.getComponent(ItemCell);
         itemCellScript.init(itemIns);
     }
-
-    initInventoryItemInsCell(prefab: cc.Prefab,itemIns:ItemInstance,_parent:cc.Node,showCheckBtn:boolean,){
+    initInventoryExpertCell(prefab: cc.Prefab,itemIns:ExpertDef,_parent:cc.Node,showCheckBtn:boolean){
+        let newItemCell = cc.instantiate(prefab);
+        newItemCell.parent = _parent;
+        newItemCell.setPosition(cc.v2(0,0));
+        let itemCellScript:ExpertBagCell = newItemCell.getComponent(ExpertBagCell);
+        itemCellScript.init(itemIns);
+    }
+    initInventoryItemInsCell(prefab: cc.Prefab,itemIns:ItemInstance,_parent:cc.Node,showCheckBtn:boolean){
         let newItemCell = cc.instantiate(prefab);
         newItemCell.parent = _parent;
         newItemCell.setPosition(cc.v2(0,0));

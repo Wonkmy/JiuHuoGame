@@ -13,6 +13,7 @@ export default class GameContext{
     UID:number = 0;
     CurLevel:number=0;
     totalPoints:number = 0;
+    totalMoney:number = 0;// 总收入
 
     curSelected:ItemInstance = null!;
     /**
@@ -45,6 +46,7 @@ export default class GameContext{
     startRound(){
         this.inventoryItemInstance = [];
         this.curSelected = null!;
+        this.totalPoints = ConstValue.TotalPoints;
         this.targetInfo = ROUND_TARGETS_INFO[this.CurLevel]// 获得当前的目标收益
         this.roundTask = createRoundTask(this.CurLevel);
         this.taskRewardClaimed = false;
@@ -107,7 +109,7 @@ export function getRoundTaskText():string{
     if(!task){
         return "";
     }
-    return task.title + "\n" + task.desc + "\n进度:" + task.progress + "/" + task.needCount + "  奖励:" + task.reward;
+    return task.title + "\n" + task.desc + "\n进度:" + task.progress + "/" + task.needCount + "  奖励:" + task.reward + "未获得";
 }
 
 export function recordRoundTaskProgress(item:ItemInstance){

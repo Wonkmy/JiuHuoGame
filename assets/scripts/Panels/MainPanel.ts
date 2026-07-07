@@ -17,7 +17,6 @@ const {ccclass, property} = cc._decorator;
 export default class MainPanel extends BaseUI {
     public static instance:MainPanel = null!;
     protected static className = "MainPanel";
-    totalMoney:number = 0;
 
     btn_YJ:cc.Node = null!;
     btn_ReRoll:cc.Node = null!;
@@ -29,6 +28,9 @@ export default class MainPanel extends BaseUI {
     @property({type:cc.Node})
     openBagPanel:cc.Node = null!;
 
+    @property({type:cc.Node})
+    openExpertBagPanel:cc.Node = null!;
+
     onLoad(): void {
         MainPanel.instance = this;
     }
@@ -37,7 +39,6 @@ export default class MainPanel extends BaseUI {
         this.btn_YJ = this.node.getChildByName("btn_YJ");
         this.btn_ReRoll = this.node.getChildByName("btn_ReRoll");
         this.marketItemContainer = this.node.getChildByName("ItemContainers").getChildByName("sview").getChildByName("view").getChildByName("content")
-        this.totalMoney = ConstValue.defaultMoney;
         GameMain.instance.mainRuntime.createMarketTrend();
         this.onCreateItems();
 
@@ -46,6 +47,14 @@ export default class MainPanel extends BaseUI {
         this.openBagPanel.on(cc.Node.EventType.TOUCH_END, () => {
             UIManager.getInstance().openUI(BagPanel, 0, (ui: BagPanel) => {
                 ui.onShow();
+                ui.setInventoryData("bag")
+            })
+        }, this)
+
+        this.openExpertBagPanel.on(cc.Node.EventType.TOUCH_END, () => {
+            UIManager.getInstance().openUI(BagPanel, 0, (ui: BagPanel) => {
+                ui.onShow();
+                ui.setInventoryData("expert")
             })
         }, this)
     }
@@ -63,7 +72,7 @@ export default class MainPanel extends BaseUI {
         this.marketItemContainer.height = count * 216.2 + (count + 1) * 30;
         for (let i = 0; i < allItemInstance.length; i++) {
             const itemIns:ItemInstance = allItemInstance[i];
-            cc.resources.load("prefab/itemCell", cc.Prefab, (err, prefab: cc.Prefab) => {
+            GameMain.instance.bundle.load("prefab/itemCell", cc.Prefab, (err, prefab: cc.Prefab) => {
                 if (err) {
                     console.error("load itemCell prefab error:", err);
                     return;
@@ -95,8 +104,8 @@ export default class MainPanel extends BaseUI {
      * 重新刷新当前店铺物品，需要花费高额预算（后期看广告的盈利点）
      */
     private onReRoll(){
-        if(this.totalMoney >= ConstValue.REROLL_COST){
-            this.totalMoney -= ConstValue.REROLL_COST;
+        if(GameMain.instance.mainRuntime.ctx.totalMoney >= ConstValue.REROLL_COST){
+            GameMain.instance.mainRuntime.ctx.totalMoney -= ConstValue.REROLL_COST;
             this.upgradeTotalMoney();
             this.onCreateItems();
         }else{
@@ -108,8 +117,8 @@ export default class MainPanel extends BaseUI {
     }
 
     onBuyItemInstance(_itemIns:ItemInstance){
-        if(this.totalMoney >=  _itemIns.buyPrice){
-            this.totalMoney -=  _itemIns.buyPrice;
+        if(GameMain.instance.mainRuntime.ctx.totalMoney >=  _itemIns.buyPrice){
+            GameMain.instance.mainRuntime.ctx.totalMoney -=  _itemIns.buyPrice;
             this.totalCostMoney +=  _itemIns.buyPrice;
             this.upgradeTotalMoney();
             UIManager.getInstance().openUI(TipPanel,0,(ui:TipPanel)=>{
@@ -128,7 +137,7 @@ export default class MainPanel extends BaseUI {
     }
 
     private upgradeTotalMoney(){
-        this.node.getChildByName("totalMoney").getChildByName("content").getComponent(cc.Label).string = "总预算: "+ String(this.totalMoney);
+        this.node.getChildByName("totalMoney").getChildByName("content").getComponent(cc.Label).string = "总预算: "+ String(GameMain.instance.mainRuntime.ctx.totalMoney);
     }
 }
 

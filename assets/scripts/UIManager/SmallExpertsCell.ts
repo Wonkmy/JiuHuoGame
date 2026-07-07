@@ -6,6 +6,7 @@
 //  - https://docs.cocos.com/creator/2.4/manual/en/scripting/life-cycle-callbacks.html
 
 import { ExpertDef } from "../GameCodes/Datas/GameData";
+import GameMain from "../GameMain";
 import ExpertTipPanel from "../Panels/ExpertTipPanel";
 import TipPanel from "../Panels/TipPanel";
 import { UIManager } from "./UIManager";
@@ -15,7 +16,7 @@ const {ccclass, property} = cc._decorator;
 @ccclass
 export default class SmallExpertsCell extends cc.Component {
     init(expertDef: ExpertDef) {
-        cc.resources.load("arts/experts/" + expertDef.image, cc.SpriteFrame, (err, spriteFrame: cc.SpriteFrame) => {
+        GameMain.instance.bundle.load("arts/experts/" + expertDef.image, cc.SpriteFrame, (err, spriteFrame: cc.SpriteFrame) => {
             if (err) {
                 console.error("load item spriteFrame error:", err);
                 return;

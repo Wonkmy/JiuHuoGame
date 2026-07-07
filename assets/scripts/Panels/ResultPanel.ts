@@ -57,18 +57,20 @@ export default class ResultPanel extends BaseUI{
         let taskReward = taskFinished ? getRoundTaskReward() : 0;
         if(taskReward > 0 && !GameMain.instance.mainRuntime.ctx.taskRewardClaimed){
             // 委托奖励只发一次，并计入本轮收益。
-            MainPanel.instance.totalMoney += taskReward;
+            GameMain.instance.mainRuntime.ctx.totalMoney += taskReward;
             GameMain.instance.mainRuntime.ctx.taskRewardClaimed = true;
         }
         let finalProfit = _profit + taskReward;
-        let taskText = taskFinished ? "\n委托完成，额外收益: " + taskReward : "\n委托未完成\n" + getRoundTaskText();
-        this.node.getChildByName("res_tip").getComponent(cc.Label).string = `本轮议价总收益: `+String(finalProfit) + taskText;
+        let taskText = taskFinished ? "\n委托完成,额外收益: " + taskReward : "\n委托未完成\n" + getRoundTaskText();
+        this.node.getChildByName("res_tip").getComponent(cc.Label).string = `本轮交易总收益:\n`+String(finalProfit <=0?0:finalProfit);
+        if(taskFinished== false){this.node.getChildByName("task").color = cc.Color.RED}
+        this.node.getChildByName("task").getComponent(cc.Label).string = taskText;
         let _target = GameMain.instance.mainRuntime.ctx.targetInfo.target;
         this.isCrossRound = finalProfit >= _target;
         this.upgradeTotalMoney();
     }
 
     private upgradeTotalMoney(){
-        this.node.getChildByName("totalMoney").getChildByName("content").getComponent(cc.Label).string = "总预算: "+ String(MainPanel.instance.totalMoney);
+        this.node.getChildByName("totalMoney").getChildByName("content").getComponent(cc.Label).string = "总预算: "+ String(GameMain.instance.mainRuntime.ctx.totalMoney);
     }
 }

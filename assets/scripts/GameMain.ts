@@ -18,6 +18,7 @@ export default class GameMain extends cc.Component {
     EXPERT_DEFS: ExpertDef[] = []
 
     mainRuntime:MainPanelRuntime = null!;
+    bundle:cc.AssetManager.Bundle = null!;
 
     protected onLoad(): void {
         cc.director.getCollisionManager().enabled=true;
@@ -26,7 +27,10 @@ export default class GameMain extends cc.Component {
         this.mainRuntime = new MainPanelRuntime();
         this.ITEM_DEFS = this.gameConfig.json["items"];
         this.EXPERT_DEFS = this.gameConfig.json["experts"];
-        this.gameLoader();
+        cc.assetManager.loadBundle("jiuhuoArt",null!,(err,_bundle)=>{
+            this.bundle = _bundle
+            this.gameLoader();
+        })
     }
 
 

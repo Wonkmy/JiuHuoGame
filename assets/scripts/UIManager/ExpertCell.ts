@@ -1,4 +1,5 @@
 import { ExpertDef } from "../GameCodes/Datas/GameData";
+import GameMain from "../GameMain";
 import HirePanel from "../Panels/HirePanel";
 import { UIManager } from "./UIManager";
 
@@ -11,7 +12,7 @@ export default class ExpertCell extends cc.Component {
     init(expertDef: ExpertDef) {
         this.expertDef = expertDef;
         this.btnUse = this.node.getChildByName("btn_use");
-        cc.resources.load("arts/experts/"+ expertDef.image,cc.SpriteFrame,(err,spriteFrame:cc.SpriteFrame)=>{
+        GameMain.instance.bundle.load("arts/experts/"+ expertDef.image,cc.SpriteFrame,(err,spriteFrame:cc.SpriteFrame)=>{
             if(err){
                 console.error("load item spriteFrame error:",err);
                 return;

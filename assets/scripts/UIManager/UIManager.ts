@@ -1,3 +1,4 @@
+import GameMain from "../GameMain";
 import { BaseUI, UIClass } from "./BaseUI";
 
 export class UIManager
@@ -26,12 +27,13 @@ export class UIManager
         {
             return;
         }
-        cc.loader.loadRes(uiClass.getUrl(),(completedCount: number, totalCount: number, item: any)=>{
+
+        GameMain.instance.bundle.load(uiClass.getUrl(),(completedCount: number, totalCount: number, item: any)=>{
             if(onProgress)
             {
                 onProgress(completedCount, totalCount, item);
             }
-        }, (error, prefab)=>
+        }, (error, prefab:cc.Prefab)=>
         {
             if(error)
             {

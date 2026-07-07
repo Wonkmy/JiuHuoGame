@@ -28,7 +28,7 @@ export default class HirePanel extends BaseUI {
     setContent(hirePanelData:ExpertDef[]){
         for (let i = 0; i < 3; i++) {
             const hireDef: ExpertDef = hirePanelData[i];
-            cc.resources.load("prefab/ExpertCell", cc.Prefab, (err, prefab: cc.Prefab) => {
+            GameMain.instance.bundle.load("prefab/ExpertCell", cc.Prefab, (err, prefab: cc.Prefab) => {
                 if (err) {
                     console.error("load itemCell prefab error:", err);
                     return;

@@ -35,7 +35,7 @@ export default class ItemCellYJ extends cc.Component {
         this.Icon_isSelected.active = showCheckBtn;
         this.Icon_isSelected.color = cc.Color.GRAY;
         this.ISSelected = false;
-        cc.resources.load("arts/items/" + this.itemIns.image, cc.SpriteFrame, (err, spriteFrame: cc.SpriteFrame) => {
+        GameMain.instance.bundle.load("arts/items/" + this.itemIns.image, cc.SpriteFrame, (err, spriteFrame: cc.SpriteFrame) => {
             if (err) {
                 console.error("load item spriteFrame error:", err);
                 return;

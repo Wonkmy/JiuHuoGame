@@ -7,6 +7,7 @@
 
 import { BaseUI } from "../UIManager/BaseUI";
 import { UIManager } from "../UIManager/UIManager";
+import GameMain from "../GameMain";
 
 const {ccclass, property} = cc._decorator;
 
@@ -25,7 +26,7 @@ export default class ExpertTipPanel extends BaseUI {
     {
         this.flyTxt.string = txt;
         this.node.active = true;
-        cc.resources.load("arts/experts/"+ head,cc.SpriteFrame,(err,spriteFrame:cc.SpriteFrame)=>{
+        GameMain.instance.bundle.load("arts/experts/"+ head,cc.SpriteFrame,(err,spriteFrame:cc.SpriteFrame)=>{
             if(err){
                 console.error("load item spriteFrame error:",err);
                 return;
