@@ -38,6 +38,7 @@ export default class MainPanel extends BaseUI {
         this.btn_ReRoll = this.node.getChildByName("btn_ReRoll");
         this.marketItemContainer = this.node.getChildByName("ItemContainers").getChildByName("sview").getChildByName("view").getChildByName("content")
         this.totalMoney = ConstValue.defaultMoney;
+        GameMain.instance.mainRuntime.createMarketTrend();
         this.onCreateItems();
 
         this.btn_YJ.on(cc.Node.EventType.TOUCH_END,this.onYiJia ,this)
@@ -55,6 +56,7 @@ export default class MainPanel extends BaseUI {
         let curLevel = GameMain.instance.mainRuntime.ctx.CurLevel;
         let excludeIds = GameMain.instance.mainRuntime.ctx.inventoryItemInstance.map(item => item.id);
         let allItemInstance = createMarketItems(nextuid,curLevel + 1, excludeIds)// 生成摊位上的老旧物品
+        allItemInstance.forEach((itemIns)=> GameMain.instance.mainRuntime.applyMarketTrend(itemIns));// 本轮行情只影响卖价预期，不影响买入价
         this.upgradeTotalMoney();
         this.node.getChildByName("targetName").getComponent(cc.Label).string = String(GameMain.instance.mainRuntime.ctx.targetInfo.marketName);
         let count:number = Math.round(allItemInstance.length / 3);
@@ -112,7 +114,7 @@ export default class MainPanel extends BaseUI {
             this.upgradeTotalMoney();
             UIManager.getInstance().openUI(TipPanel,0,(ui:TipPanel)=>{
                 ui.onShow();
-                ui.showTip(`成功购买 ${_itemIns.name}。价格: ￥${_itemIns.buyPrice}`,null)
+                ui.showTip(`成功购买 ${_itemIns.name}。价格: ${_itemIns.buyPrice}`,null)
             })
             GameMain.instance.mainRuntime.ctx.inventoryItemInstance.push(_itemIns);
             return true;
@@ -126,7 +128,7 @@ export default class MainPanel extends BaseUI {
     }
 
     private upgradeTotalMoney(){
-        this.node.getChildByName("totalMoney").getChildByName("content").getComponent(cc.Label).string = "总预算:￥ "+ String(this.totalMoney);
+        this.node.getChildByName("totalMoney").getChildByName("content").getComponent(cc.Label).string = "总预算: "+ String(this.totalMoney);
     }
 }
 

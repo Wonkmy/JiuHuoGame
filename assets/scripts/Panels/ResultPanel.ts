@@ -1,5 +1,5 @@
 import { ExpertDef } from "../GameCodes/Datas/GameData";
-import { pickExperts } from "../GameCodes/GameRules";
+import { getRoundTaskReward, getRoundTaskText, isRoundTaskFinished, pickExperts } from "../GameCodes/GameRules";
 import GameMain from "../GameMain";
 import { BaseUI } from "../UIManager/BaseUI";
 import { UIManager } from "../UIManager/UIManager";
@@ -52,13 +52,23 @@ export default class ResultPanel extends BaseUI{
     }
 
     setContentText(sellTotal: number, buyTotal: number){
-        this.node.getChildByName("res_tip").getComponent(cc.Label).string = `本轮议价总收益:￥ `+String(sellTotal - buyTotal);
         let _profit: number = sellTotal - buyTotal;
+        let taskFinished = isRoundTaskFinished();
+        let taskReward = taskFinished ? getRoundTaskReward() : 0;
+        if(taskReward > 0 && !GameMain.instance.mainRuntime.ctx.taskRewardClaimed){
+            // 委托奖励只发一次，并计入本轮收益。
+            MainPanel.instance.totalMoney += taskReward;
+            GameMain.instance.mainRuntime.ctx.taskRewardClaimed = true;
+        }
+        let finalProfit = _profit + taskReward;
+        let taskText = taskFinished ? "\n委托完成，额外收益: " + taskReward : "\n委托未完成\n" + getRoundTaskText();
+        this.node.getChildByName("res_tip").getComponent(cc.Label).string = `本轮议价总收益: `+String(finalProfit) + taskText;
         let _target = GameMain.instance.mainRuntime.ctx.targetInfo.target;
-        this.isCrossRound = _profit >= _target;
+        this.isCrossRound = finalProfit >= _target;
+        this.upgradeTotalMoney();
     }
 
     private upgradeTotalMoney(){
-        this.node.getChildByName("totalMoney").getChildByName("content").getComponent(cc.Label).string = "总预算:￥ "+ String(MainPanel.instance.totalMoney);
+        this.node.getChildByName("totalMoney").getChildByName("content").getComponent(cc.Label).string = "总预算: "+ String(MainPanel.instance.totalMoney);
     }
 }

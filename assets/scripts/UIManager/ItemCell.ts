@@ -19,7 +19,7 @@ export default class ItemCell extends cc.Component {
             let sprite:cc.Sprite = this.node.getChildByName("view").getComponent(cc.Sprite);
             sprite.spriteFrame = spriteFrame;
         })
-        this.node.getChildByName("buy_price").getChildByName("buyPrice").getComponent(cc.Label).string = "￥"+String(_itemIns.buyPrice);
+        this.node.getChildByName("buy_price").getChildByName("buyPrice").getComponent(cc.Label).string = String(_itemIns.buyPrice);
         this.node.getChildByName("material").getChildByName("txt").getComponent(cc.Label).string = String(_itemIns.material);
         this.node.getChildByName("era").getChildByName("txt").getComponent(cc.Label).string = String(_itemIns.era);
         this.btn_Buy.on(cc.Node.EventType.TOUCH_END,this.onBuy,this);

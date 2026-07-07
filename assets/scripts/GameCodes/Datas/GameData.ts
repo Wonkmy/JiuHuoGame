@@ -72,6 +72,29 @@ export interface TargetInfo{
     target:number
 }
 
+export type RoundTaskKind = 'sellCategory' | 'sellEra' | 'repairSell' | 'fullRevealSell';
+
+export interface RoundTaskInfo{
+    title:string;
+    desc:string;
+    reward:number;
+    kind:RoundTaskKind;
+    needCount:number;
+    progress:number;
+    category?:ItemCategory;
+    era?:ItemEra;
+}
+
+export interface MarketTrend{
+    title:string;
+    desc:string;
+    multiplier:number;
+    categories?:string[];
+    materials?:string[];
+    eras?:string[];
+    maxRarity?:number;
+}
+
 // 每一轮目标收入
 export const ROUND_TARGETS_INFO:TargetInfo[] = [
     {marketName:"捡漏1摊位", target:500},

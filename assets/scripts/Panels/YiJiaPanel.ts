@@ -1,5 +1,5 @@
 import { ItemInstance,TargetInfo,ROUND_TARGETS_INFO } from "../GameCodes/Datas/GameData";
-import { appraise,AppraiseResult } from "../GameCodes/GameRules";
+import { appraise,AppraiseResult, getRoundTaskText, recordRoundTaskProgress } from "../GameCodes/GameRules";
 import GameMain from "../GameMain";
 import { BaseUI } from "../UIManager/BaseUI";
 import ItemCellYJ from "../UIManager/ItemCellYJ";
@@ -33,6 +33,12 @@ export default class YiJiaPanel extends BaseUI {
     @property({type:cc.Node})
     ownedExpertsContainers:cc.Node = null!;
 
+    @property({type:cc.Label})
+    marketTrendLabel:cc.Label = null!;
+
+    @property({type:cc.Label})
+    roundTaskLabel:cc.Label = null!;
+
     buyTotolPrice:number = 0;
     YijiaPrice:number = 0;
 
@@ -40,11 +46,13 @@ export default class YiJiaPanel extends BaseUI {
         this.node.getChildByName("target").active=false;
         UIManager.getInstance().openUI(TipPanel,0,(ui:TipPanel)=>{
             ui.onShow();
-            ui.showTip("目标收益:￥ "+ String(GameMain.instance.mainRuntime.ctx.targetInfo.target),()=>{
+            ui.showTip("目标收益: "+ String(GameMain.instance.mainRuntime.ctx.targetInfo.target),()=>{
                 this.upgradeTargetInfo();
             },true)
         })
         this.upgradeTotalMoney()
+        this.updateMarketTrendInfo();
+        this.updateRoundTaskInfo();
 
         let count:number = GameMain.instance.mainRuntime.ctx.inventoryItemInstance.length;
         if(count<=1){
@@ -95,18 +103,18 @@ export default class YiJiaPanel extends BaseUI {
 
     private onCashi(){
         let res: AppraiseResult = appraise('wipe').AppraiseResult;
-        this.node.getChildByName("estimateMoney").getComponent(cc.Label).string = "当前估值:￥" + String(GameMain.instance.mainRuntime.ctx.curSelected.estimate)
+        this.node.getChildByName("estimateMoney").getComponent(cc.Label).string = "当前估值:" + String(GameMain.instance.mainRuntime.ctx.curSelected.estimate)
         this.showDeltaPrice(res);
     }
 
     private onOpen(){
         let res: AppraiseResult = appraise('open').AppraiseResult;
-        this.node.getChildByName("estimateMoney").getComponent(cc.Label).string = "当前估值:￥" + String(GameMain.instance.mainRuntime.ctx.curSelected.estimate)
+        this.node.getChildByName("estimateMoney").getComponent(cc.Label).string = "当前估值:" + String(GameMain.instance.mainRuntime.ctx.curSelected.estimate)
         this.showDeltaPrice(res);
     };
     private onRepair(){
         let res: AppraiseResult = appraise('repair').AppraiseResult;
-        this.node.getChildByName("estimateMoney").getComponent(cc.Label).string = "当前估值:￥" + String(GameMain.instance.mainRuntime.ctx.curSelected.estimate)
+        this.node.getChildByName("estimateMoney").getComponent(cc.Label).string = "当前估值:" + String(GameMain.instance.mainRuntime.ctx.curSelected.estimate)
         this.showDeltaPrice(res);
     };
 
@@ -125,6 +133,8 @@ export default class YiJiaPanel extends BaseUI {
         let curShouyi:number = finalPrice - GameMain.instance.mainRuntime.ctx.curSelected.buyPrice;
         MainPanel.instance.totalMoney += finalPrice;
         this.YijiaPrice += finalPrice;
+        recordRoundTaskProgress(GameMain.instance.mainRuntime.ctx.curSelected);
+        this.updateRoundTaskInfo();
         let _target = GameMain.instance.mainRuntime.ctx.targetInfo.target;
         let _targetExtra:number = this.YijiaPrice - this.buyTotolPrice;
         if(_targetExtra <0)_targetExtra=0;
@@ -183,7 +193,7 @@ export default class YiJiaPanel extends BaseUI {
                 }, this)
                 this.inventoryContainer.children[0].getComponent(ItemCellYJ).ISSelected = true;
                 GameMain.instance.mainRuntime.ctx.curSelected = GameMain.instance.mainRuntime.ctx.inventoryItemInstance[0];
-                this.node.getChildByName("estimateMoney").getComponent(cc.Label).string = "当前估值:￥" + String(GameMain.instance.mainRuntime.ctx.curSelected.estimate);
+                this.node.getChildByName("estimateMoney").getComponent(cc.Label).string = "当前估值:" + String(GameMain.instance.mainRuntime.ctx.curSelected.estimate);
             });
         }else{
             cc.resources.load("arts/items/" + GameMain.instance.mainRuntime.ctx.curSelected.image, cc.SpriteFrame, (err, spriteFrame: cc.SpriteFrame) => {
@@ -197,13 +207,25 @@ export default class YiJiaPanel extends BaseUI {
                     n.getComponent(ItemCellYJ).ISSelected = false;
                 }, this)
                 itemCellYj.ISSelected = true
-                this.node.getChildByName("estimateMoney").getComponent(cc.Label).string = "当前估值:￥" + String(GameMain.instance.mainRuntime.ctx.curSelected.estimate)
+                this.node.getChildByName("estimateMoney").getComponent(cc.Label).string = "当前估值:" + String(GameMain.instance.mainRuntime.ctx.curSelected.estimate)
             });
         }
     }
 
     private upgradeTotalMoney(){
-        this.node.getChildByName("totalMoney").getComponent(cc.Label).string = "总预算:￥ "+ String(MainPanel.instance.totalMoney);
+        this.node.getChildByName("totalMoney").getComponent(cc.Label).string = "总预算: "+ String(MainPanel.instance.totalMoney);
+    }
+
+    private updateMarketTrendInfo(){
+        if(this.marketTrendLabel && MainPanel.instance){
+            this.marketTrendLabel.string = GameMain.instance.mainRuntime.getMarketTrendText();
+        }
+    }
+
+    private updateRoundTaskInfo(){
+        if(this.roundTaskLabel){
+            this.roundTaskLabel.string = getRoundTaskText();
+        }
     }
 
     private upgradeTargetInfo(){
@@ -211,6 +233,6 @@ export default class YiJiaPanel extends BaseUI {
         let _target = GameMain.instance.mainRuntime.ctx.targetInfo.target;
         this.node.getChildByName("target").getChildByName("target_slider").getChildByName("fg").getComponent(cc.Sprite).fillRange = this.YijiaPrice / _target;
         this.node.getChildByName("target").getChildByName("target_slider").getChildByName("num").getComponent(cc.Label).string = String(this.YijiaPrice) + "/" + String(_target);
-        this.node.getChildByName("target").getChildByName("content").getComponent(cc.Label).string = "目标收益:￥ "+ String(_target);
+        this.node.getChildByName("target").getChildByName("content").getComponent(cc.Label).string = "目标收益: "+ String(_target);
     }
 }

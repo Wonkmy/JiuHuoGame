@@ -7,7 +7,7 @@
 
 import GameMain from "../GameMain";
 import { ConstValue } from "../Global/ConstValue";
-import { AppraiseKind, ExpertDef, ItemDef, ItemInstance,TargetInfo, ROUND_TARGETS_INFO } from "./Datas/GameData";
+import { AppraiseKind, ExpertDef, ItemDef, ItemInstance,TargetInfo, ROUND_TARGETS_INFO, RoundTaskInfo, ItemCategory, CATEGORY_NAME } from "./Datas/GameData";
 
 export default class GameContext{
     UID:number = 0;
@@ -24,6 +24,8 @@ export default class GameContext{
      */
     inventoryItemInstance:ItemInstance[]=[]
     targetInfo:TargetInfo = null!;// 目标收益
+    roundTask:RoundTaskInfo = null!;// 本轮委托/挑战
+    taskRewardClaimed:boolean = false;
 
     getUid():string{
         return `old_${this.UID++}`;
@@ -36,13 +38,102 @@ export default class GameContext{
         this.inventoryItemInstance = [];
         this.curSelected = null!;
         this.targetInfo = null!;
+        this.roundTask = null!;
+        this.taskRewardClaimed = false;
     }
 
     startRound(){
         this.inventoryItemInstance = [];
         this.curSelected = null!;
         this.targetInfo = ROUND_TARGETS_INFO[this.CurLevel]// 获得当前的目标收益
+        this.roundTask = createRoundTask(this.CurLevel);
+        this.taskRewardClaimed = false;
     };
+}
+
+export function createRoundTask(round:number):RoundTaskInfo{
+    const reward = 150 + Math.min(round,5) * 50;
+    const categoryTasks:{category:ItemCategory,title:string}[] = [
+        {category:'porcelain',title:'老客收瓷器'},
+        {category:'painting',title:'藏家找书画'},
+        {category:'cameraWatch',title:'玩家收老相机'},
+        {category:'folkToy',title:'民俗货有人要'},
+        {category:'wood',title:'木器客来访'},
+        {category:'bronze',title:'铜器老板点货'},
+    ];
+    const categoryTask = categoryTasks[Math.floor(Math.random() * categoryTasks.length)];
+    const eraTask = Math.random() > 0.5 ? '清末' : '民国';
+    const tasks:RoundTaskInfo[] = [
+        {
+            title:categoryTask.title,
+            desc:"卖出 1 件" + CATEGORY_NAME[categoryTask.category],
+            reward,
+            kind:'sellCategory',
+            category:categoryTask.category,
+            needCount:1,
+            progress:0,
+        },
+        {
+            title:"年份收藏",
+            desc:"卖出 1 件" + eraTask + "旧物",
+            reward,
+            kind:'sellEra',
+            era:eraTask,
+            needCount:1,
+            progress:0,
+        },
+        {
+            title:"修复挑战",
+            desc:"卖出 1 件修复过的物品",
+            reward:reward + 50,
+            kind:'repairSell',
+            needCount:1,
+            progress:0,
+        },
+        {
+            title:"看透再卖",
+            desc:"卖出 1 件完全揭示的物品",
+            reward:reward + 30,
+            kind:'fullRevealSell',
+            needCount:1,
+            progress:0,
+        },
+    ];
+    return tasks[Math.floor(Math.random() * tasks.length)];
+}
+
+export function getRoundTaskText():string{
+    const task = GameMain.instance.mainRuntime.ctx.roundTask;
+    if(!task){
+        return "";
+    }
+    return task.title + "\n" + task.desc + "\n进度:" + task.progress + "/" + task.needCount + "  奖励:" + task.reward;
+}
+
+export function recordRoundTaskProgress(item:ItemInstance){
+    const task = GameMain.instance.mainRuntime.ctx.roundTask;
+    if(!task || task.progress >= task.needCount){
+        return;
+    }
+    let isMatched = false;
+    if(task.kind === 'sellCategory' && task.category === item.category)isMatched = true;
+    if(task.kind === 'sellEra' && task.era === item.era)isMatched = true;
+    if(task.kind === 'repairSell' && item.repaired)isMatched = true;
+    if(task.kind === 'fullRevealSell' && item.reveal >= 3)isMatched = true;
+
+    if(isMatched){
+        task.progress = Math.min(task.needCount,task.progress + 1);
+    }
+}
+
+export function isRoundTaskFinished():boolean{
+    const task = GameMain.instance.mainRuntime.ctx.roundTask;
+    return !!task && task.progress >= task.needCount;
+}
+
+export function getRoundTaskReward():number{
+    const task = GameMain.instance.mainRuntime.ctx.roundTask;
+    return task ? task.reward : 0;
 }
 
 export function pickExperts(count: number, ownedExperts: ExpertDef[]): ExpertDef[] {
@@ -68,13 +159,13 @@ function pickMarketDefsByRound(round: number, count: number, excludeIds: string[
     const rare = GameMain.instance.ITEM_DEFS.filter(i => !excluded.has(i.id) &&i.baseValue > 620);
 
     const weightsByRound = [
-        [45, 35, 15, 5, 0],
-        [30, 40, 20, 8, 2],
-        [20, 35, 30, 12, 3],
-        [12, 28, 35, 20, 5],
-        [8, 20, 35, 27, 10],
-        [5, 15, 30, 35, 15],
-        [3, 10, 25, 40, 22],
+        [35, 35, 20, 8, 2],
+        [25, 35, 25, 12, 3],
+        [18, 30, 32, 15, 5],
+        [10, 24, 34, 24, 8],
+        [8, 18, 32, 28, 14],
+        [5, 12, 28, 36, 19],
+        [3, 8, 22, 40, 27],
     ];
 
     const weights = weightsByRound[Math.min(round - 1, weightsByRound.length - 1)];
@@ -117,16 +208,16 @@ function pickPoolByWeight<T>(pools: T[][], weights: number[]): T[] {
 
 export function createItem(def: ItemDef, uid: string): ItemInstance {
     const quality = 0.72 + Math.random() * 1.18 + def.rarity * 0.08;
-    const fake = Math.random() < Math.max(0.06, 0.18 - def.rarity * 0.02);
+    const fake = Math.random() < Math.max(0.1, 0.24 - def.rarity * 0.025);
     const trueValue = Math.max(35, Math.round(def.baseValue * quality * (fake ? 0.28 : 1)));
-    const buyRate = 0.35 + Math.random() * 0.34;
+    const buyRate = 0.48 + Math.random() * 0.42;
     const buyPrice = Math.max(25, Math.round(def.baseValue * buyRate));
     return {
         ...def,
         uid,
         buyPrice,
         trueValue,
-        estimate: Math.max(20, Math.round(trueValue * 0.45)),
+        estimate: Math.max(20, Math.round(trueValue * 0.38)),
         reveal: 0,
         fake,
         repaired: false,
@@ -143,21 +234,21 @@ export function rollAppraiseEvent(item: ItemInstance, kind: AppraiseKind): strin
 
     const roll = Math.random();
     if (item.fake && item.reveal >= 3) {
-        item.trueValue = Math.max(20, Math.round(item.trueValue * 0.82));
+        item.trueValue = Math.max(20, Math.round(item.trueValue * 0.55));
         return '后仿露馅';
     }
 
     // 鉴定时额外给一次简单涨跌，制造“再看一眼”的刺激感。
-    if (kind === 'open' && roll < 0.22) {
-        item.trueValue = Math.round(item.trueValue * 1.28);
+    if (kind === 'open' && roll < 0.18) {
+        item.trueValue = Math.round(item.trueValue * 1.65);
         return '拆出老编号';
     }
-    if (kind === 'wipe' && roll < 0.18) {
-        item.trueValue = Math.round(item.trueValue * 1.16);
+    if (kind === 'wipe' && roll < 0.16) {
+        item.trueValue = Math.round(item.trueValue * 1.32);
         return '擦出款识';
     }
-    if (roll > 0.82) {
-        item.trueValue = Math.max(20, Math.round(item.trueValue * 0.84));
+    if (roll > 0.74) {
+        item.trueValue = Math.max(20, Math.round(item.trueValue * 0.68));
         return '暗伤露出来了';
     }
     return kind === 'open' ? '细节更清楚了' : '灰尘擦开了';
@@ -165,7 +256,7 @@ export function rollAppraiseEvent(item: ItemInstance, kind: AppraiseKind): strin
 export function getItemSellValue(item: ItemInstance, ownedExperts: ExpertDef[], finalSell: boolean): number {
     let value = item.trueValue;
     if (!finalSell) {
-        const revealRates = [0.48, 0.68, 0.86, 1];
+        const revealRates = [0.4, 0.68, 0.92, 1.08];
         value = Math.round(item.trueValue * revealRates[item.reveal]);
     }
 
@@ -276,8 +367,8 @@ export function appraise(kind: AppraiseKind) {
     if (kind === 'repair') {
         if (!item.repaired) {
             item.repaired = true;
-            // 修复只做简单加值，避免把业务逻辑写成复杂算法。
-            item.trueValue = Math.round(item.trueValue * (item.fake ? 0.95 : 1.22));
+            // 修复收益和假货惩罚拉开，避免每次操作都只是小幅上涨。
+            item.trueValue = Math.round(item.trueValue * (item.fake ? 0.65 : 1.48));
         }
     } else {
         item.reveal = Math.min(3, item.reveal + (kind === 'open' ? 2 : 1));// 揭示度，范围 0-3，越高估值越接近真实价值
