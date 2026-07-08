@@ -8,6 +8,7 @@
 import { BaseUI } from "../UIManager/BaseUI";
 import { UIManager } from "../UIManager/UIManager";
 import GameMain from "../GameMain";
+import { FaynUtils } from "../Global/FaynUtils";
 
 const {ccclass, property} = cc._decorator;
 
@@ -18,6 +19,7 @@ export default class ExpertTipPanel extends BaseUI {
     override onShow(): void {
         this.flyTxt = this.node.getChildByName("flyTxt").getComponentInChildren(cc.Label);
         this.node.getChildByName("splash").on(cc.Node.EventType.TOUCH_END, () => {
+            FaynUtils.PlayMusic("click",false,1);
             UIManager.getInstance().closeUI(ExpertTipPanel);
         }, this)
     }

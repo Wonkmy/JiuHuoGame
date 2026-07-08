@@ -1,5 +1,6 @@
 import { ExpertDef } from "../GameCodes/Datas/GameData";
 import GameMain from "../GameMain";
+import { FaynUtils } from "../Global/FaynUtils";
 import { BaseUI } from "../UIManager/BaseUI";
 import ExpertCell from "../UIManager/ExpertCell";
 import { UIManager } from "../UIManager/UIManager";
@@ -21,6 +22,7 @@ export default class HirePanel extends BaseUI {
 
     private onUseExpert(expertDef: ExpertDef) {
         console.log("雇佣专家:", expertDef);
+        FaynUtils.PlayMusic("buff",false,1);
         GameMain.instance.mainRuntime.ctx.ownedExperts.push(expertDef);
         UIManager.getInstance().closeUI(HirePanel);
     }

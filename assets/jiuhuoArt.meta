@@ -6,7 +6,7 @@
   "bundleName": "",
   "priority": 1,
   "compressionType": {
-    "wechatgame": "subpackage"
+    "wechatgame": "default"
   },
   "optimizeHotUpdate": {
     "wechatgame": false
@@ -15,7 +15,7 @@
     "wechatgame": false
   },
   "isRemoteBundle": {
-    "wechatgame": false
+    "wechatgame": true
   },
   "subMetas": {}
 }

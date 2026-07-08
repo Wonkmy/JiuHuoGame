@@ -1,5 +1,6 @@
 import { ExpertDef } from "../GameCodes/Datas/GameData";
 import GameMain from "../GameMain";
+import { FaynUtils } from "../Global/FaynUtils";
 import HirePanel from "../Panels/HirePanel";
 import { UIManager } from "./UIManager";
 
@@ -28,6 +29,7 @@ export default class ExpertCell extends cc.Component {
 
     private onClickUseExpert() {
         console.log("onClickUseExpert");
+        FaynUtils.PlayMusic("btnclick",false,1);
         cc.game.emit("on_use_expert", this.expertDef);
     }
 }

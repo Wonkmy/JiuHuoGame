@@ -34,6 +34,7 @@ export default class HomePanel extends BaseUI {
                 UIManager.getInstance().openUI(MainPanel,0,(ui:MainPanel)=>{
                     GameMain.instance.mainRuntime.init(ui);
                     ui.onShow();
+                    GameMain.instance.playMarketBgmOnce();
                 })
             }
         },100);

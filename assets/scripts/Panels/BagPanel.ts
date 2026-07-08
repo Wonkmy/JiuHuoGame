@@ -4,6 +4,7 @@ import MainPanel from "./MainPanel";
 import GameMain from "../GameMain";
 const {ccclass, property} = cc._decorator;
 import { UIManager } from "../UIManager/UIManager";
+import { FaynUtils } from "../Global/FaynUtils";
 
 @ccclass
 export default class BagPanel extends BaseUI {
@@ -17,9 +18,11 @@ export default class BagPanel extends BaseUI {
 
     override onShow(): void {
         this.closeBtn.on(cc.Node.EventType.TOUCH_END, () => {
+            FaynUtils.PlayMusic("click",false,1);
             UIManager.getInstance().closeUI(BagPanel);
         },this)
          this.node.getChildByName("splash").on(cc.Node.EventType.TOUCH_END, () => {
+            FaynUtils.PlayMusic("click",false,1);
             UIManager.getInstance().closeUI(BagPanel);
         }, this)
     }

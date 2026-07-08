@@ -7,6 +7,7 @@
 
 import { ExpertDef } from "../GameCodes/Datas/GameData";
 import GameMain from "../GameMain";
+import { FaynUtils } from "../Global/FaynUtils";
 import ExpertTipPanel from "../Panels/ExpertTipPanel";
 import TipPanel from "../Panels/TipPanel";
 import { UIManager } from "./UIManager";
@@ -27,6 +28,7 @@ export default class SmallExpertsCell extends cc.Component {
         this.node.getChildByName("desc").getComponent(cc.Label).string = expertDef.desc;
 
         this.node.on(cc.Node.EventType.TOUCH_END, () => {
+            FaynUtils.PlayMusic("click",false,1);
             UIManager.getInstance().openUI(ExpertTipPanel, 0, (ui: ExpertTipPanel) => {
                 ui.onShow();
                 ui.showTip(`已拥有\n专家名称: ${expertDef.name}\n专家称号: ${expertDef.title}\n专家描述: ${expertDef.desc}`, expertDef.image);

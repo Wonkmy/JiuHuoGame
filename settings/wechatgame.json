@@ -2,7 +2,7 @@
   "appid": "",
   "orientation": "portrait",
   "separate_engine": false,
-  "REMOTE_SERVER_ROOT": "",
+  "REMOTE_SERVER_ROOT": "https://wonkmycloudfile.oss-cn-beijing.aliyuncs.com",
   "subContext": "",
   "startSceneAssetBundle": false
 }

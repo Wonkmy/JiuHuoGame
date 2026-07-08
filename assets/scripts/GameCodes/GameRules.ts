@@ -27,6 +27,10 @@ export default class GameContext{
     targetInfo:TargetInfo = null!;// 目标收益
     roundTask:RoundTaskInfo = null!;// 本轮委托/挑战
     taskRewardClaimed:boolean = false;
+    roundResultClaimed:boolean = false;
+    hiddenMarketNextRound:boolean = false;
+    hiddenMarketActive:boolean = false;
+    budgetPenaltyNextRound:number = 0;
 
     getUid():string{
         return `old_${this.UID++}`;
@@ -41,15 +45,27 @@ export default class GameContext{
         this.targetInfo = null!;
         this.roundTask = null!;
         this.taskRewardClaimed = false;
+        this.roundResultClaimed = false;
+        this.hiddenMarketNextRound = false;
+        this.hiddenMarketActive = false;
+        this.budgetPenaltyNextRound = 0;
     }
 
     startRound(){
         this.inventoryItemInstance = [];
         this.curSelected = null!;
         this.totalPoints = ConstValue.TotalPoints;
+        this.hiddenMarketActive = this.hiddenMarketNextRound;
+        this.hiddenMarketNextRound = false;
+        if(this.budgetPenaltyNextRound > 0){
+            // 失败惩罚延迟到下一轮开始扣除，避免结算界面数值反复变化。
+            this.totalMoney = Math.max(0,this.totalMoney - this.budgetPenaltyNextRound);
+            this.budgetPenaltyNextRound = 0;
+        }
         this.targetInfo = ROUND_TARGETS_INFO[this.CurLevel]// 获得当前的目标收益
         this.roundTask = createRoundTask(this.CurLevel);
         this.taskRewardClaimed = false;
+        this.roundResultClaimed = false;
     };
 }
 

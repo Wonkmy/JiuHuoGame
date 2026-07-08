@@ -6,6 +6,7 @@
 //  - https://docs.cocos.com/creator/2.4/manual/en/scripting/life-cycle-callbacks.html
 
 import { ConstValue } from "../Global/ConstValue";
+import { FaynUtils } from "../Global/FaynUtils";
 import { BaseUI } from "../UIManager/BaseUI";
 import { UIManager } from "../UIManager/UIManager";
 
@@ -22,6 +23,7 @@ export default class SettingPanel extends BaseUI {
     }
 
     private onCloseSelf(){
+        FaynUtils.PlayMusic("click",false,1);
         UIManager.getInstance().closeUI(SettingPanel);
     }
 }

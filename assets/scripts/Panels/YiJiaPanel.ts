@@ -1,6 +1,7 @@
 import { ItemInstance,TargetInfo,ROUND_TARGETS_INFO } from "../GameCodes/Datas/GameData";
 import { appraise,AppraiseResult, getRoundTaskText, recordRoundTaskProgress } from "../GameCodes/GameRules";
 import GameMain from "../GameMain";
+import { FaynUtils } from "../Global/FaynUtils";
 import { BaseUI } from "../UIManager/BaseUI";
 import ItemCellYJ from "../UIManager/ItemCellYJ";
 import MainPanel from "./MainPanel";
@@ -53,6 +54,7 @@ export default class YiJiaPanel extends BaseUI {
             ui.onShow();
             ui.showTip("目标收益: "+ String(GameMain.instance.mainRuntime.ctx.targetInfo.target),()=>{
                 this.upgradeTargetInfo();
+                this.showGuideTipOnce("appraise","鉴赏会消耗行动点，估值会变化，最后按当前估值卖出。",2);
             },true)
         })
         this.upgradeTotalMoney()
@@ -96,6 +98,7 @@ export default class YiJiaPanel extends BaseUI {
          * 打开我的顾问团
          */
         this.openExpertBagPanel.on(cc.Node.EventType.TOUCH_END, () => {
+            FaynUtils.PlayMusic("btnclick",false,1);
             UIManager.getInstance().openUI(BagPanel, 0, (ui: BagPanel) => {
                 ui.onShow();
                 ui.setInventoryData("expert")
@@ -106,9 +109,7 @@ export default class YiJiaPanel extends BaseUI {
             this.showMainItem(null!)
         },0.5);
 
-        cc.game.on("on_select", (itemCellYj: ItemCellYJ) => {
-            this.showMainItem(itemCellYj)
-        })
+        cc.game.on("on_select", this.onSelectItem,this)
         this.canshi_Node.on(cc.Node.EventType.TOUCH_END,this.onCashi ,this)
         this.open_Node.on(cc.Node.EventType.TOUCH_END,this.onOpen ,this)
         this.repair_Node.on(cc.Node.EventType.TOUCH_END,this.onRepair ,this)
@@ -116,18 +117,26 @@ export default class YiJiaPanel extends BaseUI {
         this.sell_Node.on(cc.Node.EventType.TOUCH_END,this.onSell ,this)
     }
 
+    private onSelectItem = (itemCellYj: ItemCellYJ) => {
+        FaynUtils.PlayMusic("click",false,1);
+        this.showMainItem(itemCellYj);
+    }
+
     private onCashi(){
+        FaynUtils.PlayMusic("bullet",false,1);
         let res: AppraiseResult = appraise('wipe').AppraiseResult;
         this.node.getChildByName("estimateMoney").getComponent(cc.Label).string = "当前估值:" + String(GameMain.instance.mainRuntime.ctx.curSelected.estimate)
         this.showDeltaPrice(res);
     }
 
     private onOpen(){
+        FaynUtils.PlayMusic("bullet",false,1);
         let res: AppraiseResult = appraise('open').AppraiseResult;
         this.node.getChildByName("estimateMoney").getComponent(cc.Label).string = "当前估值:" + String(GameMain.instance.mainRuntime.ctx.curSelected.estimate)
         this.showDeltaPrice(res);
     };
     private onRepair(){
+        FaynUtils.PlayMusic("bullet",false,1);
         let res: AppraiseResult = appraise('repair').AppraiseResult;
         this.node.getChildByName("estimateMoney").getComponent(cc.Label).string = "当前估值:" + String(GameMain.instance.mainRuntime.ctx.curSelected.estimate)
         this.showDeltaPrice(res);
@@ -143,6 +152,7 @@ export default class YiJiaPanel extends BaseUI {
 
     private onSell(){
         if(GameMain.instance.mainRuntime.ctx.inventoryItemInstance.length <= 0)return;
+        FaynUtils.PlayMusic("hit",false,1);
         let deleteIndex:number = -1;
         let finalPrice:number = GameMain.instance.mainRuntime.ctx.curSelected.estimate;
         let curShouyi:number = finalPrice - GameMain.instance.mainRuntime.ctx.curSelected.buyPrice;
@@ -187,9 +197,9 @@ export default class YiJiaPanel extends BaseUI {
                 this.scheduleOnce(()=>{
                     UIManager.getInstance().closeUI(YiJiaPanel);
                     UIManager.getInstance().openUI(ResultPanel,0,(ui:ResultPanel)=>{
-                    ui.onShow();
-                    ui.setContentText(this.YijiaPrice , this.buyTotolPrice);// 结算收益 = 卖出总价 - 买入总价
-                })
+                        ui.onShow();
+                        ui.setContentText(this.YijiaPrice , this.buyTotolPrice);// 结算收益 = 卖出总价 - 买入总价
+                    })
                 },0.5);
             }
         }
@@ -254,5 +264,22 @@ export default class YiJiaPanel extends BaseUI {
         this.node.getChildByName("target").getChildByName("target_slider").getChildByName("fg").getComponent(cc.Sprite).fillRange = this.YijiaPrice / _target;
         this.node.getChildByName("target").getChildByName("target_slider").getChildByName("num").getComponent(cc.Label).string = String(this.YijiaPrice) + "/" + String(_target);
         this.node.getChildByName("target").getChildByName("content").getComponent(cc.Label).string = "目标收益: "+ String(_target);
+    }
+
+    private showGuideTipOnce(key:string,txt:string,delayTime:number = 0){
+        let guideKey = "JiuHuoGuide_" + key;
+        if(cc.sys.localStorage.getItem(guideKey) === "1")return;
+        cc.sys.localStorage.setItem(guideKey,"1");
+        // 延迟弹出，避免和进入鉴赏时的目标收益提示重叠。
+        this.scheduleOnce(()=>{
+            UIManager.getInstance().openUI(TipPanel, 0, (ui: TipPanel) => {
+                ui.onShow();
+                ui.showTip(txt, null)
+            })
+        },delayTime);
+    }
+
+    override onDestroy(): void {
+        cc.game.off("on_select", this.onSelectItem,this)
     }
 }

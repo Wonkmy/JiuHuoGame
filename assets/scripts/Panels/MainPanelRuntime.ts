@@ -71,6 +71,16 @@ export default class MainPanelRuntime{
         itemIns.estimate = Math.max(20,Math.round(itemIns.estimate * this.currentMarketTrend.multiplier));
     }
 
+    applyHiddenMarket(itemIns:ItemInstance){
+        if(!this.ctx.hiddenMarketActive){
+            return;
+        }
+        // 熟客引荐摊只持续一轮：买入略便宜，真实价值和估值略高。
+        itemIns.buyPrice = Math.max(10,Math.round(itemIns.buyPrice * 0.9));
+        itemIns.trueValue = Math.max(20,Math.round(itemIns.trueValue * 1.18));
+        itemIns.estimate = Math.max(20,Math.round(itemIns.estimate * 1.18));
+    }
+
     private isMatchMarketTrend(itemIns:ItemInstance,trend:MarketTrend):boolean{
         if(trend.categories && trend.categories.indexOf(itemIns.category) >= 0)return true;
         if(trend.materials && trend.materials.indexOf(itemIns.material) >= 0)return true;

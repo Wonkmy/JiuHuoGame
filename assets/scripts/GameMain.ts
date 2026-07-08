@@ -1,6 +1,7 @@
 import {ExpertDef, ItemDef } from "./GameCodes/Datas/GameData";
 import HomePanel from "./Panels/HomePanel";
 import MainPanelRuntime from "./Panels/MainPanelRuntime";
+import { FaynUtils } from "./Global/FaynUtils";
 import TipPanel from "./Panels/TipPanel";
 import { UIManager } from "./UIManager/UIManager";
 
@@ -19,6 +20,7 @@ export default class GameMain extends cc.Component {
 
     mainRuntime:MainPanelRuntime = null!;
     bundle:cc.AssetManager.Bundle = null!;
+    private marketBgmStarted:boolean = false;
 
     protected onLoad(): void {
         cc.director.getCollisionManager().enabled=true;
@@ -27,10 +29,28 @@ export default class GameMain extends cc.Component {
         this.mainRuntime = new MainPanelRuntime();
         this.ITEM_DEFS = this.gameConfig.json["items"];
         this.EXPERT_DEFS = this.gameConfig.json["experts"];
-        cc.assetManager.loadBundle("jiuhuoArt",null!,(err,_bundle)=>{
-            this.bundle = _bundle
-            this.gameLoader();
-        })
+        if(CC_DEBUG){
+            cc.assetManager.loadBundle("jiuhuoArt",null!,(err,_bundle)=>{
+                this.bundle = _bundle
+                this.gameLoader();
+            })
+        }else{
+            // cc.assetManager.loadBundle("https://wonkmycloudfile.oss-cn-beijing.aliyuncs.com/jiuhuoArt",null!,(err,_bundle)=>{
+            //     this.bundle = _bundle
+            //     this.gameLoader();
+            // })
+            const ossUrl = "https://wonkmycloudfile.oss-cn-beijing.aliyuncs.com/jiuhuoArt";
+            cc.assetManager.loadBundle(ossUrl + "?t=" + Date.now(), null!, (err, bundle) => {
+                if (err) {
+                    console.error("OSS加载失败:", err);
+                    // 如果这里报错，说明 OSS 路径或跨域还有问题
+                    return;
+                }
+                console.log("成功从 OSS 加载 Bundle！");
+                this.bundle = bundle;
+                this.gameLoader();
+            });
+        }
     }
 
 
@@ -45,5 +65,12 @@ export default class GameMain extends cc.Component {
             ui.onShow();
             ui.showTip(content,null);
         })
+    }
+
+    playMarketBgmOnce(){
+        if(this.marketBgmStarted)return;
+        this.marketBgmStarted = true;
+        // BGM只在进入游戏后播放一次，循环铺底，音量低于点击和反馈音效。
+        FaynUtils.PlayMusic("marketbgm",true,0.35);
     }
 }
