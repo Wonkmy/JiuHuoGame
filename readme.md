@@ -1,39 +1,32 @@
-0,"tilegrass_01"
-1,"tilegrass_02"
-2,"tiledirt_01"
-3,"tiledirt_02"
-4,"tree_01"
-5,"tree_02"
-6,"tree_03"
-7,"tree_04"
-8,"tile"
-9,"rabbit"
-10,"pig"
+# 摊上捡个宝
 
-## 如何创建一个动物实体？
-注意：这些操作都要在GameMain.instance.getAeestsById(getAeestsById(assId:number,callBack))函数的回调函数中执行
-### 先获取动物精灵资源
-let tex: cc.Texture2D = spass as cc.Texture2D;
-let sp: cc.SpriteFrame = new cc.SpriteFrame(tex)
-sp.name = "rabbit";
-### 创建一支动物节点
-let newAnimal: cc.Node = new cc.Node("animal");
-newAnimal.setParent(this.node);
-newAnimal.setPosition(this._calculorPos(x, y, newAnimal));
-newAnimal.addComponent(cc.Sprite);
-### 为动物节点添加实体类
-let rabbitEntity: RabbitEntity = newAnimal.addComponent(RabbitEntity);
-rabbitEntity.id = id;
-### 创建一条基因数据
-let rabbitGene: AnimalGene = new AnimalGene(cc.Color.BLACK, Gender.Male);
-### 创建一个动物实体数据
-let newrabbit_data = new RabbitData("小黑", 1, sp, rabbitGene);
-rabbitEntity.entitydata = newrabbit_data;// 赋值数据
-### (可选) 为该实体赋予--跳跃--行为
-let jumpBehavior: JumpBehaviors = new JumpBehaviors();// 创建一个新的跳跃行为类
-jumpBehavior.setHandle(0.5, new cc.Vec2(rabbitEntity.node.x + 50, rabbitEntity.node.y), 50, 1);// 设置跳跃行为的参数
-jumpBehavior.defineBehavior();// 定义跳跃行为
-### 将动物生成并开始生活
-rabbitEntity.spwan().livelihood();
-### 实际执行'跳跃'行为(finished可以为空，如果想连续执行跳跃行为，可以在finished回调中再次调用doBehavior)
-rabbitEntity.doBehavior(jumpBehavior, finished);
+《摊上捡个宝》是一款旧货地摊题材的微信小游戏。玩家用有限预算逛摊买入旧物，通过擦拭、拆看、修复等鉴赏操作逐步揭示物品价值，再根据行情、专家效果和本轮委托选择合适时机卖出，目标是在一轮轮交易中完成收益目标，进入更高级的货摊。
+
+## 核心玩法
+
+1. 逛摊买货：从货摊中挑选瓷器、旧书画、老相机、民俗旧物、木器、铜器等物品。
+2. 鉴赏揭示：通过不同鉴赏方式提升估值，并可能触发捡漏、走眼、修复涨价等结果。
+3. 行情卖出：卖出价格会受到当前行情、专家加成、物品状态和鉴赏结果影响。
+4. 委托挑战：每轮会出现老顾客委托或挑战任务，完成后获得额外收益。
+5. 轮次成长：达成本轮目标可进入下一摊，赚翻时可能开启隐藏地摊，失败时会影响下一轮预算。
+
+## 当前完成度
+
+- 已完成一局完整闭环：开局预算、买货、鉴赏、卖出、结算、进入下一轮。
+- 已完成核心数值系统：动态估值、专家效果、行情加成、委托奖励、失败惩罚、隐藏地摊。
+- 已完成基础反馈：按钮音效、市场 BGM、鉴赏结果提示、结算公式展示、强弱结算动画。
+- 已适配微信小游戏方向，真机预览流程已可跑通。
+
+## 合规说明
+
+游戏中的旧物、估值、专家和行情均为虚构玩法内容，不代表真实鉴定、交易或投资建议。专家牌只在单局内影响估值和结算策略，不支持充值购买、用户间交易、抽奖或随机付费获取。
+
+## 项目信息
+
+- 引擎版本：Cocos Creator 2.4.13
+- 项目目录：`JiuHuoGame`
+- 主要脚本目录：`assets/scripts`
+- 构建目录：`build`
+- 宣传与审核素材目录：`publisher`
+
+`build` 和 `publisher` 目录不作为源码提交内容。
