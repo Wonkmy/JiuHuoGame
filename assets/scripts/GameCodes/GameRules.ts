@@ -246,17 +246,29 @@ export function getAppraiseCost(kind: AppraiseKind): number {
     return kind === 'wipe' ? 1 : kind === 'open' ? 2 : 3;
 }
 export function rollAppraiseEvent(item: ItemInstance, kind: AppraiseKind): string {
+    const roll = Math.random();
     if (kind === 'repair') {
+        if (!item.fake && roll < 0.12) {
+            item.trueValue = Math.round(item.trueValue * 1.45);
+            return '修复后品相大涨';
+        }
         return item.fake ? '修完仍有破绽' : '修复见光，品相回升';
     }
 
-    const roll = Math.random();
     if (item.fake && item.reveal >= 3) {
         item.trueValue = Math.max(20, Math.round(item.trueValue * 0.55));
         return '后仿露馅';
     }
 
     // 鉴定时额外给一次简单涨跌，制造“再看一眼”的刺激感。
+    if (kind === 'open' && roll < 0.06) {
+        item.trueValue = Math.round(item.trueValue * 2.25);
+        return '夹层发现旧票据';
+    }
+    if (kind === 'wipe' && roll < 0.06) {
+        item.trueValue = Math.round(item.trueValue * 1.9);
+        return '底款露出';
+    }
     if (kind === 'open' && roll < 0.18) {
         item.trueValue = Math.round(item.trueValue * 1.65);
         return '拆出老编号';
