@@ -186,7 +186,7 @@ export default class YiJiaPanel extends BaseUI {
 
     private onSell(){
         if(GameMain.instance.mainRuntime.ctx.inventoryItemInstance.length <= 0)return;
-        FaynUtils.PlayMusic("hit",false,1);
+        FaynUtils.PlayMusic("buff",false,1);
         let deleteIndex:number = -1;
         let soldItem = GameMain.instance.mainRuntime.ctx.curSelected;
         let finalPrice:number = soldItem.estimate;

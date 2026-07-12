@@ -137,7 +137,7 @@ export default class MainPanel extends BaseUI {
         if(GameMain.instance.mainRuntime.ctx.totalMoney >=  _itemIns.buyPrice){
             GameMain.instance.mainRuntime.ctx.totalMoney -=  _itemIns.buyPrice;
             this.totalCostMoney +=  _itemIns.buyPrice;
-            FaynUtils.PlayMusic("buff",false,1);
+            FaynUtils.PlayMusic("buy",false,1);
             this.upgradeTotalMoney();
             UIManager.getInstance().openUI(TipPanel,0,(ui:TipPanel)=>{
                 ui.onShow();
