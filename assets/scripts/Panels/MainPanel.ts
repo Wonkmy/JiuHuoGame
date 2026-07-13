@@ -1,4 +1,4 @@
-import {ItemInstance } from "../GameCodes/Datas/GameData";
+import {CATEGORY_NAME, ItemCategory, ItemInstance } from "../GameCodes/Datas/GameData";
 import { createMarketItems } from "../GameCodes/GameRules";
 import GameContext from "../GameCodes/GameRules";
 import GameMain from "../GameMain";
@@ -31,6 +31,9 @@ export default class MainPanel extends BaseUI {
 
     @property({type:cc.Node})
     openExpertBagPanel:cc.Node = null!;
+
+    @property({type:cc.Label})
+    roundInfoLabel:cc.Label = null!;
 
     onLoad(): void {
         MainPanel.instance = this;
@@ -80,6 +83,7 @@ export default class MainPanel extends BaseUI {
             marketName += "·熟客引荐";
         }
         this.node.getChildByName("targetName").getComponent(cc.Label).string = marketName;
+        this.updateRoundInfo();
         let count:number = Math.round(allItemInstance.length / 3);
         this.marketItemContainer.height = count * 216.2 + (count + 1) * 30;
         for (let i = 0; i < allItemInstance.length; i++) {
@@ -158,6 +162,54 @@ export default class MainPanel extends BaseUI {
 
     private upgradeTotalMoney(){
         this.node.getChildByName("totalMoney").getChildByName("content").getComponent(cc.Label).string = "总预算: "+ String(GameMain.instance.mainRuntime.ctx.totalMoney);
+    }
+
+    private updateRoundInfo(){
+        if(!this.roundInfoLabel)return;
+        let target = GameMain.instance.mainRuntime.ctx.targetInfo.target;
+        // 买货界面只显示决策摘要，完整说明保留在鉴赏界面。
+        this.roundInfoLabel.string = "目标｜" + String(target) +
+            "\n行情｜" + this.getShortMarketTrendText() +
+            "\n委托｜" + this.getShortRoundTaskText();
+    }
+
+    private getShortMarketTrendText():string{
+        let trend = GameMain.instance.mainRuntime.currentMarketTrend;
+        if(!trend)return "暂无";
+        let rate = Math.round((trend.multiplier - 1) * 100);
+        let rateText = rate > 0 ? "+" + String(rate) + "%" : String(rate) + "%";
+        let targetText = trend.title;
+        if(trend.categories && trend.categories.length > 0){
+            targetText = trend.categories.map((category)=>{
+                return CATEGORY_NAME[category as ItemCategory] || category;
+            }).join("/");
+        }else if(trend.materials && trend.materials.length > 0){
+            targetText = trend.materials.join("/");
+        }else if(trend.eras && trend.eras.length > 0){
+            targetText = trend.eras.join("/");
+        }else if(trend.maxRarity != null){
+            targetText = "普通货";
+        }
+        return targetText + " " + rateText;
+    }
+
+    private getShortRoundTaskText():string{
+        let task = GameMain.instance.mainRuntime.ctx.roundTask;
+        if(!task)return "暂无";
+        let rewardText = " +" + String(task.reward);
+        if(task.kind === "sellCategory" && task.category){
+            return "卖1件" + CATEGORY_NAME[task.category] + rewardText;
+        }
+        if(task.kind === "sellEra" && task.era){
+            return "卖1件" + task.era + "旧物" + rewardText;
+        }
+        if(task.kind === "repairSell"){
+            return "卖1件修复旧物" + rewardText;
+        }
+        if(task.kind === "fullRevealSell"){
+            return "卖1件看透旧物" + rewardText;
+        }
+        return task.desc + rewardText;
     }
 
     private showGuideTipOnce(key:string,txt:string,delayTime:number = 0){

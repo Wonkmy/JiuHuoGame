@@ -46,7 +46,7 @@ export default class MainPanelRuntime{
         if(!this.currentMarketTrend){
             return "";
         }
-        return "本轮行情:" + this.currentMarketTrend.title + "\n" + this.currentMarketTrend.desc + "\n已计入当前估值";
+        return "本轮行情:" + this.currentMarketTrend.title + "\n" + this.currentMarketTrend.desc + "\n不影响买入价，只影响卖出估值";
     }
 
     createMarketTrend(){
