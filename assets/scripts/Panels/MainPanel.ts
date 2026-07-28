@@ -65,6 +65,18 @@ export default class MainPanel extends BaseUI {
         }, this)
 
         this.showGuideTipOnce("main_buy","先买入几件旧货，买入价越低，试错空间越大。",2);
+
+        this.node.getChildByName("share").on(cc.Node.EventType.TOUCH_END,this.onShareBtnClick,this)
+    }
+    public onShareBtnClick() {
+        //@ts-ignore
+        if (typeof wx === 'undefined') return;
+        //@ts-ignore
+        wx.shareAppMessage({
+            title: '我刚在《摊上捡个宝》里捡到宝了！',
+            // imageUrl: 'xxx',
+            query: 'from=button'
+        });
     }
 
     onCreateItems(){
@@ -223,6 +235,10 @@ export default class MainPanel extends BaseUI {
                 ui.showTip(txt, null)
             })
         },delayTime);
+    }
+
+    override onDestroy(): void {
+        this.node.getChildByName("share").off(cc.Node.EventType.TOUCH_END,this.onShareBtnClick,this)
     }
 }
 
