@@ -1,0 +1,38 @@
+{
+  "ver": "2.3.7",
+  "uuid": "b85f6105-6eb6-4518-b983-df68b6787268",
+  "importer": "texture",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "premultiplyAlpha": false,
+  "genMipmaps": false,
+  "packable": true,
+  "width": 300,
+  "height": 319,
+  "platformSettings": {},
+  "subMetas": {
+    "cangpin_display_stand_plus_300": {
+      "ver": "1.0.6",
+      "uuid": "e5d4aab1-b796-42cd-920f-f6c9ab649724",
+      "importer": "sprite-frame",
+      "rawTextureUuid": "b85f6105-6eb6-4518-b983-df68b6787268",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0,
+      "offsetY": 0,
+      "trimX": 0,
+      "trimY": 0,
+      "width": 300,
+      "height": 319,
+      "rawWidth": 300,
+      "rawHeight": 319,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}

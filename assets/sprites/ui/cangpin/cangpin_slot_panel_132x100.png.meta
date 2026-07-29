@@ -1,0 +1,38 @@
+{
+  "ver": "2.3.7",
+  "uuid": "5571fb3e-88fa-4735-b4a7-c5b044db02cc",
+  "importer": "texture",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "premultiplyAlpha": false,
+  "genMipmaps": false,
+  "packable": true,
+  "width": 132,
+  "height": 100,
+  "platformSettings": {},
+  "subMetas": {
+    "cangpin_slot_panel_132x100": {
+      "ver": "1.0.6",
+      "uuid": "44186673-106a-466f-80e8-ab48c91dc980",
+      "importer": "sprite-frame",
+      "rawTextureUuid": "5571fb3e-88fa-4735-b4a7-c5b044db02cc",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0.5,
+      "offsetY": -0.5,
+      "trimX": 6,
+      "trimY": 6,
+      "width": 121,
+      "height": 89,
+      "rawWidth": 132,
+      "rawHeight": 100,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}
