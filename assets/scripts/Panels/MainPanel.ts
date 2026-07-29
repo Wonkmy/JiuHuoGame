@@ -237,9 +237,9 @@ export default class MainPanel extends BaseUI {
         },delayTime);
     }
 
-    override onDestroy(): void {
-        this.node.getChildByName("share").off(cc.Node.EventType.TOUCH_END,this.onShareBtnClick,this)
-    }
+    // onDestroy(): void {
+    //     this.node.getChildByName("share").off(cc.Node.EventType.TOUCH_END,this.onShareBtnClick,this)
+    // }
 }
 
 
