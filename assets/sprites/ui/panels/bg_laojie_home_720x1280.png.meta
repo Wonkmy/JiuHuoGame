@@ -1,6 +1,6 @@
 {
   "ver": "2.3.7",
-  "uuid": "f79598d3-f34e-4009-97b7-bc692ac596b4",
+  "uuid": "214654be-9919-4ef4-af74-f6dbe445b25b",
   "importer": "texture",
   "type": "sprite",
   "wrapMode": "clamp",
@@ -8,15 +8,15 @@
   "premultiplyAlpha": false,
   "genMipmaps": false,
   "packable": true,
-  "width": 520,
-  "height": 300,
+  "width": 720,
+  "height": 1280,
   "platformSettings": {},
   "subMetas": {
-    "panel_medium_520x300": {
+    "bg_laojie_home_720x1280": {
       "ver": "1.0.6",
-      "uuid": "c3603fca-a0b6-4b1a-936e-6ab1ce873b4d",
+      "uuid": "c84343cd-2930-4971-8a49-4738d14a2f87",
       "importer": "sprite-frame",
-      "rawTextureUuid": "f79598d3-f34e-4009-97b7-bc692ac596b4",
+      "rawTextureUuid": "214654be-9919-4ef4-af74-f6dbe445b25b",
       "trimType": "auto",
       "trimThreshold": 1,
       "rotated": false,
@@ -24,14 +24,14 @@
       "offsetY": 0,
       "trimX": 0,
       "trimY": 0,
-      "width": 520,
-      "height": 300,
-      "rawWidth": 520,
-      "rawHeight": 300,
-      "borderTop": 87,
-      "borderBottom": 87,
-      "borderLeft": 87,
-      "borderRight": 87,
+      "width": 720,
+      "height": 1280,
+      "rawWidth": 720,
+      "rawHeight": 1280,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
       "subMetas": {}
     }
   }

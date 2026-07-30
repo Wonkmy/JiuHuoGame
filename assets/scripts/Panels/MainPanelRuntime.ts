@@ -6,20 +6,53 @@ import ItemCellYJ from "../UIManager/ItemCellYJ";
 import MainPanel from "./MainPanel";
 import GameMain from "../GameMain";
 import ExpertBagCell from "../UIManager/ExpertBagCell";
+import { Advertise } from "../GameCodes/Advertise";
 
 export default class MainPanelRuntime{
-    mainPanel:MainPanel = null!;
+    // mainPanel:MainPanel = null!;
     ctx:GameContext = null!;
 
     currentMarketTrend:MarketTrend = null!;
-    init(mp:MainPanel){
-        this.mainPanel = mp;
+    init(){
+        // this.mainPanel = mp;
         this.ctx = new GameContext();
         this.ctx.CurLevel = 0;
         this.ctx.totalPoints = ConstValue.TotalPoints;
         this.ctx.startRound();
-        this.ctx.totalMoney = ConstValue.defaultMoney;
+        let m = cc.sys.localStorage.getItem("game_money");
+        let fm = 0;
+        console.log(m);
+
+        if(m == '' || m == null || m == 'undefined' || m === undefined){
+            fm = ConstValue.defaultMoney;
+        }else{
+            fm = Number(m);
+        }
+        this.ctx.totalMoney = fm;
+        if (cc.sys.platform === cc.sys.WECHAT_GAME) {
+            // 监听微信的未捕获错误
+            //@ts-ignore
+            wx.onError((res) => {
+                // 检查是否是广告相关的报错
+                if (res && typeof res === 'string') {
+                    if (res.indexOf('insertTextView:fail') !== -1 ||
+                        res.indexOf('updateTextView:fail') !== -1 ||
+                        res.indexOf('parent') !== -1) {
+                        // 广告审核中的已知错误，静默忽略
+                        console.log('广告组件未就绪（正常审核期现象）');
+                        return; // 不向上抛出
+                    }
+                }
+                // 其他错误正常输出
+                console.error('全局捕获到错误:', res);
+            });
+        }
     };
+
+    initAD(){
+        Advertise.instance.InitChapingAd();
+        Advertise.instance.InitVideoAd();
+    }
 
     initItemInsCell(prefab: cc.Prefab,itemIns:ItemInstance,_parent:cc.Node){
         let newItemCell = cc.instantiate(prefab);
@@ -90,6 +123,6 @@ export default class MainPanelRuntime{
     }
 
     dispose(){
-        this.mainPanel = null!;
+        // this.mainPanel = null!;
     }
 }

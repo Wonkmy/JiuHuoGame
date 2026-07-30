@@ -1,3 +1,4 @@
+import { Advertise } from "../GameCodes/Advertise";
 import { ExpertDef } from "../GameCodes/Datas/GameData";
 import { getRoundTaskReward, getRoundTaskText, isRoundTaskFinished, pickExperts } from "../GameCodes/GameRules";
 import GameMain from "../GameMain";
@@ -32,6 +33,10 @@ export default class ResultPanel extends BaseUI{
 
     private onNextTurn(){
         FaynUtils.PlayMusic("btnclick",false,1);
+        let r = Math.random();
+        if(r <= 0.6){
+            Advertise.instance.ShowChapingAd();
+        }
         if(this.isCrossRound){
             GameMain.instance.mainRuntime.ctx.CurLevel++;
         }
@@ -63,7 +68,8 @@ export default class ResultPanel extends BaseUI{
         let taskReward = taskFinished ? getRoundTaskReward() : 0;
         if(taskReward > 0 && !GameMain.instance.mainRuntime.ctx.taskRewardClaimed){
             // 委托奖励只发一次，并计入本轮收益。
-            GameMain.instance.mainRuntime.ctx.totalMoney += taskReward;
+            // GameMain.instance.mainRuntime.ctx.totalMoney += taskReward;
+            GameMain.instance.mainRuntime.ctx.addMoney(taskReward);
             GameMain.instance.mainRuntime.ctx.taskRewardClaimed = true;
         }
         // 最终收益 = 本轮卖出总价 + 委托收益 - 本轮买入花费。

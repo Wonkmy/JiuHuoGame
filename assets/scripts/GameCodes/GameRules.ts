@@ -36,6 +36,11 @@ export default class GameContext{
         return `old_${this.UID++}`;
     }
 
+    addMoney(v:number){
+        this.totalMoney += v;
+        cc.sys.localStorage.setItem("game_money",this.totalMoney);
+    }
+
     resetGame(){
         this.CurLevel = 0;
         this.totalPoints = ConstValue.TotalPoints;
@@ -60,6 +65,7 @@ export default class GameContext{
         if(this.budgetPenaltyNextRound > 0){
             // 失败惩罚延迟到下一轮开始扣除，避免结算界面数值反复变化。
             this.totalMoney = Math.max(0,this.totalMoney - this.budgetPenaltyNextRound);
+            cc.sys.localStorage.setItem("game_money",this.totalMoney);
             this.budgetPenaltyNextRound = 0;
         }
         this.targetInfo = ROUND_TARGETS_INFO[this.CurLevel]// 获得当前的目标收益

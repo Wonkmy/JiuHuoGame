@@ -11,6 +11,9 @@ import MainPanelRuntime from "./MainPanelRuntime";
 import TipPanel from "./TipPanel";
 import YiJiaPanel from "./YiJiaPanel";
 import BagPanel from "./BagPanel";
+import { Advertise } from "../GameCodes/Advertise";
+import DialogPanel from "./DialogPanel";
+import EntrancePanel from "./EntrancePanel";
 
 const {ccclass, property} = cc._decorator;
 
@@ -21,6 +24,8 @@ export default class MainPanel extends BaseUI {
 
     btn_YJ:cc.Node = null!;
     btn_ReRoll:cc.Node = null!;
+    btn_addMoney:cc.Node = null!;
+    btn_back:cc.Node = null!;
 
     marketItemContainer:cc.Node = null!;
 
@@ -32,22 +37,32 @@ export default class MainPanel extends BaseUI {
     @property({type:cc.Node})
     openExpertBagPanel:cc.Node = null!;
 
+    @property({type:cc.Node})
+    openCangpinPanel:cc.Node = null!;
+
     @property({type:cc.Label})
     roundInfoLabel:cc.Label = null!;
 
     onLoad(): void {
         MainPanel.instance = this;
+        // GameMain.instance.mainRuntime.initAD();
     }
 
     override onShow(): void {
         this.btn_YJ = this.node.getChildByName("btn_YJ");
         this.btn_ReRoll = this.node.getChildByName("btn_ReRoll");
+        this.btn_addMoney = this.node.getChildByName("addMoney");
+        this.btn_back = this.node.getChildByName("back");
         this.marketItemContainer = this.node.getChildByName("ItemContainers").getChildByName("sview").getChildByName("view").getChildByName("content")
         GameMain.instance.mainRuntime.createMarketTrend();
         this.onCreateItems();
 
         this.btn_YJ.on(cc.Node.EventType.TOUCH_END,this.onYiJia ,this)
         this.btn_ReRoll.on(cc.Node.EventType.TOUCH_END,this.onReRoll ,this)
+        this.btn_addMoney.on(cc.Node.EventType.TOUCH_END,this.onAddMoney,this)
+        this.openCangpinPanel.on(cc.Node.EventType.TOUCH_END,this.onOpenCangpinPanel,this)
+        this.btn_back.on(cc.Node.EventType.TOUCH_END,this.onBackLaojie,this)
+
         this.openBagPanel.on(cc.Node.EventType.TOUCH_END, () => {
             FaynUtils.PlayMusic("btnclick",false,1);
             UIManager.getInstance().openUI(BagPanel, 0, (ui: BagPanel) => {
@@ -77,6 +92,45 @@ export default class MainPanel extends BaseUI {
             // imageUrl: 'xxx',
             query: 'from=button'
         });
+    }
+
+    onBackLaojie(){
+        UIManager.getInstance().closeUI(MainPanel);
+        UIManager.getInstance().openUI(EntrancePanel, 0, (ui: EntrancePanel) => {
+            ui.onShow();
+        })
+    }
+
+    onOpenCangpinPanel(){
+        UIManager.getInstance().openUI(TipPanel, 1, (ui: TipPanel) => {
+            ui.onShow();
+            ui.showTip("藏馆还在布置,等展柜安好，再开门迎客", null,false,1.5)
+        })
+    }
+
+    private onAddMoney(){
+        UIManager.getInstance().openUI(DialogPanel,1,(ui:DialogPanel)=>{
+            ui.onShow();
+            ui.setContent("预算不够了?看段视频\n+200预算。",()=>{
+                Advertise.instance.ShowVideoAd((res: number) => {
+                    if (res == 1) {
+                        this.addMoneyProcess(200);
+                    }
+                    else if (res == 2) {
+                        UIManager.getInstance().openUI(TipPanel, 0, (ui: TipPanel) => {
+                            ui.onShow();
+                            ui.showTip("视频播放失败", null)
+                        })
+                    }
+                })
+            })
+        })
+    }
+
+    addMoneyProcess(n:number){
+        // GameMain.instance.mainRuntime.ctx.totalMoney += n;
+        GameMain.instance.mainRuntime.ctx.addMoney(n);
+        this.upgradeTotalMoney();
     }
 
     onCreateItems(){
@@ -136,7 +190,7 @@ export default class MainPanel extends BaseUI {
     private onReRoll(){
         FaynUtils.PlayMusic("btnclick",false,1);
         if(GameMain.instance.mainRuntime.ctx.totalMoney >= ConstValue.REROLL_COST){
-            GameMain.instance.mainRuntime.ctx.totalMoney -= ConstValue.REROLL_COST;
+            GameMain.instance.mainRuntime.ctx.addMoney(-ConstValue.REROLL_COST);
             FaynUtils.PlayMusic("click",false,1);
             this.upgradeTotalMoney();
             this.onCreateItems();
@@ -147,11 +201,29 @@ export default class MainPanel extends BaseUI {
                 ui.showTip("预算不够了",null)
             })
         }
+        // UIManager.getInstance().openUI(DialogPanel,1,(ui:DialogPanel)=>{
+        //     ui.onShow();
+        //     ui.setContent("观看一段视频刷新物品?",()=>{
+        //         Advertise.instance.ShowVideoAd((res: number) => {
+        //             if (res == 1) {
+        //                 FaynUtils.PlayMusic("click", false, 1);
+        //                 this.onCreateItems();
+        //             }
+        //             else if (res == 2) {
+        //                 UIManager.getInstance().openUI(TipPanel, 0, (ui: TipPanel) => {
+        //                     ui.onShow();
+        //                     ui.showTip("视频播放失败", null)
+        //                 })
+        //             }
+        //         })
+        //     })
+        // })
     }
 
     onBuyItemInstance(_itemIns:ItemInstance){
         if(GameMain.instance.mainRuntime.ctx.totalMoney >=  _itemIns.buyPrice){
-            GameMain.instance.mainRuntime.ctx.totalMoney -=  _itemIns.buyPrice;
+            // GameMain.instance.mainRuntime.ctx.totalMoney -=  _itemIns.buyPrice;
+            GameMain.instance.mainRuntime.ctx.addMoney(-_itemIns.buyPrice);
             this.totalCostMoney +=  _itemIns.buyPrice;
             FaynUtils.PlayMusic("buy",false,1);
             this.upgradeTotalMoney();

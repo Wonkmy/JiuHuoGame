@@ -1,6 +1,7 @@
 import GameMain from "../GameMain";
 import { BaseUI } from "../UIManager/BaseUI";
 import { UIManager } from "../UIManager/UIManager";
+import EntrancePanel from "./EntrancePanel";
 import MainPanel from "./MainPanel";
 import MainPanelRuntime from "./MainPanelRuntime";
 
@@ -31,8 +32,13 @@ export default class HomePanel extends BaseUI {
                 clearInterval(setTimeID);
                 UIManager.getInstance().closeUI(HomePanel);
 
-                UIManager.getInstance().openUI(MainPanel,0,(ui:MainPanel)=>{
-                    GameMain.instance.mainRuntime.init(ui);
+                // UIManager.getInstance().openUI(MainPanel,0,(ui:MainPanel)=>{
+                //     GameMain.instance.mainRuntime.init(ui);
+                //     ui.onShow();
+                //     GameMain.instance.playMarketBgmOnce();
+                // })
+                UIManager.getInstance().openUI(EntrancePanel,0,(ui:EntrancePanel)=>{
+                    GameMain.instance.mainRuntime.init();
                     ui.onShow();
                     GameMain.instance.playMarketBgmOnce();
                 })

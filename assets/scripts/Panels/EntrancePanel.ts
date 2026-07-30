@@ -1,0 +1,48 @@
+import GameMain from "../GameMain";
+import { BaseUI } from "../UIManager/BaseUI";
+import { UIManager } from "../UIManager/UIManager";
+import MainPanel from "./MainPanel";
+import TipPanel from "./TipPanel";
+
+const {ccclass, property} = cc._decorator;
+
+@ccclass
+export default class EntrancePanel extends BaseUI {
+    protected static className = "EntrancePanel";
+    @property({type:cc.Node})
+    btn_entryJiaoyiMode:cc.Node = null!;
+
+    @property({type:cc.Node})
+    btn_cangpinMode:cc.Node = null!;
+
+    override onShow(): void {
+        this.upgradeTotalMoney();
+        this.btn_entryJiaoyiMode.on(cc.Node.EventType.TOUCH_END,this.onEnterJiaoyi,this)
+        this.btn_cangpinMode.on(cc.Node.EventType.TOUCH_END,this.onEnterCangpin,this)
+
+        cc.tween(this.node.getChildByName("jiaoyi"))
+            .repeatForever(
+                cc.tween().to(0.9,{scale:1.15})
+                    .to(0.9,{scale:1.0})
+            )
+            .start()
+    }
+
+    private onEnterCangpin(){
+        UIManager.getInstance().openUI(TipPanel, 1, (ui: TipPanel) => {
+            ui.onShow();
+            ui.showTip("藏馆布置中,等展柜安好，再开门迎客", null, false, 1.5)
+        })
+    }
+
+    private onEnterJiaoyi(){
+        UIManager.getInstance().closeUI(EntrancePanel);
+        UIManager.getInstance().openUI(MainPanel, 0, (ui: MainPanel) => {
+            ui.onShow();
+        })
+    }
+
+    private upgradeTotalMoney(){
+        this.node.getChildByName("totalMoney").getChildByName("content").getComponent(cc.Label).string = "总预算: "+ String(GameMain.instance.mainRuntime.ctx.totalMoney);
+    }
+}
