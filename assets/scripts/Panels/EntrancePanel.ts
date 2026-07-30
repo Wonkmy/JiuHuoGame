@@ -1,6 +1,7 @@
 import GameMain from "../GameMain";
 import { BaseUI } from "../UIManager/BaseUI";
 import { UIManager } from "../UIManager/UIManager";
+import CangpinPanel from "./CangpinPanel";
 import MainPanel from "./MainPanel";
 import TipPanel from "./TipPanel";
 
@@ -22,16 +23,27 @@ export default class EntrancePanel extends BaseUI {
 
         cc.tween(this.node.getChildByName("jiaoyi"))
             .repeatForever(
-                cc.tween().to(0.9,{scale:1.15})
+                cc.tween().to(0.9,{scale:1.05})
                     .to(0.9,{scale:1.0})
+            )
+            .start()
+
+            cc.tween(this.node.getChildByName("cangguan"))
+            .repeatForever(
+                cc.tween().to(0.85,{scale:1.05},{easing:"outBack"})
+                    .to(0.85,{scale:1.0})
             )
             .start()
     }
 
     private onEnterCangpin(){
-        UIManager.getInstance().openUI(TipPanel, 1, (ui: TipPanel) => {
+        // UIManager.getInstance().openUI(TipPanel, 1, (ui: TipPanel) => {
+        //     ui.onShow();
+        //     ui.showTip("藏馆布置中,等展柜安好，再开门迎客", null, false, 1.5)
+        // })
+        //
+        UIManager.getInstance().openUI(CangpinPanel, 1, (ui: CangpinPanel) => {
             ui.onShow();
-            ui.showTip("藏馆布置中,等展柜安好，再开门迎客", null, false, 1.5)
         })
     }
 

@@ -45,7 +45,7 @@ export default class MainPanel extends BaseUI {
 
     onLoad(): void {
         MainPanel.instance = this;
-        // GameMain.instance.mainRuntime.initAD();
+        GameMain.instance.mainRuntime.initAD();
     }
 
     override onShow(): void {
@@ -189,35 +189,35 @@ export default class MainPanel extends BaseUI {
      */
     private onReRoll(){
         FaynUtils.PlayMusic("btnclick",false,1);
-        if(GameMain.instance.mainRuntime.ctx.totalMoney >= ConstValue.REROLL_COST){
-            GameMain.instance.mainRuntime.ctx.addMoney(-ConstValue.REROLL_COST);
-            FaynUtils.PlayMusic("click",false,1);
-            this.upgradeTotalMoney();
-            this.onCreateItems();
-        }else{
-            FaynUtils.PlayMusic("error",false,1);
-            UIManager.getInstance().openUI(TipPanel,0,(ui:TipPanel)=>{
-                ui.onShow();
-                ui.showTip("预算不够了",null)
-            })
-        }
-        // UIManager.getInstance().openUI(DialogPanel,1,(ui:DialogPanel)=>{
-        //     ui.onShow();
-        //     ui.setContent("观看一段视频刷新物品?",()=>{
-        //         Advertise.instance.ShowVideoAd((res: number) => {
-        //             if (res == 1) {
-        //                 FaynUtils.PlayMusic("click", false, 1);
-        //                 this.onCreateItems();
-        //             }
-        //             else if (res == 2) {
-        //                 UIManager.getInstance().openUI(TipPanel, 0, (ui: TipPanel) => {
-        //                     ui.onShow();
-        //                     ui.showTip("视频播放失败", null)
-        //                 })
-        //             }
-        //         })
+        // if(GameMain.instance.mainRuntime.ctx.totalMoney >= ConstValue.REROLL_COST){
+        //     GameMain.instance.mainRuntime.ctx.addMoney(-ConstValue.REROLL_COST);
+        //     FaynUtils.PlayMusic("click",false,1);
+        //     this.upgradeTotalMoney();
+        //     this.onCreateItems();
+        // }else{
+        //     FaynUtils.PlayMusic("error",false,1);
+        //     UIManager.getInstance().openUI(TipPanel,0,(ui:TipPanel)=>{
+        //         ui.onShow();
+        //         ui.showTip("预算不够了",null)
         //     })
-        // })
+        // }
+        UIManager.getInstance().openUI(DialogPanel,1,(ui:DialogPanel)=>{
+            ui.onShow();
+            ui.setContent("观看一段视频刷新物品?",()=>{
+                Advertise.instance.ShowVideoAd((res: number) => {
+                    if (res == 1) {
+                        FaynUtils.PlayMusic("click", false, 1);
+                        this.onCreateItems();
+                    }
+                    else if (res == 2) {
+                        UIManager.getInstance().openUI(TipPanel, 0, (ui: TipPanel) => {
+                            ui.onShow();
+                            ui.showTip("视频播放失败", null)
+                        })
+                    }
+                })
+            })
+        })
     }
 
     onBuyItemInstance(_itemIns:ItemInstance){
