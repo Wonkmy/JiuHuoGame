@@ -21,7 +21,6 @@ export default class MainPanelRuntime{
         this.ctx.startRound();
         let m = cc.sys.localStorage.getItem("game_money");
         let fm = 0;
-        console.log(m);
 
         if(m == '' || m == null || m == 'undefined' || m === undefined){
             fm = ConstValue.defaultMoney;
@@ -46,6 +45,7 @@ export default class MainPanelRuntime{
                 // 其他错误正常输出
                 console.error('全局捕获到错误:', res);
             });
+            //@ts-ignore
         }
     };
 
@@ -68,12 +68,12 @@ export default class MainPanelRuntime{
         let itemCellScript:ExpertBagCell = newItemCell.getComponent(ExpertBagCell);
         itemCellScript.init(itemIns);
     }
-    initInventoryItemInsCell(prefab: cc.Prefab,itemIns:ItemInstance,_parent:cc.Node,showCheckBtn:boolean){
+    initInventoryItemInsCell(prefab: cc.Prefab,itemIns:ItemInstance,_parent:cc.Node,showCheckBtn:boolean,readyDisplay:boolean = false){
         let newItemCell = cc.instantiate(prefab);
         newItemCell.parent = _parent;
         newItemCell.setPosition(cc.v2(0,0));
         let itemCellScript:ItemCellYJ = newItemCell.getComponent(ItemCellYJ);
-        itemCellScript.init(itemIns,showCheckBtn);
+        itemCellScript.init(itemIns,showCheckBtn,readyDisplay);
     }
     getMarketTrendText():string{
         if(!this.currentMarketTrend){

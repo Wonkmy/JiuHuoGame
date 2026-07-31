@@ -16,6 +16,9 @@ export default class DialogPanel extends BaseUI {
     @property({type:cc.Node})
     close:cc.Node = null!;
 
+    @property({type:cc.Node})
+    adNode:cc.Node = null!;
+
     yesAction:any=null;
 	public static get Instance() {
 
@@ -34,8 +37,11 @@ export default class DialogPanel extends BaseUI {
             UIManager.getInstance().closeUI(DialogPanel);
         },this)
     }
-    setContent(content:string,yesAction:any)
+    setContent(content:string,yesAction:any,showAD:boolean = true)
     {
+        if(this.adNode){
+            this.adNode.active = showAD;
+        }
         this.yesAction=yesAction;
         this.contentLabel.string = content;
     }

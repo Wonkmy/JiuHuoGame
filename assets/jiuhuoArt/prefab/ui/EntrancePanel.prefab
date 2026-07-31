@@ -1242,13 +1242,13 @@
     "_color": {
       "__type__": "cc.Color",
       "r": 255,
-      "g": 0,
+      "g": 77,
       "b": 0,
       "a": 255
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 53.32,
+      "width": 93.32,
       "height": 50.4
     },
     "_anchorPoint": {
@@ -1300,8 +1300,8 @@
     ],
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
-    "_string": "新!",
-    "_N$string": "新!",
+    "_string": "火爆!",
+    "_N$string": "火爆!",
     "_fontSize": 40,
     "_lineHeight": 40,
     "_enableWrapText": true,
@@ -2424,8 +2424,8 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 100,
-      "height": 31.5
+      "width": 53.32,
+      "height": 50.4
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -2476,10 +2476,10 @@
     ],
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
-    "_string": "即将推出",
-    "_N$string": "即将推出",
-    "_fontSize": 25,
-    "_lineHeight": 25,
+    "_string": "新!",
+    "_N$string": "新!",
+    "_fontSize": 40,
+    "_lineHeight": 40,
     "_enableWrapText": true,
     "_N$file": null,
     "_isSystemFontUsed": true,

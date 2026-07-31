@@ -14,8 +14,9 @@ export default class GameContext{
     CurLevel:number=0;
     totalPoints:number = 0;
     totalMoney:number = 0;// 总收入
-
     curSelected:ItemInstance = null!;
+    curDisplaySelected:ItemInstance = null!;// 当前选中的要展示的物品
+    curSelectedTableIndex:number = -1;// 当前选中的桌子id
     /**
      * 玩家拥有的鉴定专家列表
      */
@@ -24,6 +25,14 @@ export default class GameContext{
      * 玩家背包
      */
     inventoryItemInstance:ItemInstance[]=[]
+
+    /**
+     * 玩家已解锁的桌子的索引
+     */
+    unLockedTableIndex:number[]=[]
+
+    tableInfoDataDict:TableInfoData[]=[];// 保存的桌子信息列表。记录当前桌子id以及放置展览的物品数据信息
+
     targetInfo:TargetInfo = null!;// 目标收益
     roundTask:RoundTaskInfo = null!;// 本轮委托/挑战
     taskRewardClaimed:boolean = false;
@@ -44,8 +53,10 @@ export default class GameContext{
     resetGame(){
         this.CurLevel = 0;
         this.totalPoints = ConstValue.TotalPoints;
-        this.ownedExperts = [];
-        this.inventoryItemInstance = [];
+        this.ownedExperts = [];// 顾问团列表重置
+        this.inventoryItemInstance = [];// 背包重置
+        this.unLockedTableIndex = [];// 已解锁的展厅桌子索引重置
+        this.tableInfoDataDict = [];// 保存的桌子信息列表重置
         this.curSelected = null!;
         this.targetInfo = null!;
         this.roundTask = null!;
@@ -54,10 +65,10 @@ export default class GameContext{
         this.hiddenMarketNextRound = false;
         this.hiddenMarketActive = false;
         this.budgetPenaltyNextRound = 0;
+        this.curSelectedTableIndex = -1;
     }
 
     startRound(){
-        this.inventoryItemInstance = [];
         this.curSelected = null!;
         this.totalPoints = ConstValue.TotalPoints;
         this.hiddenMarketActive = this.hiddenMarketNextRound;
@@ -72,6 +83,27 @@ export default class GameContext{
         this.roundTask = createRoundTask(this.CurLevel);
         this.taskRewardClaimed = false;
         this.roundResultClaimed = false;
+        this.curSelectedTableIndex = -1;
+        let m = cc.sys.localStorage.getItem("bag_data");
+        if(m == '' || m == null || m == 'undefined' || m === undefined){
+            this.inventoryItemInstance = [];
+        }else{
+            this.inventoryItemInstance = JSON.parse(m);
+        }
+
+        let tableInfoData = cc.sys.localStorage.getItem("tableInfoDataDict");
+        if(tableInfoData == '' || tableInfoData == null || tableInfoData == 'undefined' || tableInfoData === undefined){
+            this.tableInfoDataDict = [];
+        }else{
+            this.tableInfoDataDict = JSON.parse(tableInfoData);
+        }
+
+        let unlocked_table_list = cc.sys.localStorage.getItem("unlocked_table_list");
+        if(unlocked_table_list == '' || unlocked_table_list == null || unlocked_table_list == 'undefined' || unlocked_table_list === undefined){
+            this.unLockedTableIndex = [];
+        }else{
+            this.unLockedTableIndex = JSON.parse(unlocked_table_list);
+        }
     };
 }
 
@@ -124,6 +156,10 @@ export function createRoundTask(round:number):RoundTaskInfo{
         },
     ];
     return tasks[Math.floor(Math.random() * tasks.length)];
+}
+export class TableInfoData{
+    tableIndex:number = 0;
+    itemData:ItemInstance = null!;
 }
 
 export function getRoundTaskText():string{
@@ -246,6 +282,7 @@ export function createItem(def: ItemDef, uid: string): ItemInstance {
         fake,
         repaired: false,
         sold: false,
+        display:false
     };
 }
 export function getAppraiseCost(kind: AppraiseKind): number {

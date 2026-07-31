@@ -81,7 +81,7 @@ export default class MainPanel extends BaseUI {
 
         this.showGuideTipOnce("main_buy","先买入几件旧货，买入价越低，试错空间越大。",2);
 
-        this.node.getChildByName("share").on(cc.Node.EventType.TOUCH_END,this.onShareBtnClick,this)
+        this.node.getChildByName("share").on(cc.Node.EventType.TOUCH_END,this.onShareBtnClick,this);
     }
     public onShareBtnClick() {
         //@ts-ignore
@@ -90,8 +90,9 @@ export default class MainPanel extends BaseUI {
         wx.shareAppMessage({
             title: '我刚在《摊上捡个宝》里捡到宝了！',
             // imageUrl: 'xxx',
-            query: 'from=button'
+            query: 'from=button',
         });
+        this.addMoneyProcess(200);
     }
 
     onBackLaojie(){
@@ -111,10 +112,11 @@ export default class MainPanel extends BaseUI {
     private onAddMoney(){
         UIManager.getInstance().openUI(DialogPanel,1,(ui:DialogPanel)=>{
             ui.onShow();
-            ui.setContent("预算不够了?看段视频\n+200预算。",()=>{
+            ui.setContent("预算不够了?看段视频\n+500预算。",()=>{
                 Advertise.instance.ShowVideoAd((res: number) => {
                     if (res == 1) {
-                        this.addMoneyProcess(200);
+                        UIManager.getInstance().closeUI(DialogPanel);
+                        this.addMoneyProcess(500);
                     }
                     else if (res == 2) {
                         UIManager.getInstance().openUI(TipPanel, 0, (ui: TipPanel) => {
@@ -128,9 +130,21 @@ export default class MainPanel extends BaseUI {
     }
 
     addMoneyProcess(n:number){
-        // GameMain.instance.mainRuntime.ctx.totalMoney += n;
         GameMain.instance.mainRuntime.ctx.addMoney(n);
         this.upgradeTotalMoney();
+        if (n > 0) {
+            UIManager.getInstance().openUI(DialogPanel, 0, (ui: DialogPanel) => {
+                ui.onShow();
+                ui.setContent(`获得\n${n}\n预算`, () => {
+                    UIManager.getInstance().closeUI(DialogPanel);
+                }, false)
+            })
+        }else{
+            UIManager.getInstance().openUI(TipPanel, 1, (ui: TipPanel) => {
+                ui.onShow();
+                ui.showTip(`花费/损失${n}预算`,null,false,1.2);
+            })
+        }
     }
 
     onCreateItems(){
@@ -206,6 +220,7 @@ export default class MainPanel extends BaseUI {
             ui.setContent("观看一段视频刷新物品?",()=>{
                 Advertise.instance.ShowVideoAd((res: number) => {
                     if (res == 1) {
+                        UIManager.getInstance().closeUI(DialogPanel);
                         FaynUtils.PlayMusic("click", false, 1);
                         this.onCreateItems();
                     }
@@ -233,6 +248,7 @@ export default class MainPanel extends BaseUI {
             })
             this.showGuideTipOnce("after_buy","买够后点击鉴赏，看看这些货到底值不值钱。",1.4);
             GameMain.instance.mainRuntime.ctx.inventoryItemInstance.push(_itemIns);
+            cc.sys.localStorage.setItem("bag_data",JSON.stringify(GameMain.instance.mainRuntime.ctx.inventoryItemInstance))
             return true;
         }else{
             FaynUtils.PlayMusic("error",false,1);
@@ -244,7 +260,7 @@ export default class MainPanel extends BaseUI {
         return false;
     }
 
-    private upgradeTotalMoney(){
+    upgradeTotalMoney(){
         this.node.getChildByName("totalMoney").getChildByName("content").getComponent(cc.Label).string = "总预算: "+ String(GameMain.instance.mainRuntime.ctx.totalMoney);
     }
 

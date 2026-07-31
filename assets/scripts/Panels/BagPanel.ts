@@ -19,15 +19,17 @@ export default class BagPanel extends BaseUI {
     override onShow(): void {
         this.closeBtn.on(cc.Node.EventType.TOUCH_END, () => {
             FaynUtils.PlayMusic("click",false,1);
+            GameMain.instance.mainRuntime.ctx.curSelectedTableIndex = -1;
             UIManager.getInstance().closeUI(BagPanel);
         },this)
-         this.node.getChildByName("splash").on(cc.Node.EventType.TOUCH_END, () => {
+        this.node.getChildByName("splash").on(cc.Node.EventType.TOUCH_END, () => {
             FaynUtils.PlayMusic("click",false,1);
+            GameMain.instance.mainRuntime.ctx.curSelectedTableIndex = -1;
             UIManager.getInstance().closeUI(BagPanel);
         }, this)
     }
 
-    setInventoryData(inventortType: string) {
+    setInventoryData(inventortType: string,readyDisplay:boolean = false) {
         if (inventortType === "bag") {
             this.node.getChildByName("ItemContainers").getChildByName("title").getComponent(cc.Label).string = "我的货物";
             let count: number = GameMain.instance.mainRuntime.ctx.inventoryItemInstance.length;
@@ -48,7 +50,7 @@ export default class BagPanel extends BaseUI {
                         console.error("load itemCell prefab error:", err);
                         return;
                     }
-                    GameMain.instance.mainRuntime.initInventoryItemInsCell(prefab, itemIns, this.inventoryContainer, false);
+                    GameMain.instance.mainRuntime.initInventoryItemInsCell(prefab, itemIns, this.inventoryContainer, false,readyDisplay);
                 })
             }
         }else if(inventortType === "expert"){

@@ -10,11 +10,16 @@ const {ccclass, property} = cc._decorator;
 @ccclass
 export default class EntrancePanel extends BaseUI {
     protected static className = "EntrancePanel";
+    public static instance:EntrancePanel = null!;
     @property({type:cc.Node})
     btn_entryJiaoyiMode:cc.Node = null!;
 
     @property({type:cc.Node})
     btn_cangpinMode:cc.Node = null!;
+
+    protected onLoad(): void {
+        EntrancePanel.instance = this;
+    }
 
     override onShow(): void {
         this.upgradeTotalMoney();
@@ -35,7 +40,7 @@ export default class EntrancePanel extends BaseUI {
             )
             .start()
     }
-
+    // 打开藏品馆馆界面
     private onEnterCangpin(){
         // UIManager.getInstance().openUI(TipPanel, 1, (ui: TipPanel) => {
         //     ui.onShow();
@@ -54,7 +59,7 @@ export default class EntrancePanel extends BaseUI {
         })
     }
 
-    private upgradeTotalMoney(){
+    upgradeTotalMoney(){
         this.node.getChildByName("totalMoney").getChildByName("content").getComponent(cc.Label).string = "总预算: "+ String(GameMain.instance.mainRuntime.ctx.totalMoney);
     }
 }

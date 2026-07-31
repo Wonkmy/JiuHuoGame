@@ -115,12 +115,15 @@ export default class YiJiaPanel extends BaseUI {
         this.repair_Node.on(cc.Node.EventType.TOUCH_END,this.onRepair ,this)
 
         this.sell_Node.on(cc.Node.EventType.TOUCH_END,this.onSell ,this)
+        this.node.getChildByName("back").on(cc.Node.EventType.TOUCH_END,this.onFinishedYijia ,this)
     }
 
     private onSelectItem = (itemCellYj: ItemCellYJ) => {
         FaynUtils.PlayMusic("click",false,1);
         this.showMainItem(itemCellYj);
     }
+
+
 
     private onCashi(){
         FaynUtils.PlayMusic("bullet",false,1);
@@ -182,6 +185,21 @@ export default class YiJiaPanel extends BaseUI {
             return item.reveal >= 3 ? "边角拆开后，里面的结构基本看明白了。" : "轻轻拆看，夹层和内壁露出线索。";
         }
         return res.diff < 0 ? "裂痕太深，修过仍有破绽。" : "旧伤被压住，整体品相回升。";
+    }
+
+    // 直接离开交易厅直接结算
+    private onFinishedYijia(){
+        if (GameMain.instance.mainRuntime.ctx.inventoryItemInstance.length > 0) {
+            this.main_item.getComponent(cc.Sprite).spriteFrame = null!;
+            this.node.getChildByName("estimateMoney").active = false;
+            this.scheduleOnce(() => {
+                UIManager.getInstance().closeUI(YiJiaPanel);
+                UIManager.getInstance().openUI(ResultPanel, 0, (ui: ResultPanel) => {
+                    ui.onShow();
+                    ui.setContentText(this.YijiaPrice, this.buyTotolPrice);// 结算收益 = 卖出总价 - 买入总价
+                })
+            }, 0.5);
+        }
     }
 
     private onSell(){
@@ -271,13 +289,6 @@ export default class YiJiaPanel extends BaseUI {
                 this.node.getChildByName("estimateMoney").getComponent(cc.Label).string = "当前估值:" + String(GameMain.instance.mainRuntime.ctx.curSelected.estimate);
             });
         }else{
-            // GameMain.instance.bundle.load("arts/items/" + GameMain.instance.mainRuntime.ctx.curSelected.image, cc.SpriteFrame, (err, spriteFrame: cc.SpriteFrame) => {
-            //     if (err) {
-            //         console.error("load item spriteFrame error:", err);
-            //         return;
-            //     }
-
-            //     });
             if (this.main_item === null) {
                 this.main_item = this.node.getChildByName("main_item");
             }
@@ -287,8 +298,7 @@ export default class YiJiaPanel extends BaseUI {
                 n.getComponent(ItemCellYJ).ISSelected = false;
             }, this)
             itemCellYj.ISSelected = true;
-            this.node.getChildByName("estimateMoney").getComponent(cc.Label).string = "当前估值:" + String(GameMain.instance.mainRuntime.ctx.curSelected.estimate)
-
+            this.node.getChildByName("estimateMoney").getComponent(cc.Label).string = "当前估值:" + String(GameMain.instance.mainRuntime.ctx.curSelected.estimate);
         }
     }
 
