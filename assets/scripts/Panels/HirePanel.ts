@@ -1,3 +1,4 @@
+import { Advertise } from "../GameCodes/Advertise";
 import { ExpertDef } from "../GameCodes/Datas/GameData";
 import GameMain from "../GameMain";
 import { FaynUtils } from "../Global/FaynUtils";
@@ -18,6 +19,7 @@ export default class HirePanel extends BaseUI {
 
     override onShow(): void {
         cc.game.on("on_use_expert", this.onUseExpert);
+        Advertise.instance.ShowHengfuAd();
     }
 
     private onUseExpert(expertDef: ExpertDef) {
@@ -40,5 +42,9 @@ export default class HirePanel extends BaseUI {
                 this.list_container.addChild(expertCell);
             })
         }
+    }
+
+    onDestroy(): void {
+        Advertise.instance.HideHengfuAd();
     }
 }

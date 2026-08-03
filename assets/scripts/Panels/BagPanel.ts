@@ -5,6 +5,7 @@ import GameMain from "../GameMain";
 const {ccclass, property} = cc._decorator;
 import { UIManager } from "../UIManager/UIManager";
 import { FaynUtils } from "../Global/FaynUtils";
+import { Advertise } from "../GameCodes/Advertise";
 
 @ccclass
 export default class BagPanel extends BaseUI {
@@ -27,10 +28,13 @@ export default class BagPanel extends BaseUI {
             GameMain.instance.mainRuntime.ctx.curSelectedTableIndex = -1;
             UIManager.getInstance().closeUI(BagPanel);
         }, this)
+
+
     }
 
     setInventoryData(inventortType: string,readyDisplay:boolean = false) {
         if (inventortType === "bag") {
+            Advertise.instance.ShowHengfuAd();
             this.node.getChildByName("ItemContainers").getChildByName("title").getComponent(cc.Label).string = "我的货物";
             let count: number = GameMain.instance.mainRuntime.ctx.inventoryItemInstance.length;
             if (count <= 0) {
@@ -54,6 +58,10 @@ export default class BagPanel extends BaseUI {
                 })
             }
         }else if(inventortType === "expert"){
+            let r = Math.random();
+            if(r < 0.5){
+                Advertise.instance.ShowChapingAd();
+            }
             this.node.getChildByName("ItemContainers").getChildByName("title").getComponent(cc.Label).string = "我的顾问团";
             let count: number = GameMain.instance.mainRuntime.ctx.ownedExperts.length;
             if (count <= 0) {
@@ -77,5 +85,9 @@ export default class BagPanel extends BaseUI {
                 })
             }
         }
+    }
+
+    onDestroy(): void {
+        Advertise.instance.HideHengfuAd();
     }
 }

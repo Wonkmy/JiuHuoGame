@@ -8,18 +8,58 @@ export class Advertise extends cc.Component {
      */
     chaPingAd:any;//插屏广告
     videoAd:any;//视频激励广告
+    hengfuAd:any;//横幅广告
+//
     videoId:string = "";
     chapingId:string = "";
+
+
+    recommendPageManager:any;// 评价与推荐
+
     protected onLoad(): void {
         Advertise.instance = this;
     }
+
+    hengfuID:string = "adunit-e746cca4ca42a588";
+    hengfuID2:string = "adunit-328cf70362126733";
+    async InitHengfu(){
+        if (!(cc.sys.platform === cc.sys.WECHAT_GAME)) {
+            return;
+        }
+        if (this.hengfuAd != null) return;
+
+        try {
+            // @ts-ignore
+            const systemInfo = wx.getSystemInfoSync();
+            // @ts-ignore
+            this.hengfuAd = wx.createCustomAd({
+                adUnitId: Math.random() < 0.5 ? this.hengfuID : this.hengfuID2, // 随机选择一个广告单元 ID
+                style: {
+                    left: 0,
+                    top: systemInfo.windowHeight - 100, // 横幅广告高度为 100px，放在屏幕底部
+                    width: 350
+                }
+            });
+
+            // 拉取横幅广告异常处理
+            this.hengfuAd.onError((err: any) => {
+                // 审核期间这里会静默触发，但不会报红
+                console.log('横幅广告拉取失败（可能未审核）', err);
+                // 不影响游戏逻辑，静默处理
+            });
+        } catch (e) {
+            console.log('横幅广告创建失败（广告ID未生效，正常现象）', e);
+            this.hengfuAd = null; // 置空，防止后续调用
+        }
+    }
+
     async InitChapingAd() {
         if (!(cc.sys.platform === cc.sys.WECHAT_GAME)) {
             return;
         }
         if (this.chaPingAd != null) return;
 
-        // 🔥 关键：用 try-catch 包裹创建过程
+        // 关键：用 try-catch 包裹创建过程
         try {
             // @ts-ignore
             this.chaPingAd = wx.createInterstitialAd({
@@ -69,6 +109,47 @@ export class Advertise extends cc.Component {
         }
     }
 
+    /**
+ *  游戏内提前加载推荐组件数据
+ */
+    async loadRecommend() {
+        if (!(cc.sys.platform === cc.sys.WECHAT_GAME)) {
+            return;
+        }
+        if (this.recommendPageManager != null) return;
+            // @ts-ignore
+        if (!wx.createPageManager) {
+            throw '当前基础库版本暂不支持。';
+        }
+            // @ts-ignore
+        this.recommendPageManager = wx.createPageManager();
+        await this.recommendPageManager.load({
+            openlink: 'TWFRCqV5WeM2AkMXhKwJ03MhfPOieJfAsvXKUbWvQFQtLyyA5etMPabBehga950uzfZcH3Vi3QeEh41xRGEVFw', // 推荐组件OPENLINK常量，直接复制即可，无需理解含义
+        });
+    }
+
+    async showRecommend() {
+        if (!this.recommendPageManager) {
+            await this.loadRecommend();
+        }
+        return await this.recommendPageManager.show();
+    }
+
+    ShowHengfuAd(){
+        if(this.hengfuAd){
+            this.hengfuAd.show().catch((err:any) => {
+                console.error(err)
+            })
+        }
+    }
+
+    HideHengfuAd(){
+        if(this.hengfuAd){
+            this.hengfuAd.hide().catch((err:any) => {
+                console.error(err)
+            })
+        }
+    }
 
 
     ShowChapingAd(){

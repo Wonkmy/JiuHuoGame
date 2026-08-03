@@ -28,7 +28,45 @@ export default class ResultPanel extends BaseUI{
     override onShow(): void {
         this.btn_NextTurn.on(cc.Node.EventType.TOUCH_END,this.onNextTurn ,this);
         this.btn_OpenHire.on(cc.Node.EventType.TOUCH_END,this.onOpenHire ,this);
+        this.node.getChildByName("btn_ShareWar").on(cc.Node.EventType.TOUCH_END,this.onShareBtnClick,this);
         this.upgradeTotalMoney();
+    }
+
+    onShareBtnClick() {
+        // //@ts-ignore
+        // if (typeof wx === 'undefined') return;
+        // let _canvas = cc.game.canvas;
+        // //@ts-ignore
+        // wx.canvasToTempFilePath({
+        //     canvas: _canvas,  // 这里直接传入标准 canvas
+        //     x: 0,
+        //     y: 0,
+        //     width: _canvas.width,
+        //     height: _canvas.height,
+        //     destWidth: 500,
+        //     destHeight: 400,
+        //     fileType: 'png',
+        //     success(res:any) {
+        //         let tempFilePath = res.tempFilePath;
+        //         // 拿到截图路径后，调用分享
+        //         //@ts-ignore
+        //         wx.shareAppMessage({
+        //             title: '我刚在《摊上捡个宝》里捡到宝了！',
+        //             //imageUrl: 'https://mmocgame.qpic.cn/wechatgame/J2tHF6veZrJbgTZeuiaAn5NFHvbm8AnrWnnV9rGmKjzGZUZloTQiawNhEs3HcbkoZv/0',
+        //             imageUrl: tempFilePath,
+        //             query: 'from=button',
+        //         });
+        //     },
+        //     fail(err:any) {
+        //         console.error('截图失败', err);
+        //     }
+        // });
+        //@ts-ignore
+        wx.shareAppMessage({
+            title: '我刚在《摊上捡个宝》里捡到宝了！',
+            imageUrl: 'https://mmocgame.qpic.cn/wechatgame/J2tHF6veZrJbgTZeuiaAn5NFHvbm8AnrWnnV9rGmKjzGZUZloTQiawNhEs3HcbkoZv/0',
+            query: 'from=button',
+        });
     }
 
     private onNextTurn(){
@@ -99,9 +137,11 @@ export default class ResultPanel extends BaseUI{
         // 达标且委托完成才使用强反馈，否则用轻量渐显，避免失败局也像奖励。
         if(isGreatResult){
             FaynUtils.PlayMusic("buff",false,1);
+            this.node.getChildByName("btn_ShareWar").getChildByName("txt").getComponent(cc.Label).string = "分享本轮战绩";
             this.playSmashResultContent();
         }else{
             FaynUtils.PlayMusic(finalProfit >= _target ? "click" : "error",false,1);
+            this.node.getChildByName("btn_ShareWar").getChildByName("txt").getComponent(cc.Label).string = "邀请好友助力";
             this.playFadeInResultContent();
         }
         this.showGuideTipOnce("result","最终收益 = 卖出总价 + 委托奖励 - 买入花费。达标后可进入下一摊。",isGreatResult ? 2.2 : 1.1);

@@ -52,6 +52,8 @@ export default class MainPanelRuntime{
     initAD(){
         Advertise.instance.InitChapingAd();
         Advertise.instance.InitVideoAd();
+        Advertise.instance.InitHengfu();
+        Advertise.instance.loadRecommend();
     }
 
     initItemInsCell(prefab: cc.Prefab,itemIns:ItemInstance,_parent:cc.Node){

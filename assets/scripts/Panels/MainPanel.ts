@@ -82,6 +82,7 @@ export default class MainPanel extends BaseUI {
         this.showGuideTipOnce("main_buy","先买入几件旧货，买入价越低，试错空间越大。",2);
 
         this.node.getChildByName("share").on(cc.Node.EventType.TOUCH_END,this.onShareBtnClick,this);
+        this.node.getChildByName("tuijian").on(cc.Node.EventType.TOUCH_END,this.onTuijianBtnClick,this);
     }
     public onShareBtnClick() {
         //@ts-ignore
@@ -89,10 +90,19 @@ export default class MainPanel extends BaseUI {
         //@ts-ignore
         wx.shareAppMessage({
             title: '我刚在《摊上捡个宝》里捡到宝了！',
-            // imageUrl: 'xxx',
+            imageUrl: 'https://mmocgame.qpic.cn/wechatgame/SUPteJsTQTnMic0ibpIp8QYnc6e3CR4KkHeYXuneYaVFK5ZvM7jmNZibuLzdNmfiaMaO/0',
             query: 'from=button',
         });
         this.addMoneyProcess(200);
+    }
+
+    onTuijianBtnClick(){
+        //@ts-ignore
+        if (typeof wx === 'undefined') return;
+        Advertise.instance.showRecommend();
+        setTimeout(()=>{
+            this.addMoneyProcess(50);
+        },1000)
     }
 
     onBackLaojie(){

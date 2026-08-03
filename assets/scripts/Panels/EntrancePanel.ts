@@ -1,3 +1,4 @@
+import { Advertise } from "../GameCodes/Advertise";
 import GameMain from "../GameMain";
 import { BaseUI } from "../UIManager/BaseUI";
 import { UIManager } from "../UIManager/UIManager";
@@ -26,6 +27,8 @@ export default class EntrancePanel extends BaseUI {
         this.btn_entryJiaoyiMode.on(cc.Node.EventType.TOUCH_END,this.onEnterJiaoyi,this)
         this.btn_cangpinMode.on(cc.Node.EventType.TOUCH_END,this.onEnterCangpin,this)
 
+        Advertise.instance.ShowHengfuAd();
+
         cc.tween(this.node.getChildByName("jiaoyi"))
             .repeatForever(
                 cc.tween().to(0.9,{scale:1.05})
@@ -47,6 +50,7 @@ export default class EntrancePanel extends BaseUI {
         //     ui.showTip("藏馆布置中,等展柜安好，再开门迎客", null, false, 1.5)
         // })
         //
+        Advertise.instance.HideHengfuAd();
         UIManager.getInstance().openUI(CangpinPanel, 1, (ui: CangpinPanel) => {
             ui.onShow();
         })
@@ -61,5 +65,9 @@ export default class EntrancePanel extends BaseUI {
 
     upgradeTotalMoney(){
         this.node.getChildByName("totalMoney").getChildByName("content").getComponent(cc.Label).string = "总预算: "+ String(GameMain.instance.mainRuntime.ctx.totalMoney);
+    }
+
+    onDestroy(): void {
+        Advertise.instance.HideHengfuAd();
     }
 }
