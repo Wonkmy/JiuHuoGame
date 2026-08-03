@@ -5,6 +5,7 @@ import GameMain from "../GameMain";
 import { FaynUtils } from "../Global/FaynUtils";
 import { BaseUI } from "../UIManager/BaseUI";
 import { UIManager } from "../UIManager/UIManager";
+import DialogPanel from "./DialogPanel";
 import HirePanel from "./HirePanel";
 import MainPanel from "./MainPanel";
 import TipPanel from "./TipPanel";
@@ -28,11 +29,11 @@ export default class ResultPanel extends BaseUI{
     override onShow(): void {
         this.btn_NextTurn.on(cc.Node.EventType.TOUCH_END,this.onNextTurn ,this);
         this.btn_OpenHire.on(cc.Node.EventType.TOUCH_END,this.onOpenHire ,this);
-        this.node.getChildByName("btn_ShareWar").on(cc.Node.EventType.TOUCH_END,this.onShareBtnClick,this);
+        // this.node.getChildByName("btn_ShareWar").on(cc.Node.EventType.TOUCH_END,this.onShareBtnClick,this);
         this.upgradeTotalMoney();
     }
 
-    onShareBtnClick() {
+    onShareBtnClick(num:number) {
         // //@ts-ignore
         // if (typeof wx === 'undefined') return;
         // let _canvas = cc.game.canvas;
@@ -63,7 +64,7 @@ export default class ResultPanel extends BaseUI{
         // });
         //@ts-ignore
         wx.shareAppMessage({
-            title: '我刚在《摊上捡个宝》里捡到宝了！',
+            title: `我刚在《摊上捡个宝》里一把就赚取了${num}的收益\n快来挑战吧！`,
             imageUrl: 'https://mmocgame.qpic.cn/wechatgame/J2tHF6veZrJbgTZeuiaAn5NFHvbm8AnrWnnV9rGmKjzGZUZloTQiawNhEs3HcbkoZv/0',
             query: 'from=button',
         });
@@ -135,7 +136,7 @@ export default class ResultPanel extends BaseUI{
         this.clearResultContent();
         this.showFinalResultContent(displayProfit,sellTotal,taskReward,buyTotal,finalProfit,taskFinished,taskText,resultText,false);
         // 达标且委托完成才使用强反馈，否则用轻量渐显，避免失败局也像奖励。
-        if(isGreatResult){
+        if(isGreatResult && displayProfit >= 300){
             FaynUtils.PlayMusic("buff",false,1);
             this.node.getChildByName("btn_ShareWar").getChildByName("txt").getComponent(cc.Label).string = "分享本轮战绩";
             this.playSmashResultContent();
@@ -169,6 +170,16 @@ export default class ResultPanel extends BaseUI{
 
     private showFinalResultContent(displayProfit:number,sellTotal:number,taskReward:number,buyTotal:number,finalProfit:number,taskFinished:boolean,taskText:string,resultText:string,enableButtons:boolean = true){
         this.node.getChildByName("res_tip").getComponent(cc.Label).string = `本轮交易总收益:\n`+String(displayProfit);
+        if (displayProfit >= 500) {
+            UIManager.getInstance().openUI(DialogPanel, 0, (ui: DialogPanel) => {
+                ui.onShow();
+                ui.setContent("恭喜您获得高额收益！是否分享给好友炫耀一下?\n分享可以额外获得50预算奖励!",() =>{
+                    this.onShareBtnClick(displayProfit);
+                    GameMain.instance.mainRuntime.ctx.addMoney(50);// 分享后奖励50预算
+                    UIManager.getInstance().closeUI(DialogPanel);
+                },false)
+            })
+        }
         if(this.profitFormulaLabel){
             let formulaText = "收益 = 卖出总价 " + sellTotal + " + 委托奖励 " + taskReward + " - 买入花费 " + buyTotal + "\n = " + finalProfit;
             if(finalProfit < 0){
