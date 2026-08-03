@@ -138,30 +138,27 @@ export default class TableEnt extends cc.Component {
     }
 
     private unlockProcess() {
-        try {
-            if (MainPanel.instance != null) {
-                if (GameMain.instance.mainRuntime.ctx.totalMoney >= ConstValue.UNLOCK_TABLE_COST) {
-                    MainPanel.instance.addMoneyProcess(-ConstValue.UNLOCK_TABLE_COST);
-                    UIManager.getInstance().openUI(TipPanel, 1, (ui: TipPanel) => {
-                        ui.onShow();
-                        ui.showTip("已解锁当前桌子", null)
-                    })
-                    this.isUnlock = true;
-                    this.unlockBtn.active = !this.isUnlock;
-                    this.putBtn.active = this.isUnlock;
-                    GameMain.instance.mainRuntime.ctx.unLockedTableIndex.push(this.ID)
-                    cc.sys.localStorage.setItem("unlocked_table_list",JSON.stringify(GameMain.instance.mainRuntime.ctx.unLockedTableIndex))
-                }
-                else {
-                    FaynUtils.PlayMusic("error", false, 1);
-                    UIManager.getInstance().openUI(TipPanel, 1, (ui: TipPanel) => {
-                        ui.onShow();
-                        ui.showTip("预算不够了\n`邀请鉴宝`可获得预算", null)
-                    })
-                }
-            }
-        } catch (error) {
-
+        if (GameMain.instance.mainRuntime.ctx.totalMoney >= ConstValue.UNLOCK_TABLE_COST) {
+            GameMain.instance.mainRuntime.ctx.addMoney(-ConstValue.UNLOCK_TABLE_COST);
+            CangpinPanel.instance.upgradeTotalMoney();
+            UIManager.getInstance().closeUI(DialogPanel);
+            UIManager.getInstance().openUI(TipPanel, 1, (ui: TipPanel) => {
+                ui.onShow();
+                ui.showTip("已解锁当前桌子", null)
+            })
+            this.isUnlock = true;
+            this.unlockBtn.active = !this.isUnlock;
+            this.putBtn.active = this.isUnlock;
+            GameMain.instance.mainRuntime.ctx.unLockedTableIndex.push(this.ID)
+            cc.sys.localStorage.setItem("unlocked_table_list", JSON.stringify(GameMain.instance.mainRuntime.ctx.unLockedTableIndex))
+        }
+        else {
+            FaynUtils.PlayMusic("error", false, 1);
+            UIManager.getInstance().openUI(TipPanel, 1, (ui: TipPanel) => {
+                ui.onShow();
+                ui.showTip("预算不够了\n`邀请鉴宝`可获得预算", null)
+                UIManager.getInstance().closeUI(DialogPanel);
+            })
         }
     }
 }

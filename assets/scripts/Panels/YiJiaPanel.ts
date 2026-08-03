@@ -215,21 +215,21 @@ export default class YiJiaPanel extends BaseUI {
         this.showSellResultTip(soldItem,noExpertPrice,expertBonus,finalPrice,curShouyi);
         // GameMain.instance.mainRuntime.ctx.totalMoney += finalPrice;
         GameMain.instance.mainRuntime.ctx.addMoney(finalPrice);
-        if (finalPrice >= 500) {
-            UIManager.getInstance().openUI(DialogPanel, 0, (ui: DialogPanel) => {
-                ui.onShow();
-                ui.setContent(`恭喜您获得${finalPrice}收益！是否炫耀一下?\n可以额外获得50预算奖励!`, () => {
-                    // @ts-ignore
-                    wx.shareAppMessage({
-                        title: `我刚刚一把就赚取了${finalPrice}的收益\n快来挑战吧！`,
-                        imageUrl: 'https://mmocgame.qpic.cn/wechatgame/J2tHF6veZrJbgTZeuiaAn5NFHvbm8AnrWnnV9rGmKjzGZUZloTQiawNhEs3HcbkoZv/0',
-                        query: 'from=button',
-                    });
-                    GameMain.instance.mainRuntime.ctx.addMoney(50);// 分享后奖励50预算
-                    UIManager.getInstance().closeUI(DialogPanel);
-                }, false)
-            })
-        }
+        // if (finalPrice >= 500) {
+        //     UIManager.getInstance().openUI(DialogPanel, 0, (ui: DialogPanel) => {
+        //         ui.onShow();
+        //         ui.setContent(`恭喜您获得${finalPrice}收益！是否炫耀一下?\n可以额外获得50预算奖励!`, () => {
+        //             // @ts-ignore
+        //             wx.shareAppMessage({
+        //                 title: `我刚刚一把就赚取了${finalPrice}的收益\n快来挑战吧！`,
+        //                 imageUrl: 'https://mmocgame.qpic.cn/wechatgame/J2tHF6veZrJbgTZeuiaAn5NFHvbm8AnrWnnV9rGmKjzGZUZloTQiawNhEs3HcbkoZv/0',
+        //                 query: 'from=button',
+        //             });
+        //             GameMain.instance.mainRuntime.ctx.addMoney(50);// 分享后奖励50预算
+        //             UIManager.getInstance().closeUI(DialogPanel);
+        //         }, false)
+        //     })
+        // }
         this.YijiaPrice += finalPrice;
         recordRoundTaskProgress(GameMain.instance.mainRuntime.ctx.curSelected);
         this.updateRoundTaskInfo();
