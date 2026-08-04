@@ -4,6 +4,7 @@ import { BaseUI } from "../UIManager/BaseUI";
 import { UIManager } from "../UIManager/UIManager";
 import CangpinPanel from "./CangpinPanel";
 import MainPanel from "./MainPanel";
+import RankPanel from "./RankPanel";
 import TipPanel from "./TipPanel";
 
 const {ccclass, property} = cc._decorator;
@@ -18,8 +19,30 @@ export default class EntrancePanel extends BaseUI {
     @property({type:cc.Node})
     btn_cangpinMode:cc.Node = null!;
 
+    rkSingleNode:cc.Node = null!;
+    rkTotalNode:cc.Node = null!;
+
     protected onLoad(): void {
         EntrancePanel.instance = this;
+        this.rkSingleNode = this.node.getChildByName("rksingle");
+        this.rkTotalNode = this.node.getChildByName("rktotal");
+
+        this.rkSingleNode.on(cc.Node.EventType.TOUCH_END,this.onOpenSingleRank,this)
+        this.rkTotalNode.on(cc.Node.EventType.TOUCH_END,this.onOpenTotalRank,this)
+    }
+
+    private onOpenSingleRank(){
+        UIManager.getInstance().openUI(RankPanel, 2, (ui: RankPanel) => {
+            ui.onShow();
+            ui.showRank("rksingle");
+        })
+    }
+
+    private onOpenTotalRank(){
+        UIManager.getInstance().openUI(RankPanel, 2, (ui: RankPanel) => {
+            ui.onShow();
+            ui.showRank("rktotal");
+        })
     }
 
     override onShow(): void {

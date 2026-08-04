@@ -170,6 +170,13 @@ export default class ResultPanel extends BaseUI{
 
     private showFinalResultContent(displayProfit:number,sellTotal:number,taskReward:number,buyTotal:number,finalProfit:number,taskFinished:boolean,taskText:string,resultText:string,enableButtons:boolean = true){
         this.node.getChildByName("res_tip").getComponent(cc.Label).string = `本轮交易总收益:\n`+String(displayProfit);
+
+        var historyMaxProfit = cc.sys.localStorage.getItem("max_single_profit") || 0;// 读取历史最高单局收益
+        historyMaxProfit = Number(historyMaxProfit);
+        if (displayProfit > historyMaxProfit){
+            cc.sys.localStorage.setItem("max_single_profit",String(displayProfit));// 保存新的历史最高单局收益
+            GameMain.instance.reportRanksingle(displayProfit)
+        }
         if (displayProfit >= 500) {
             UIManager.getInstance().openUI(DialogPanel, 0, (ui: DialogPanel) => {
                 ui.onShow();

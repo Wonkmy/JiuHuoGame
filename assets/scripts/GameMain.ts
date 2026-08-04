@@ -73,4 +73,25 @@ export default class GameMain extends cc.Component {
         // BGM只在进入游戏后播放一次，循环铺底，音量低于点击和反馈音效。
         FaynUtils.PlayMusic("marketbgm",true,0.35);
     }
+
+    public reportRanksingle(level: number) {
+        if (cc.sys.platform != cc.sys.WECHAT_GAME) {
+            return;
+        }
+
+        // @ts-ignore
+        wx.setUserCloudStorage({ //调用微信接口上报关卡等级信息，用于好友圈排行
+            KVDataList: [
+                { key: 'level', value: `${level}` }
+            ],
+
+            success: () => {
+                console.log('最高收益上报成功：' + level);
+            },
+
+            fail: (err: any) => {
+                console.error('上报失败：', err);
+            }
+        });
+    }
 }
