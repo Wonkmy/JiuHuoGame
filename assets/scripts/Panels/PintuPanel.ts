@@ -1,6 +1,7 @@
 import { ItemInstance } from "../GameCodes/Datas/GameData";
 import GameMain from "../GameMain";
 import { BaseUI } from "../UIManager/BaseUI";
+import { UIManager } from "../UIManager/UIManager";
 const { ccclass, property } = cc._decorator;
 
 @ccclass
@@ -12,6 +13,9 @@ export default class PintuPanel extends BaseUI {
 
     @property({ type: [cc.Node], tooltip: "按从左到右、从上到下拖入 9 个拼图格子节点" })
     tileNodes: cc.Node[] = [];
+
+    @property({type:cc.Node})
+    closeBtn:cc.Node = null!;
 
     @property({ type: cc.Label, tooltip: "倒计时文本，可不赋值" })
     timeLabel: cc.Label = null!;
@@ -32,7 +36,9 @@ export default class PintuPanel extends BaseUI {
     private readonly pieceSpriteName: string = "pintu_piece_sprite";
 
     override onShow(): void {
-
+        this.closeBtn.on(cc.Node.EventType.TOUCH_END, () => {
+            UIManager.getInstance().closeUI(PintuPanel);
+        }, this)
     }
 
     setResultSprite(itenInstance: ItemInstance) {
@@ -51,8 +57,11 @@ export default class PintuPanel extends BaseUI {
             if (this.autoStart) {
                 this.startGame();
             }
-
+            const source = this.puzzleSpriteFrame;
+            const rect = source.getRect();
             this.node.getChildByName("goods").getComponent(cc.Sprite).spriteFrame = spriteFrame;
+            this.node.width = rect.width;
+            this.node.height = rect.height;
         });
     }
 

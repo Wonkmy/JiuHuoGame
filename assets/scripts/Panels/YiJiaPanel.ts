@@ -291,7 +291,15 @@ export default class YiJiaPanel extends BaseUI {
     }
     private showMainItem(itemCellYj: ItemCellYJ){
         if(itemCellYj==null){
-            GameMain.instance.bundle.load("arts/items/" + GameMain.instance.mainRuntime.ctx.inventoryItemInstance[0].image, cc.SpriteFrame, (err, spriteFrame: cc.SpriteFrame) => {
+            let targetNoDisplayItem: ItemInstance | undefined = GameMain.instance.mainRuntime.ctx.inventoryItemInstance.find((i)=>!i.display);
+            // if(GameMain.instance.mainRuntime.ctx.inventoryItemInstance[0].display){
+            //     UIManager.getInstance().openUI(DialogPanel,1,(ui:DialogPanel)=>{
+            //         ui.onShow();
+            //         ui.setContent("当前货物正在展示中，无法进行鉴赏。",null,false);
+            //     })
+            //     return;
+            // }
+            GameMain.instance.bundle.load("arts/items/" + targetNoDisplayItem?.image, cc.SpriteFrame, (err, spriteFrame: cc.SpriteFrame) => {
                 if (err) {
                     console.error("load item spriteFrame error:", err);
                     return;
@@ -302,10 +310,17 @@ export default class YiJiaPanel extends BaseUI {
                     n.getComponent(ItemCellYJ).ISSelected = false;
                 }, this)
                 this.inventoryContainer.children[0].getComponent(ItemCellYJ).ISSelected = true;
-                GameMain.instance.mainRuntime.ctx.curSelected = GameMain.instance.mainRuntime.ctx.inventoryItemInstance[0];
-                this.node.getChildByName("estimateMoney").getComponent(cc.Label).string = "当前估值:" + String(GameMain.instance.mainRuntime.ctx.curSelected.estimate);
+                GameMain.instance.mainRuntime.ctx.curSelected = targetNoDisplayItem!;
+                this.node.getChildByName("estimateMoney").getComponent(cc.Label).string = "当前估值:" + String(GameMain.instance.mainRuntime.ctx.curSelected?.estimate);
             });
         }else{
+            if(itemCellYj.itemIns.display){
+                UIManager.getInstance().openUI(DialogPanel,1,(ui:DialogPanel)=>{
+                    ui.onShow();
+                    ui.setContent("当前货物正在展示中，无法进行鉴赏。",null,false);
+                })
+                return;
+            }
             if (this.main_item === null) {
                 this.main_item = this.node.getChildByName("main_item");
             }
@@ -315,7 +330,7 @@ export default class YiJiaPanel extends BaseUI {
                 n.getComponent(ItemCellYJ).ISSelected = false;
             }, this)
             itemCellYj.ISSelected = true;
-            this.node.getChildByName("estimateMoney").getComponent(cc.Label).string = "当前估值:" + String(GameMain.instance.mainRuntime.ctx.curSelected.estimate);
+            this.node.getChildByName("estimateMoney").getComponent(cc.Label).string = "当前估值:" + String(GameMain.instance.mainRuntime.ctx.curSelected?.estimate);
         }
     }
 

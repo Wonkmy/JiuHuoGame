@@ -38,7 +38,7 @@ export default class EntrancePanel extends BaseUI {
         this.rkSingleNode = this.node.getChildByName("rksingle");
         this.rkTotalNode = this.node.getChildByName("rktotal");
 
-        this.gongfangNode = this.node.getChildByName("scroll").getChildByName("Content").getChildByName("view").getChildByName("gongfang");
+        this.gongfangNode = this.node.getChildByName("scroll").getChildByName("view").getChildByName("content").getChildByName("gongfang");
 
         this.pintuNode = this.gongfangNode.getChildByName("smallgame").getChildByName("list").getChildByName("pintu");
 
@@ -77,6 +77,24 @@ export default class EntrancePanel extends BaseUI {
         this.btn_xiandingMode.on(cc.Node.EventType.TOUCH_END,this.onEnterXianding,this)
 
         Advertise.instance.ShowHengfuAd();
+
+        let hand = this.btn_entryJiaoyiMode.getChildByName("hand2");
+
+        cc.tween(hand)
+            .repeatForever(
+                cc.tween()
+                .to(0,{opacity:255})
+                .by(0.6,{scale:0.3},{easing:"sineInOut"})
+                .by(0.6,{scale:-0.3},{easing:"sineInOut"})
+                .by(0.6,{scale:0.3},{easing:"sineInOut"})
+                .by(0.6,{scale:-0.3},{easing:"sineInOut"})
+                .delay(0.5)
+                .call(()=>{
+                    hand.opacity = 0;
+                })
+                .delay(3.5)
+            )
+            .start()
 
         // cc.tween(this.btn_entryJiaoyiMode.parent)
         //     .repeatForever(

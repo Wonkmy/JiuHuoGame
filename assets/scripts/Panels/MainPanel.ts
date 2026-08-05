@@ -200,11 +200,21 @@ export default class MainPanel extends BaseUI {
                 ui.showTip("请购买至少一件老物件", null)
             })
         } else {
-            UIManager.getInstance().closeUI(MainPanel);
-            UIManager.getInstance().openUI(YiJiaPanel, 0, (ui: YiJiaPanel) => {
-                ui.buyTotolPrice = this.totalCostMoney;
-                ui.onShow();
-            })
+            var displayItems = GameMain.instance.mainRuntime.ctx.inventoryItemInstance.filter(item => !item.display);
+            if(displayItems.length <= 0){
+                UIManager.getInstance().openUI(DialogPanel, 0, (ui: DialogPanel) => {
+                    ui.onShow();
+                    ui.setContent("你所有的货物都在展示中，无法进行鉴赏。", ()=>{
+                        UIManager.getInstance().closeUI(DialogPanel);
+                    },false)
+                })
+            }else{
+                UIManager.getInstance().closeUI(MainPanel);
+                UIManager.getInstance().openUI(YiJiaPanel, 0, (ui: YiJiaPanel) => {
+                    ui.buyTotolPrice = this.totalCostMoney;
+                    ui.onShow();
+                })
+            }
         }
     }
 
