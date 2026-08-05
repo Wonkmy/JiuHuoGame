@@ -204,6 +204,46 @@ export function pickExperts(count: number, ownedExperts: ExpertDef[]): ExpertDef
         .slice(0, count);
 }
 
+// 通过查看rarity的值是否超过某个阈值，然后从库中直接给一个对应的ItemInstance
+export function createItemByRarityValue(rarityValue:number,excludeIds:string[] = []):ItemInstance{
+    const targetRarity = getTargetRarityByValue(rarityValue);
+    const excluded = new Set(excludeIds);
+
+    let pool = GameMain.instance.ITEM_DEFS.filter(item => {
+        return !excluded.has(item.id) && item.rarity === targetRarity;
+    });
+
+    if(pool.length <= 0){
+        // 没有完全匹配的稀有度时，向下找一档，避免小游戏奖励为空。
+        pool = GameMain.instance.ITEM_DEFS.filter(item => {
+            return !excluded.has(item.id) && item.rarity <= targetRarity;
+        });
+    }
+
+    if(pool.length <= 0){
+        pool = GameMain.instance.ITEM_DEFS.filter(item => !excluded.has(item.id));
+    }
+
+    const def = pool[Math.floor(Math.random() * pool.length)];
+    return createItem(def,GameMain.instance.mainRuntime.ctx.getUid());
+}
+
+function getTargetRarityByValue(rarityValue:number):number{
+    const value = Math.max(1,Math.floor(Number(rarityValue) || 1));
+
+    // 直接传 1-5 时，按物品配置里的 rarity 使用。
+    if(value <= 5){
+        return value;
+    }
+
+    // 传入 0-100 这类小游戏评分时，按阈值换算成物品稀有度。
+    if(value >= 90)return 5;
+    if(value >= 75)return 4;
+    if(value >= 55)return 3;
+    if(value >= 30)return 2;
+    return 1;
+}
+
 export function createMarketItems(nextUid: () => string,round: number = 1,excludeIds: string[] = []): ItemInstance[] {
     const defs = pickMarketDefsByRound(round, 12,excludeIds);
     return defs.map(def => createItem(def, nextUid()));

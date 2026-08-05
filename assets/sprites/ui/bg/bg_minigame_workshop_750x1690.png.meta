@@ -1,0 +1,38 @@
+{
+  "ver": "2.3.7",
+  "uuid": "7892de31-1806-4f86-8f73-64acc74b0a85",
+  "importer": "texture",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "premultiplyAlpha": false,
+  "genMipmaps": false,
+  "packable": true,
+  "width": 750,
+  "height": 1690,
+  "platformSettings": {},
+  "subMetas": {
+    "bg_minigame_workshop_750x1690": {
+      "ver": "1.0.6",
+      "uuid": "91cf40d1-3871-4960-91b8-af99424d2da2",
+      "importer": "sprite-frame",
+      "rawTextureUuid": "7892de31-1806-4f86-8f73-64acc74b0a85",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0,
+      "offsetY": 0,
+      "trimX": 0,
+      "trimY": 0,
+      "width": 750,
+      "height": 1690,
+      "rawWidth": 750,
+      "rawHeight": 1690,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}

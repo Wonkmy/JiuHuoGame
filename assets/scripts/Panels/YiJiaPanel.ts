@@ -70,6 +70,7 @@ export default class YiJiaPanel extends BaseUI {
         }
         for (let i = 0; i < GameMain.instance.mainRuntime.ctx.inventoryItemInstance.length; i++) {
             const itemIns: ItemInstance = GameMain.instance.mainRuntime.ctx.inventoryItemInstance[i];
+            if(itemIns.display)continue;
             GameMain.instance.bundle.load("prefab/itemCellYJ", cc.Prefab, (err, prefab: cc.Prefab) => {
                 if (err) {
                     console.error("load itemCell prefab error:", err);

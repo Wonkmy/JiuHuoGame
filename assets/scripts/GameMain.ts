@@ -82,7 +82,7 @@ export default class GameMain extends cc.Component {
         // @ts-ignore
         wx.setUserCloudStorage({ //调用微信接口上报关卡等级信息，用于好友圈排行
             KVDataList: [
-                { key: 'level', value: `${level}` }
+                { key: 'rksingle', value: `${level}` }
             ],
 
             success: () => {

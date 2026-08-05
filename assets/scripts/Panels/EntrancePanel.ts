@@ -4,8 +4,10 @@ import { BaseUI } from "../UIManager/BaseUI";
 import { UIManager } from "../UIManager/UIManager";
 import CangpinPanel from "./CangpinPanel";
 import MainPanel from "./MainPanel";
+import PintuPanel from "./PintuPanel";
 import RankPanel from "./RankPanel";
 import TipPanel from "./TipPanel";
+import { createMarketItems,createItemByRarityValue } from "../GameCodes/GameRules";
 
 const {ccclass, property} = cc._decorator;
 
@@ -19,16 +21,39 @@ export default class EntrancePanel extends BaseUI {
     @property({type:cc.Node})
     btn_cangpinMode:cc.Node = null!;
 
+    @property({type:cc.Node})
+    btn_xiandingMode:cc.Node = null!;
+
+    gongfangNode:cc.Node = null!;
+
+    pintuNode:cc.Node = null!;
+
     rkSingleNode:cc.Node = null!;
     rkTotalNode:cc.Node = null!;
+
+    // EntrancePanel/scroll/Content/view/gongfang/smallgame/list/pintu
 
     protected onLoad(): void {
         EntrancePanel.instance = this;
         this.rkSingleNode = this.node.getChildByName("rksingle");
         this.rkTotalNode = this.node.getChildByName("rktotal");
 
+        this.gongfangNode = this.node.getChildByName("scroll").getChildByName("Content").getChildByName("view").getChildByName("gongfang");
+
+        this.pintuNode = this.gongfangNode.getChildByName("smallgame").getChildByName("list").getChildByName("pintu");
+
         this.rkSingleNode.on(cc.Node.EventType.TOUCH_END,this.onOpenSingleRank,this)
         this.rkTotalNode.on(cc.Node.EventType.TOUCH_END,this.onOpenTotalRank,this)
+
+        this.pintuNode.on(cc.Node.EventType.TOUCH_END,this.onOpenPintu,this)
+    }
+
+    private onOpenPintu(){
+        UIManager.getInstance().openUI(PintuPanel, 1, (ui: PintuPanel) => {
+            ui.onShow();
+            let itemInstance = createItemByRarityValue(2)
+            ui.setResultSprite(itemInstance);
+        })
     }
 
     private onOpenSingleRank(){
@@ -49,22 +74,23 @@ export default class EntrancePanel extends BaseUI {
         this.upgradeTotalMoney();
         this.btn_entryJiaoyiMode.on(cc.Node.EventType.TOUCH_END,this.onEnterJiaoyi,this)
         this.btn_cangpinMode.on(cc.Node.EventType.TOUCH_END,this.onEnterCangpin,this)
+        this.btn_xiandingMode.on(cc.Node.EventType.TOUCH_END,this.onEnterXianding,this)
 
         Advertise.instance.ShowHengfuAd();
 
-        cc.tween(this.node.getChildByName("jiaoyi"))
-            .repeatForever(
-                cc.tween().to(0.9,{scale:1.05})
-                    .to(0.9,{scale:1.0})
-            )
-            .start()
+        // cc.tween(this.btn_entryJiaoyiMode.parent)
+        //     .repeatForever(
+        //         cc.tween().to(0.35,{scale:1.05})
+        //             .to(0.9,{scale:1.0})
+        //     )
+        //     .start()
 
-            cc.tween(this.node.getChildByName("cangguan"))
-            .repeatForever(
-                cc.tween().to(0.85,{scale:1.05},{easing:"outBack"})
-                    .to(0.85,{scale:1.0})
-            )
-            .start()
+            // cc.tween(this.node.getChildByName("cangguan"))
+            // .repeatForever(
+            //     cc.tween().to(0.85,{scale:1.05},{easing:"outBack"})
+            //         .to(0.85,{scale:1.0})
+            // )
+            // .start()
     }
     // 打开藏品馆馆界面
     private onEnterCangpin(){
@@ -83,6 +109,13 @@ export default class EntrancePanel extends BaseUI {
         UIManager.getInstance().closeUI(EntrancePanel);
         UIManager.getInstance().openUI(MainPanel, 0, (ui: MainPanel) => {
             ui.onShow();
+        })
+    }
+
+    private onEnterXianding(){
+        UIManager.getInstance().openUI(TipPanel, 1, (ui: TipPanel) => {
+            ui.onShow();
+            ui.showTip("敬请期待~", null, false, 1.5)
         })
     }
 

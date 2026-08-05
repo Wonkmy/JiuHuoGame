@@ -99,7 +99,9 @@ export default class TableEnt extends cc.Component {
             // 解锁当前桌子
             UIManager.getInstance().openUI(DialogPanel, 1, (ui: DialogPanel) => {
                 ui.onShow();
-                ui.setContent(`是否花费${ConstValue.UNLOCK_TABLE_COST}预算\n解锁此展桌?`, this.unlockProcess, false)
+                ui.setContent(`是否花费${ConstValue.UNLOCK_TABLE_COST}预算\n解锁此展桌?`, ()=>{
+                    this.unlockProcess();
+                }, false)
             })
         }
     }
@@ -147,6 +149,7 @@ export default class TableEnt extends cc.Component {
                 ui.showTip("已解锁当前桌子", null)
             })
             this.isUnlock = true;
+
             this.unlockBtn.active = !this.isUnlock;
             this.putBtn.active = this.isUnlock;
             GameMain.instance.mainRuntime.ctx.unLockedTableIndex.push(this.ID)
