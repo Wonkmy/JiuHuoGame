@@ -32,4 +32,8 @@ export default class ExpertCell extends cc.Component {
         FaynUtils.PlayMusic("btnclick",false,1);
         cc.game.emit("on_use_expert", this.expertDef);
     }
+
+    protected onDestroy(): void {
+        this.btnUse.off(cc.Node.EventType.TOUCH_END,this.onClickUseExpert,this)
+    }
 }

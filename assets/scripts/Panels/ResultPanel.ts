@@ -93,8 +93,6 @@ export default class ResultPanel extends BaseUI{
         FaynUtils.PlayMusic("btnclick",false,1);
         UIManager.getInstance().openUI(HirePanel, 0, (ui: HirePanel) => {
             ui.onShow();
-            let hirePanelData:ExpertDef[] = pickExperts(3, GameMain.instance.mainRuntime.ctx.ownedExperts);
-            ui.setContent(hirePanelData);
         })
         // 这里可能是一个盈利点，看一次广告后，可以再次雇佣一个
         this.btn_OpenHire.getComponent(cc.Button).interactable = false;

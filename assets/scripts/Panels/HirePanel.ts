@@ -7,6 +7,7 @@ import ExpertCell from "../UIManager/ExpertCell";
 import { UIManager } from "../UIManager/UIManager";
 import MainPanel from "./MainPanel";
 import ResultPanel from "./ResultPanel";
+import { pickExperts } from "../GameCodes/GameRules";
 
 const {ccclass, property} = cc._decorator;
 
@@ -17,9 +18,17 @@ export default class HirePanel extends BaseUI {
     @property({type: cc.Node})
     list_container: cc.Node = null!;
 
+    @property({type: cc.Node})
+    reroll: cc.Node = null!;
+
+    hirePanelData:ExpertDef[] = []
+
     override onShow(): void {
         cc.game.on("on_use_expert", this.onUseExpert);
         Advertise.instance.ShowHengfuAd();
+        this.refreshNewHireData();
+
+        this.reroll.on(cc.Node.EventType.TOUCH_END,this.refreshNewHireData,this)
     }
 
     private onUseExpert(expertDef: ExpertDef) {
@@ -29,7 +38,8 @@ export default class HirePanel extends BaseUI {
         UIManager.getInstance().closeUI(HirePanel);
     }
 
-    setContent(hirePanelData:ExpertDef[]){
+    private setContent(hirePanelData:ExpertDef[]){
+        this.list_container.removeAllChildren();
         for (let i = 0; i < 3; i++) {
             const hireDef: ExpertDef = hirePanelData[i];
             GameMain.instance.bundle.load("prefab/ExpertCell", cc.Prefab, (err, prefab: cc.Prefab) => {
@@ -42,6 +52,11 @@ export default class HirePanel extends BaseUI {
                 this.list_container.addChild(expertCell);
             })
         }
+    }
+
+    private refreshNewHireData(){
+        this.hirePanelData = pickExperts(3, GameMain.instance.mainRuntime.ctx.ownedExperts);
+        this.setContent(this.hirePanelData);
     }
 
     onDestroy(): void {

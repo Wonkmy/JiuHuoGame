@@ -8,6 +8,7 @@ import PintuPanel from "./PintuPanel";
 import RankPanel from "./RankPanel";
 import TipPanel from "./TipPanel";
 import { createMarketItems,createItemByRarityValue } from "../GameCodes/GameRules";
+import ZhenjiaPanel from "./ZhenjiaPanel";
 
 const {ccclass, property} = cc._decorator;
 
@@ -27,6 +28,7 @@ export default class EntrancePanel extends BaseUI {
     gongfangNode:cc.Node = null!;
 
     pintuNode:cc.Node = null!;
+    zhenjiaNode:cc.Node = null!;
 
     rkSingleNode:cc.Node = null!;
     rkTotalNode:cc.Node = null!;
@@ -41,11 +43,13 @@ export default class EntrancePanel extends BaseUI {
         this.gongfangNode = this.node.getChildByName("scroll").getChildByName("view").getChildByName("content").getChildByName("gongfang");
 
         this.pintuNode = this.gongfangNode.getChildByName("smallgame").getChildByName("list").getChildByName("pintu");
+        this.zhenjiaNode = this.gongfangNode.getChildByName("smallgame").getChildByName("list").getChildByName("zhenjia");
 
         this.rkSingleNode.on(cc.Node.EventType.TOUCH_END,this.onOpenSingleRank,this)
         this.rkTotalNode.on(cc.Node.EventType.TOUCH_END,this.onOpenTotalRank,this)
 
         this.pintuNode.on(cc.Node.EventType.TOUCH_END,this.onOpenPintu,this)
+        this.zhenjiaNode.on(cc.Node.EventType.TOUCH_END,this.onOpenZhenjia,this)
     }
 
     private onOpenPintu(){
@@ -54,6 +58,15 @@ export default class EntrancePanel extends BaseUI {
             let excludeIds = GameMain.instance.mainRuntime.ctx.inventoryItemInstance.map(item => item.id);
             let itemInstance = createItemByRarityValue(2,excludeIds);
             ui.setResultSprite(itemInstance);
+        })
+    }
+
+    private onOpenZhenjia(){
+        UIManager.getInstance().openUI(ZhenjiaPanel, 1, (ui: ZhenjiaPanel) => {
+            ui.onShow();
+            let excludeIds = GameMain.instance.mainRuntime.ctx.inventoryItemInstance.map(item => item.id);
+            let itemInstance = createItemByRarityValue(2,excludeIds);
+            ui.setGoods(itemInstance);
         })
     }
 
