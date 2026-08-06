@@ -51,7 +51,8 @@ export default class EntrancePanel extends BaseUI {
     private onOpenPintu(){
         UIManager.getInstance().openUI(PintuPanel, 1, (ui: PintuPanel) => {
             ui.onShow();
-            let itemInstance = createItemByRarityValue(2)
+            let excludeIds = GameMain.instance.mainRuntime.ctx.inventoryItemInstance.map(item => item.id);
+            let itemInstance = createItemByRarityValue(2,excludeIds);
             ui.setResultSprite(itemInstance);
         })
     }
@@ -117,6 +118,7 @@ export default class EntrancePanel extends BaseUI {
         //     ui.showTip("藏馆布置中,等展柜安好，再开门迎客", null, false, 1.5)
         // })
         //
+        UIManager.getInstance().closeUI(EntrancePanel);
         Advertise.instance.HideHengfuAd();
         UIManager.getInstance().openUI(CangpinPanel, 1, (ui: CangpinPanel) => {
             ui.onShow();

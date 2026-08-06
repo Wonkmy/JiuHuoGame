@@ -2,6 +2,7 @@ import { ItemInstance } from "../GameCodes/Datas/GameData";
 import GameMain from "../GameMain";
 import { BaseUI } from "../UIManager/BaseUI";
 import { UIManager } from "../UIManager/UIManager";
+import DialogPanel from "./DialogPanel";
 const { ccclass, property } = cc._decorator;
 
 @ccclass
@@ -35,6 +36,8 @@ export default class PintuPanel extends BaseUI {
     private playing: boolean = false;
     private readonly pieceSpriteName: string = "pintu_piece_sprite";
 
+    itemInstance:ItemInstance = null!;
+
     override onShow(): void {
         this.closeBtn.on(cc.Node.EventType.TOUCH_END, () => {
             UIManager.getInstance().closeUI(PintuPanel);
@@ -46,6 +49,7 @@ export default class PintuPanel extends BaseUI {
             console.warn("PintuPanel.setResultSprite: itenInstance is null");
             return;
         }
+        this.itemInstance = itenInstance;
 
         GameMain.instance.bundle.load("arts/items/"+itenInstance.image, cc.SpriteFrame, (err, spriteFrame: cc.SpriteFrame) => {
             if (err) {
@@ -285,9 +289,19 @@ export default class PintuPanel extends BaseUI {
         this.setResultText("复原成功");
 
         // 成功后如果外部通过 tag 传了回调，就交给外部发放旧物奖励。
-        if (this.tag && this.tag.onSuccess) {
-            this.tag.onSuccess();
-        }
+        // if (this.tag && this.tag.onSuccess) {
+        //     this.tag.onSuccess();
+        // }
+        UIManager.getInstance().openUI(DialogPanel, 2, (ui: DialogPanel) => {
+            ui.onShow();
+            ui.setContent(`恭喜你获得${this.itemInstance.name}`, () => {
+                this.itemInstance.isReward = true;
+                GameMain.instance.mainRuntime.ctx.inventoryItemInstance.push(this.itemInstance);
+                cc.sys.localStorage.setItem("bag_data",JSON.stringify(GameMain.instance.mainRuntime.ctx.inventoryItemInstance));
+                UIManager.getInstance().closeUI(DialogPanel);
+                UIManager.getInstance().closeUI(PintuPanel);
+            }, false)
+        })
     }
 
     private gameFail() {
@@ -303,7 +317,7 @@ export default class PintuPanel extends BaseUI {
 
     private refreshTimeLabel() {
         if (this.timeLabel) {
-            this.timeLabel.string = String(this.leftTime);
+            this.timeLabel.string = String(this.leftTime) + "秒";
         }
     }
 

@@ -43,7 +43,11 @@ export default class ItemCellYJ extends cc.Component {
             let sprite: cc.Sprite = this.node.getChildByName("view").getComponent(cc.Sprite);
             sprite.spriteFrame = spriteFrame;
         })
-        this.node.getChildByName("buyPrice").getComponent(cc.Label).string = "购买价:" + String(_itemIns.buyPrice);
+        if(_itemIns.isReward){
+            this.node.getChildByName("buyPrice").getComponent(cc.Label).string = "奖励获得" ;
+        }else{
+            this.node.getChildByName("buyPrice").getComponent(cc.Label).string = "购买价:" + String(_itemIns.buyPrice);
+        }
         this.node.getChildByName("item_name").getComponent(cc.Label).string = _itemIns.name;
         this.node.getChildByName("display").active = this.itemIns.display;
         if(readyDisplay == false){

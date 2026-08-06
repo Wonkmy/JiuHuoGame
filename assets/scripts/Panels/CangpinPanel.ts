@@ -63,6 +63,9 @@ export default class CangpinPanel extends BaseUI {
             UIManager.getInstance().openUI(DialogPanel,1,(ui:DialogPanel)=>{
                 ui.onShow();
                 ui.setContent("你的背包里没有任何藏品\n去交易行购买一些吧",()=>{
+                    UIManager.getInstance().openUI(EntrancePanel, 0, (ui: EntrancePanel) => {
+                        ui.onShow();
+                    })
                     UIManager.getInstance().closeUI(CangpinPanel);
                     UIManager.getInstance().closeUI(DialogPanel);
                 },false)
@@ -166,7 +169,11 @@ export default class CangpinPanel extends BaseUI {
             const table = this.tables[i];
             table.disposeAllMoneys();
         }
-        EntrancePanel.instance.upgradeTotalMoney();
+
+        UIManager.getInstance().openUI(EntrancePanel, 0, (ui: EntrancePanel) => {
+            ui.onShow();
+        })
+
         UIManager.getInstance().closeUI(CangpinPanel);
     }
 }

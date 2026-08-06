@@ -36,6 +36,7 @@ export interface ItemInstance extends ItemDef {
     repaired: boolean; // 是否已经修复过，避免重复修复
     sold: boolean; // 是否已经卖出或上拍成交
     display:boolean;// 是否正在藏品馆展览
+    isReward:boolean;// 是否是奖励渠道获得的
 }
 
 // 专家效果类型

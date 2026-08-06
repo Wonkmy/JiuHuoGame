@@ -8,6 +8,7 @@ import MainPanel from "../Panels/MainPanel";
 import TipPanel from "../Panels/TipPanel";
 import { UIManager } from "../UIManager/UIManager";
 import { ItemInstance } from "./Datas/GameData";
+import { TableInfoData } from "./GameRules";
 
 const {ccclass, property} = cc._decorator;
 
@@ -40,13 +41,20 @@ export default class TableEnt extends cc.Component {
         }
         this.putBtn.on(cc.Node.EventType.TOUCH_END,this.onPut,this)
         this.unlockBtn.on(cc.Node.EventType.TOUCH_END,this.onUnlockTable,this);
+        this.goodsView.node.on(cc.Node.EventType.TOUCH_END,()=>{
+            if(this.haveGoods){
+                this.haveGoods = false;
+                this.goodsView.spriteFrame = null!;
+                this.onTakeBackGoods(this.ID);// 拿回参展物品
+            }
+        },this)
     }
 
     private onPut(){
         // 放置背包中的货物进行展览
         if (this.isUnlock == true) {
             if (this.haveGoods == false) {
-                UIManager.getInstance().openUI(BagPanel, 1, (ui: BagPanel) => {
+                UIManager.getInstance().openUI(BagPanel, 2, (ui: BagPanel) => {
                     ui.onShow();
                     ui.setInventoryData("bag", true)
                     GameMain.instance.mainRuntime.ctx.curSelectedTableIndex = this.ID;
@@ -106,6 +114,25 @@ export default class TableEnt extends cc.Component {
         }
     }
 
+    onTakeBackGoods(tableIndex:number){
+        const tdict = GameMain.instance.mainRuntime.ctx.tableInfoDataDict.find(t => t.tableIndex === tableIndex);
+        if(tdict){
+            var n = GameMain.instance.mainRuntime.ctx.tableInfoDataDict.indexOf(tdict);
+            GameMain.instance.mainRuntime.ctx.tableInfoDataDict.splice(n,1);
+            cc.sys.localStorage.setItem("tableInfoDataDict",JSON.stringify(GameMain.instance.mainRuntime.ctx.tableInfoDataDict))
+        }
+        const item = GameMain.instance.mainRuntime.ctx.inventoryItemInstance.find(i => i.uid === tdict?.itemData.uid);
+        if(item){
+            item.display = false;
+            cc.sys.localStorage.setItem("bag_data",JSON.stringify(GameMain.instance.mainRuntime.ctx.inventoryItemInstance));
+            this.putBtn.active = true;
+            UIManager.getInstance().openUI(TipPanel, 1, (ui: TipPanel) => {
+                ui.onShow();
+                ui.showTip(`将${item.name} 拿回背包`, null)
+            })
+        }
+    }
+
     onDisplayGoods(itemData:ItemInstance){
         if(this.isUnlock == true){
             GameMain.instance.bundle.load("arts/items/" + itemData.image, cc.SpriteFrame, (err, spriteFrame: cc.SpriteFrame) => {
@@ -131,7 +158,6 @@ export default class TableEnt extends cc.Component {
                     }
                 )
                 cc.sys.localStorage.setItem("tableInfoDataDict",JSON.stringify(GameMain.instance.mainRuntime.ctx.tableInfoDataDict))
-
                 let ii = GameMain.instance.mainRuntime.ctx.inventoryItemInstance.indexOf(itemData)
                 GameMain.instance.mainRuntime.ctx.inventoryItemInstance[ii].display = true;
                 cc.sys.localStorage.setItem("bag_data",JSON.stringify(GameMain.instance.mainRuntime.ctx.inventoryItemInstance))
