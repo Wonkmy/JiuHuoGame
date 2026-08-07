@@ -4,7 +4,6 @@ import MainPanelRuntime from "./Panels/MainPanelRuntime";
 import { FaynUtils } from "./Global/FaynUtils";
 import TipPanel from "./Panels/TipPanel";
 import { UIManager } from "./UIManager/UIManager";
-import WechatManager from "./Net/Login/WechatAuth";
 
 
 declare const wx: any;
@@ -25,6 +24,8 @@ export default class GameMain extends cc.Component {
     bundle:cc.AssetManager.Bundle = null!;
     private marketBgmStarted:boolean = false;
 
+    private noAdEndTime: number = 0;
+
     protected onLoad(): void {
         cc.director.getCollisionManager().enabled=true;
         cc.director.getPhysicsManager().enabled = true;
@@ -32,8 +33,6 @@ export default class GameMain extends cc.Component {
         this.mainRuntime = new MainPanelRuntime();
         this.ITEM_DEFS = this.gameConfig.json["items"];
         this.EXPERT_DEFS = this.gameConfig.json["experts"];
-
-        this.login()
 
         // if(CC_DEBUG){
         //     cc.assetManager.loadBundle("jiuhuoArt",null!,(err,_bundle)=>{
@@ -59,59 +58,16 @@ export default class GameMain extends cc.Component {
             })
     }
 
-    async login() {
-        try {
-            // 检查本地是否有用户信息
-            const localOpenid = wx.getStorageSync('openid');
-
-            if (localOpenid) {
-                // 本地有缓存，直接获取最新分数
-                const userData = await WechatManager.getUserScore(localOpenid);
-                console.log('用户已登录，当前分数：', userData.score);
-            } else {
-                // 首次登录
-                const userData = await WechatManager.loginAndGetScore();
-                console.log('首次登录，初始分数：', userData.score);
-                // 可选：获取用户头像昵称（需要用户点击授权）
-                this.getUserProfile();
-            }
-        } catch (error) {
-            console.error('登录失败：', error);
-        }
+    public openNoAdForMinutes(minutes: number = 30) {
+        this.noAdEndTime = Date.now() + minutes * 60 * 1000;
     }
 
-    // 游戏结束时更新分数
-    async gameOver(finalScore: number) {
-        try {
-            const newScore = await WechatManager.updateScore(finalScore);
-            console.log('分数已更新：', newScore);
-        } catch (error) {
-            console.error('更新分数失败：', error);
-        }
+    public isNoAdActive(): boolean {
+        return Date.now() < this.noAdEndTime;
     }
-
-    async showRank() {
-        try {
-            const rankData = await WechatManager.getRank();
-            return rankData;
-        } catch (error) {
-            console.error('获取排行榜失败：', error);
-        }
-    }
-
-    // 获取用户信息（需要用户点击触发）
-    getUserProfile() {
-        wx.getUserProfile({
-            desc: '用于完善个人资料',
-            success: async (res:any) => {
-                const { nickName, avatarUrl } = res.userInfo;
-                await WechatManager.updateUserInfo(nickName, avatarUrl);
-                console.log('用户信息已更新');
-            },
-            fail: (err:any) => {
-                console.log('用户拒绝授权');
-            }
-        });
+    public getNoAdLeftSeconds(): number {
+        if (!this.isNoAdActive()) return 0;
+        return Math.ceil((this.noAdEndTime - Date.now()) / 1000);
     }
 
     gameLoader(){

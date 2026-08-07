@@ -8,6 +8,7 @@ import { UIManager } from "../UIManager/UIManager";
 import MainPanel from "./MainPanel";
 import ResultPanel from "./ResultPanel";
 import { pickExperts } from "../GameCodes/GameRules";
+import DialogPanel from "./DialogPanel";
 
 const {ccclass, property} = cc._decorator;
 
@@ -28,7 +29,19 @@ export default class HirePanel extends BaseUI {
         Advertise.instance.ShowHengfuAd();
         this.refreshNewHireData();
 
-        this.reroll.on(cc.Node.EventType.TOUCH_END,this.refreshNewHireData,this)
+        this.reroll.on(cc.Node.EventType.TOUCH_END,()=>{
+            UIManager.getInstance().openUI(DialogPanel, 1, (ui: DialogPanel) => {
+                ui.onShow();
+                ui.setContent("是否重新结识一位顾问?", () => {
+                    UIManager.getInstance().closeUI(DialogPanel);
+                    Advertise.instance.ShowVideoAd((res: number) => {
+                        if (res === 1) {
+                            this.refreshNewHireData()
+                        }
+                    })
+                }, true)
+            })
+        },this)
     }
 
     private onUseExpert(expertDef: ExpertDef) {

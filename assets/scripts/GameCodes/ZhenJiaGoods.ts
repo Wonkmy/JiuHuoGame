@@ -9,7 +9,7 @@ const {ccclass, property} = cc._decorator;
 export default class ZhenJiaGoods extends cc.Component {
     _material:cc.Material = null!;
     _sprite:cc.Sprite = null!;
-    private _isSelected: boolean = false;
+    _isSelected: boolean = false;
 
     _itemInstance:ItemInstance = null!;
     ID:number  = 0;
@@ -40,15 +40,11 @@ export default class ZhenJiaGoods extends cc.Component {
     private onTapSelf(){
         FaynUtils.PlayMusic("bullet",false,1);
         ZhenjiaPanel.instance.hideAllGoodsSelectedIcon();
-        if(this._isSelected){
-            this._isSelected  = false;
-            ZhenjiaPanel.instance.curSelectedGoodsIndex = -1;
-        }else{
-            this._isSelected  = true;
-            ZhenjiaPanel.instance.curSelectedGoodsIndex = this.ID;
-            this.node.getChildByName("num").active = true;
+        ZhenjiaPanel.instance.refreshBoss_dialog();
+        this._isSelected = true;
+        ZhenjiaPanel.instance.curSelectedGoodsIndex = this.ID;
+        this.node.getChildByName("num").active = true;
 
-            ZhenjiaPanel.instance.showCost(this.finalPrice)
-        }
+        ZhenjiaPanel.instance.showCost(this.finalPrice)
     }
 }

@@ -1,0 +1,38 @@
+{
+  "ver": "2.3.7",
+  "uuid": "81bd0000-e033-4dfd-9e4c-c3d754c5be2d",
+  "importer": "texture",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "premultiplyAlpha": false,
+  "genMipmaps": false,
+  "packable": true,
+  "width": 88,
+  "height": 96,
+  "platformSettings": {},
+  "subMetas": {
+    "icon_workshop_authenticate_button_88x96": {
+      "ver": "1.0.6",
+      "uuid": "17d03de1-783d-4fe7-a122-e8a44cd39ea1",
+      "importer": "sprite-frame",
+      "rawTextureUuid": "81bd0000-e033-4dfd-9e4c-c3d754c5be2d",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0,
+      "offsetY": 0.5,
+      "trimX": 4,
+      "trimY": 6,
+      "width": 80,
+      "height": 83,
+      "rawWidth": 88,
+      "rawHeight": 96,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}

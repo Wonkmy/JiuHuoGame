@@ -12,6 +12,7 @@ import GameMain from "../GameMain";
 import { BaseUI } from "../UIManager/BaseUI";
 import { UIManager } from "../UIManager/UIManager";
 import DialogPanel from "./DialogPanel";
+import TipPanel from "./TipPanel";
 
 const {ccclass, property} = cc._decorator;
 
@@ -29,6 +30,12 @@ export default class ZhenjiaPanel extends BaseUI {
 
     curSelectedGoodsIndex:number = -1;
 
+    bossVoice = [
+        "~~~不要犹豫了，迅速拿下吧",
+        "~~~犹犹豫豫的，果断一点",
+        "~~~眼光真不错，这可是真货啊"
+    ]
+
     protected onLoad(): void {
         ZhenjiaPanel.instance = this;
     }
@@ -38,17 +45,42 @@ export default class ZhenjiaPanel extends BaseUI {
             UIManager.getInstance().closeUI(ZhenjiaPanel);
         }, this)
 
+        let r = Math.random();
+        if (r < 0.5) {
+            Advertise.instance.ShowChapingAd();
+        }
+
         this.hideAllGoodsSelectedIcon();
         this.upgradeTotalMoney();
         this.node.getChildByName("btn_buy").on(cc.Node.EventType.TOUCH_END,this.onBuy ,this)
     }
 
+    refreshBoss_dialog(){
+        let index = Math.floor(Math.random() * this.bossVoice.length);
+        let str = this.bossVoice[index];
+        cc.tween(this.node.getChildByName("boss_dialog"))
+            .to(0.12,{scale:1.2})
+            .to(0.12,{scale:1.0})
+            .to(0.12,{scale:1.2})
+            .to(0.12,{scale:1.0})
+            .start()
+        this.node.getChildByName("boss_dialog").getComponent(cc.Label).string = str;
+    }
+
     onBuy(){
+        if(this.curSelectedGoodsIndex <= -1){
+            UIManager.getInstance().openUI(TipPanel, 2, (ui: TipPanel) => {
+                ui.onShow();
+                ui.showTip("先选择一个货物吧", false)
+            })
+            return;
+        }
         let price = this.node.getChildByName("goods" + this.curSelectedGoodsIndex).getComponent(ZhenJiaGoods).finalPrice;
         let _itemIns = this.node.getChildByName("goods" + this.curSelectedGoodsIndex).getComponent(ZhenJiaGoods)._itemInstance;
         if(GameMain.instance.mainRuntime.ctx.totalMoney >=  price){
             GameMain.instance.mainRuntime.ctx.addMoney(-price);
             this.upgradeTotalMoney();
+            _itemIns.buyPrice = price;
             GameMain.instance.mainRuntime.ctx.inventoryItemInstance.push(_itemIns);
             cc.sys.localStorage.setItem("bag_data",JSON.stringify(GameMain.instance.mainRuntime.ctx.inventoryItemInstance));
             UIManager.getInstance().openUI(DialogPanel, 2, (ui: DialogPanel) => {
@@ -84,6 +116,7 @@ export default class ZhenjiaPanel extends BaseUI {
     hideAllGoodsSelectedIcon() {
         for (let i = 0; i < 6; i++) {
             this.node.getChildByName("goods" + (i + 1)).getChildByName("num").active = false;
+            this.node.getChildByName("goods" + (i + 1)).getComponent(ZhenJiaGoods)._isSelected = false;
         }
     }
 

@@ -288,10 +288,6 @@ export default class PintuPanel extends BaseUI {
         this.clearTileSelectedState();
         this.setResultText("复原成功");
 
-        // 成功后如果外部通过 tag 传了回调，就交给外部发放旧物奖励。
-        // if (this.tag && this.tag.onSuccess) {
-        //     this.tag.onSuccess();
-        // }
         UIManager.getInstance().openUI(DialogPanel, 2, (ui: DialogPanel) => {
             ui.onShow();
             ui.setContent(`恭喜你获得${this.itemInstance.name}`, () => {
@@ -310,9 +306,13 @@ export default class PintuPanel extends BaseUI {
         this.clearTileSelectedState();
         this.setResultText("复原失败");
 
-        if (this.tag && this.tag.onFail) {
-            this.tag.onFail();
-        }
+        UIManager.getInstance().openUI(DialogPanel, 2, (ui: DialogPanel) => {
+            ui.onShow();
+            ui.setContent(`复原失败`, () => {
+                UIManager.getInstance().closeUI(DialogPanel);
+                UIManager.getInstance().closeUI(PintuPanel);
+            }, false)
+        })
     }
 
     private refreshTimeLabel() {

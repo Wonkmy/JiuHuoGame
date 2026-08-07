@@ -1,3 +1,7 @@
+import GameMain from "../GameMain";
+import TipPanel from "../Panels/TipPanel";
+import { UIManager } from "../UIManager/UIManager";
+
 const { ccclass, property } = cc._decorator;
 
 @ccclass
@@ -137,6 +141,16 @@ export class Advertise extends cc.Component {
 
     ShowHengfuAd(){
         if(this.hengfuAd){
+            if(GameMain.instance.isNoAdActive()){
+                // UIManager.getInstance().openUI(TipPanel, 1, (ui: TipPanel) => {
+                //     ui.onShow();
+                //     let left = GameMain.instance.getNoAdLeftSeconds();
+                //     let min = Math.floor(left / 60);
+                //     let sec = left % 60;
+                //     ui.showTip(`广告免扰中 ${min}:${sec < 10 ? "0" + sec : sec}`,null)
+                // })
+                return;
+            }
             this.hengfuAd.show().catch((err:any) => {
                 console.error(err)
             })
@@ -155,6 +169,16 @@ export class Advertise extends cc.Component {
     ShowChapingAd(){
         //播放插屏广告
         if(this.chaPingAd){
+            if(GameMain.instance.isNoAdActive()){
+                // UIManager.getInstance().openUI(TipPanel, 1, (ui: TipPanel) => {
+                //     ui.onShow();
+                //     let left = GameMain.instance.getNoAdLeftSeconds();
+                //     let min = Math.floor(left / 60);
+                //     let sec = left % 60;
+                //     ui.showTip(`广告免扰中 ${min}:${sec < 10 ? "0" + sec : sec}`,null)
+                // })
+                return;
+            }
             this.chaPingAd.show().catch((err:any) => {
                 console.error(err)
             })

@@ -9,6 +9,7 @@ import RankPanel from "./RankPanel";
 import TipPanel from "./TipPanel";
 import { createMarketItems,createItemByRarityValue } from "../GameCodes/GameRules";
 import ZhenjiaPanel from "./ZhenjiaPanel";
+import DialogPanel from "./DialogPanel";
 
 const {ccclass, property} = cc._decorator;
 
@@ -33,12 +34,14 @@ export default class EntrancePanel extends BaseUI {
     rkSingleNode:cc.Node = null!;
     rkTotalNode:cc.Node = null!;
 
-    // EntrancePanel/scroll/Content/view/gongfang/smallgame/list/pintu
+    noADNode:cc.Node = null!;// 看激励视频免广告30分钟
 
     protected onLoad(): void {
         EntrancePanel.instance = this;
+        Advertise.instance.ShowChapingAd();
         this.rkSingleNode = this.node.getChildByName("rksingle");
         this.rkTotalNode = this.node.getChildByName("rktotal");
+        this.noADNode = this.node.getChildByName("noADNode");
 
         this.gongfangNode = this.node.getChildByName("scroll").getChildByName("view").getChildByName("content").getChildByName("gongfang");
 
@@ -50,6 +53,21 @@ export default class EntrancePanel extends BaseUI {
 
         this.pintuNode.on(cc.Node.EventType.TOUCH_END,this.onOpenPintu,this)
         this.zhenjiaNode.on(cc.Node.EventType.TOUCH_END,this.onOpenZhenjia,this)
+        this.noADNode.on(cc.Node.EventType.TOUCH_END,this.onNoAd,this)
+    }
+
+    private onNoAd(){
+        UIManager.getInstance().openUI(DialogPanel, 1, (ui: DialogPanel) => {
+            ui.onShow();
+            ui.setContent("看一段赞助,5分钟内不再弹出自动广告?\n本次游戏生效", () => {
+                Advertise.instance.ShowVideoAd((res:number)=>{
+                    if(res === 1){
+                        GameMain.instance.openNoAdForMinutes(5);
+                        UIManager.getInstance().closeUI(DialogPanel);
+                    }
+                });
+            }, true)
+        })
     }
 
     private onOpenPintu(){
@@ -94,6 +112,17 @@ export default class EntrancePanel extends BaseUI {
 
         let hand = this.btn_entryJiaoyiMode.getChildByName("hand2");
 
+        setTimeout(() => {
+            let left = GameMain.instance.getNoAdLeftSeconds();
+            if(left<=0){
+                this.noADNode.getChildByName("timer").getComponent(cc.Label).string = ""
+            }else{
+                let min = Math.floor(left / 60);
+                let sec = left % 60;
+                this.noADNode.getChildByName("timer").getComponent(cc.Label).string = `剩余 ${min}:${sec < 10 ? "0" + sec : sec}`
+            }
+        }, 1000);
+
         cc.tween(hand)
             .repeatForever(
                 cc.tween()
@@ -110,19 +139,35 @@ export default class EntrancePanel extends BaseUI {
             )
             .start()
 
-        // cc.tween(this.btn_entryJiaoyiMode.parent)
-        //     .repeatForever(
-        //         cc.tween().to(0.35,{scale:1.05})
-        //             .to(0.9,{scale:1.0})
-        //     )
-        //     .start()
+        this.playWorkshopBtnAnim()
+    }
 
-            // cc.tween(this.node.getChildByName("cangguan"))
-            // .repeatForever(
-            //     cc.tween().to(0.85,{scale:1.05},{easing:"outBack"})
-            //         .to(0.85,{scale:1.0})
-            // )
-            // .start()
+    private playWorkshopBtnAnim() {
+        const normalScale = 1.5;
+        const bigScale = 1.72;
+
+        this.pintuNode.stopAllActions();
+        this.zhenjiaNode.stopAllActions();
+
+        this.pintuNode.scale = normalScale;
+        this.zhenjiaNode.scale = normalScale;
+
+        // 注意：Action 不能复用，所以每个节点都要重新创建一套 action
+        const createAction = () => {
+            return cc.repeatForever(
+                cc.sequence(
+                    cc.scaleTo(0.25, bigScale),
+                    cc.scaleTo(0.25, normalScale),
+                    cc.delayTime(1)
+                )
+            );
+        };
+
+        this.pintuNode.runAction(createAction());
+
+        this.scheduleOnce(() => {
+            this.zhenjiaNode.runAction(createAction());
+        }, 0.5);
     }
     // 打开藏品馆馆界面
     private onEnterCangpin(){
