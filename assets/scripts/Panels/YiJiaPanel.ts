@@ -209,28 +209,16 @@ export default class YiJiaPanel extends BaseUI {
         FaynUtils.PlayMusic("buff",false,1);
         let deleteIndex:number = -1;
         let soldItem = GameMain.instance.mainRuntime.ctx.curSelected;
+        if(soldItem == null || soldItem.display){
+            return;
+        }
         let finalPrice:number = soldItem.estimate;
         let curShouyi:number = finalPrice - soldItem.buyPrice;
         let noExpertPrice = getItemSellValue(soldItem,[],false);
         let expertBonus = finalPrice - noExpertPrice;
         this.showSellResultTip(soldItem,noExpertPrice,expertBonus,finalPrice,curShouyi);
-        // GameMain.instance.mainRuntime.ctx.totalMoney += finalPrice;
         GameMain.instance.mainRuntime.ctx.addMoney(finalPrice);
-        // if (finalPrice >= 500) {
-        //     UIManager.getInstance().openUI(DialogPanel, 0, (ui: DialogPanel) => {
-        //         ui.onShow();
-        //         ui.setContent(`恭喜您获得${finalPrice}收益！是否炫耀一下?\n可以额外获得50预算奖励!`, () => {
-        //             // @ts-ignore
-        //             wx.shareAppMessage({
-        //                 title: `我刚刚一把就赚取了${finalPrice}的收益\n快来挑战吧！`,
-        //                 imageUrl: 'https://mmocgame.qpic.cn/wechatgame/J2tHF6veZrJbgTZeuiaAn5NFHvbm8AnrWnnV9rGmKjzGZUZloTQiawNhEs3HcbkoZv/0',
-        //                 query: 'from=button',
-        //             });
-        //             GameMain.instance.mainRuntime.ctx.addMoney(50);// 分享后奖励50预算
-        //             UIManager.getInstance().closeUI(DialogPanel);
-        //         }, false)
-        //     })
-        // }
+
         this.YijiaPrice += finalPrice;
         recordRoundTaskProgress(GameMain.instance.mainRuntime.ctx.curSelected);
         this.updateRoundTaskInfo();
@@ -251,7 +239,11 @@ export default class YiJiaPanel extends BaseUI {
         })
         if (deleteIndex !== -1) {
             GameMain.instance.mainRuntime.ctx.inventoryItemInstance.splice(deleteIndex, 1);
+            cc.sys.localStorage.setItem("bag_data",JSON.stringify(GameMain.instance.mainRuntime.ctx.inventoryItemInstance))
             this.inventoryContainer.removeAllChildren();
+
+
+
             if (GameMain.instance.mainRuntime.ctx.inventoryItemInstance.length > 0) {
                 for (let i = 0; i < GameMain.instance.mainRuntime.ctx.inventoryItemInstance.length; i++) {
                     const itemIns: ItemInstance = GameMain.instance.mainRuntime.ctx.inventoryItemInstance[i];
@@ -260,9 +252,14 @@ export default class YiJiaPanel extends BaseUI {
                             console.error("load itemCell prefab error:", err);
                             return;
                         }
-                        GameMain.instance.mainRuntime.initInventoryItemInsCell(prefab, itemIns, this.inventoryContainer,true);
+                        if(!itemIns.display){
+                            GameMain.instance.mainRuntime.initInventoryItemInsCell(prefab, itemIns, this.inventoryContainer,true);
+                        }
                     })
                 }
+                this.main_item.getComponent(cc.Sprite).spriteFrame = null!;
+                this.node.getChildByName("estimateMoney").active=false;
+                GameMain.instance.mainRuntime.ctx.curSelected = null!;
                 this.showMainItem(null!)
             }else{
                 // 如果背包空了，直接关闭鉴赏界面，打开结算界面
@@ -299,20 +296,23 @@ export default class YiJiaPanel extends BaseUI {
             //     })
             //     return;
             // }
-            GameMain.instance.bundle.load("arts/items/" + targetNoDisplayItem?.image, cc.SpriteFrame, (err, spriteFrame: cc.SpriteFrame) => {
-                if (err) {
-                    console.error("load item spriteFrame error:", err);
-                    return;
-                }
-                let sprite: cc.Sprite = this.main_item.getComponent(cc.Sprite);
-                sprite.spriteFrame = spriteFrame;
-                this.inventoryContainer.children.forEach((n) => {
-                    n.getComponent(ItemCellYJ).ISSelected = false;
-                }, this)
-                this.inventoryContainer.children[0].getComponent(ItemCellYJ).ISSelected = true;
-                GameMain.instance.mainRuntime.ctx.curSelected = targetNoDisplayItem!;
-                this.node.getChildByName("estimateMoney").getComponent(cc.Label).string = "当前估值:" + String(GameMain.instance.mainRuntime.ctx.curSelected?.estimate);
-            });
+            if (targetNoDisplayItem != undefined) {
+                GameMain.instance.bundle.load("arts/items/" + targetNoDisplayItem?.image, cc.SpriteFrame, (err, spriteFrame: cc.SpriteFrame) => {
+                    if (err) {
+                        console.error("load item spriteFrame error:", err);
+                        return;
+                    }
+                    let sprite: cc.Sprite = this.main_item.getComponent(cc.Sprite);
+                    sprite.spriteFrame = spriteFrame;
+                    this.inventoryContainer.children.forEach((n) => {
+                        n.getComponent(ItemCellYJ).ISSelected = false;
+                    }, this)
+                    this.inventoryContainer.children[0].getComponent(ItemCellYJ).ISSelected = true;
+                    GameMain.instance.mainRuntime.ctx.curSelected = targetNoDisplayItem!;
+                    this.node.getChildByName("estimateMoney").getComponent(cc.Label).string = "当前估值:" + String(GameMain.instance.mainRuntime.ctx.curSelected?.estimate);
+                });
+            }
+
         }else{
             if(itemCellYj.itemIns.display){
                 UIManager.getInstance().openUI(DialogPanel,1,(ui:DialogPanel)=>{

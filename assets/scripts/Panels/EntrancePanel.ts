@@ -26,6 +26,9 @@ export default class EntrancePanel extends BaseUI {
     @property({type:cc.Node})
     btn_xiandingMode:cc.Node = null!;
 
+    @property({type:cc.Label})
+    noADNodeTimer:cc.Label = null!;
+
     gongfangNode:cc.Node = null!;
 
     pintuNode:cc.Node = null!;
@@ -54,6 +57,16 @@ export default class EntrancePanel extends BaseUI {
         this.pintuNode.on(cc.Node.EventType.TOUCH_END,this.onOpenPintu,this)
         this.zhenjiaNode.on(cc.Node.EventType.TOUCH_END,this.onOpenZhenjia,this)
         this.noADNode.on(cc.Node.EventType.TOUCH_END,this.onNoAd,this)
+        setTimeout(() => {
+            let left = GameMain.instance.getNoAdLeftSeconds();
+            if(left<=0){
+                this.noADNodeTimer.string = ""
+            }else{
+                let min = Math.floor(left / 60);
+                let sec = left % 60;
+                this.noADNodeTimer.string = `剩余 ${min}:${sec < 10 ? "0" + sec : sec}`
+            }
+        }, 1000);
     }
 
     private onNoAd(){
@@ -112,16 +125,7 @@ export default class EntrancePanel extends BaseUI {
 
         let hand = this.btn_entryJiaoyiMode.getChildByName("hand2");
 
-        setTimeout(() => {
-            let left = GameMain.instance.getNoAdLeftSeconds();
-            if(left<=0){
-                this.noADNode.getChildByName("timer").getComponent(cc.Label).string = ""
-            }else{
-                let min = Math.floor(left / 60);
-                let sec = left % 60;
-                this.noADNode.getChildByName("timer").getComponent(cc.Label).string = `剩余 ${min}:${sec < 10 ? "0" + sec : sec}`
-            }
-        }, 1000);
+
 
         cc.tween(hand)
             .repeatForever(
