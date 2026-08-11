@@ -1,5 +1,5 @@
 import {CATEGORY_NAME, ItemCategory, ItemInstance } from "../GameCodes/Datas/GameData";
-import { createMarketItems } from "../GameCodes/GameRules";
+import { createMarketItems,createMarketItemsByLocation} from "../GameCodes/GameRules";
 import GameContext from "../GameCodes/GameRules";
 import GameMain from "../GameMain";
 import { ConstValue } from "../Global/ConstValue";
@@ -162,7 +162,7 @@ export default class MainPanel extends BaseUI {
         let nextuid = ()=>GameMain.instance.mainRuntime.ctx.getUid()
         let curLevel = GameMain.instance.mainRuntime.ctx.CurLevel;
         let excludeIds = GameMain.instance.mainRuntime.ctx.inventoryItemInstance.map(item => item.id);
-        let allItemInstance = createMarketItems(nextuid,curLevel + 1, excludeIds)// 生成摊位上的老旧物品
+        let allItemInstance = createMarketItemsByLocation(GameMain.instance.mainRuntime.ctx.currentLocation,nextuid, excludeIds)// 生成摊位上的老旧物品
         allItemInstance.forEach((itemIns)=>{
             GameMain.instance.mainRuntime.applyHiddenMarket(itemIns);
             GameMain.instance.mainRuntime.applyMarketTrend(itemIns);// 本轮行情只影响卖价预期，不影响买入价

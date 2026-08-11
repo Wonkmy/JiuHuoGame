@@ -10,6 +10,7 @@ import TipPanel from "./TipPanel";
 import { createMarketItems,createItemByRarityValue } from "../GameCodes/GameRules";
 import ZhenjiaPanel from "./ZhenjiaPanel";
 import DialogPanel from "./DialogPanel";
+import ChooseLocationPanel from "./ChooseLocationPanel";
 
 const {ccclass, property} = cc._decorator;
 
@@ -39,12 +40,15 @@ export default class EntrancePanel extends BaseUI {
 
     noADNode:cc.Node = null!;// 看激励视频免广告30分钟
 
+    paotanNode:cc.Node = null;
+
     protected onLoad(): void {
         EntrancePanel.instance = this;
         Advertise.instance.ShowChapingAd();
         this.rkSingleNode = this.node.getChildByName("rksingle");
         this.rkTotalNode = this.node.getChildByName("rktotal");
         this.noADNode = this.node.getChildByName("noADNode");
+        this.paotanNode = this.node.getChildByName("paotan");
 
         this.gongfangNode = this.node.getChildByName("scroll").getChildByName("view").getChildByName("content").getChildByName("gongfang");
 
@@ -57,6 +61,9 @@ export default class EntrancePanel extends BaseUI {
         this.pintuNode.on(cc.Node.EventType.TOUCH_END,this.onOpenPintu,this)
         this.zhenjiaNode.on(cc.Node.EventType.TOUCH_END,this.onOpenZhenjia,this)
         this.noADNode.on(cc.Node.EventType.TOUCH_END,this.onNoAd,this)
+        this.paotanNode.on(cc.Node.EventType.TOUCH_END,this.onOpenPaotan,this)
+
+
         setTimeout(() => {
             let left = GameMain.instance.getNoAdLeftSeconds();
             if(left<=0){
@@ -67,6 +74,12 @@ export default class EntrancePanel extends BaseUI {
                 this.noADNodeTimer.string = `剩余 ${min}:${sec < 10 ? "0" + sec : sec}`
             }
         }, 1000);
+    }
+
+    private onOpenPaotan(){
+        UIManager.getInstance().openUI(ChooseLocationPanel, 1, (ui: ChooseLocationPanel) => {
+            ui.onShow();
+        })
     }
 
     private onNoAd(){

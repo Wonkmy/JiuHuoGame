@@ -41,6 +41,8 @@ export default class GameContext{
     hiddenMarketActive:boolean = false;
     budgetPenaltyNextRound:number = 0;
 
+    currentLocation:string = "";// 当前选择的地点
+
     getUid():string{
         return `old_${this.UID++}`;
     }
@@ -103,6 +105,13 @@ export default class GameContext{
             this.unLockedTableIndex = [];
         }else{
             this.unLockedTableIndex = JSON.parse(unlocked_table_list);
+        }
+
+        let locationData = cc.sys.localStorage.getItem("location");
+        if(locationData == '' || locationData == null || locationData == 'undefined' || locationData === undefined){
+            this.currentLocation = ""
+        }else{
+            this.currentLocation = locationData
         }
     };
 }
@@ -247,6 +256,70 @@ function getTargetRarityByValue(rarityValue:number):number{
 export function createMarketItems(nextUid: () => string,round: number = 1,excludeIds: string[] = []): ItemInstance[] {
     const defs = pickMarketDefsByRound(round, 12,excludeIds);
     return defs.map(def => createItem(def, nextUid()));
+}
+
+export function createMarketItemsByLocation(location:string,nextUid:() => string,excludeIds:string[] = []):ItemInstance[]{
+    const defs = pickMarketDefsByLocation(location,8,4,excludeIds);
+    return defs.map(def => createItem(def,nextUid()));
+}
+
+function pickMarketDefsByLocation(location:string,locationCount:number,commonCount:number,excludeIds:string[] = []):ItemDef[]{
+    const excluded = new Set(excludeIds);
+    const selected = new Set<string>();
+    const categories = getLocationCategories(location);
+    const allDefs = GameMain.instance.ITEM_DEFS.filter(item => !excluded.has(item.id));
+    const locationPool = allDefs.filter(item => categories.indexOf(item.category) >= 0);
+    const result:ItemDef[] = [];
+
+    // 先抽地点特色货，让玩家能明显感知“这个摊位货源不一样”。
+    result.push(...pickRandomDefs(locationPool,locationCount,selected));
+    result.push(...pickRandomDefs(allDefs,commonCount,selected));
+
+    // 极端情况下某些池子不够，继续从通用库补满 12 个。
+    if(result.length < locationCount + commonCount){
+        result.push(...pickRandomDefs(allDefs,locationCount + commonCount - result.length,selected));
+    }
+
+    return result;
+}
+
+export function getLocationCategoriesName(location:string){
+    if(location === "海边旧市" || location === "seaside"){
+        return "老相机/手表类"+"铜器和杂项类"+"民俗玩具类";
+    }else
+    if(location === "旧宅门口" || location === "oldHouse"){
+        return "瓷器类"+"木器类"+"旧书画";
+    }else
+    if(location === "厂区仓摊" || location === "factory"){
+        return "铜器和杂项类"+"老相机/手表类"+"木器类";
+    }else
+    if(location === "老街杂摊" || location === "oldStreet"){
+        return "比较齐全的";
+    }else{
+        return "";
+    }
+}
+
+function getLocationCategories(location:string):ItemCategory[]{
+    if(location === "海边旧市" || location === "seaside"){
+        return ["cameraWatch","bronze","folkToy"];
+    }
+    if(location === "旧宅门口" || location === "oldHouse"){
+        return ["porcelain","wood","painting"];
+    }
+    if(location === "厂区仓摊" || location === "factory"){
+        return ["bronze","cameraWatch","wood"];
+    }
+    if(location === "老街杂摊" || location === "oldStreet"){
+        return ["porcelain","painting","cameraWatch","folkToy","wood","bronze"];
+    }
+}
+
+function pickRandomDefs(pool:ItemDef[],count:number,selected:Set<string>):ItemDef[]{
+    const candidates = pool.filter(item => !selected.has(item.id)).sort(() => Math.random() - 0.5);
+    const result = candidates.slice(0,count);
+    result.forEach(item => selected.add(item.id));
+    return result;
 }
 
 function pickMarketDefsByRound(round: number, count: number, excludeIds: string[] = []): ItemDef[] {
