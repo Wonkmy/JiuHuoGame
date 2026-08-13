@@ -11,6 +11,7 @@ import { createMarketItems,createItemByRarityValue } from "../GameCodes/GameRule
 import ZhenjiaPanel from "./ZhenjiaPanel";
 import DialogPanel from "./DialogPanel";
 import ChooseLocationPanel from "./ChooseLocationPanel";
+import ProfilePanel from "./ProfilePanel";
 
 const {ccclass, property} = cc._decorator;
 
@@ -135,6 +136,8 @@ export default class EntrancePanel extends BaseUI {
         this.btn_cangpinMode.on(cc.Node.EventType.TOUCH_END,this.onEnterCangpin,this)
         this.btn_xiandingMode.on(cc.Node.EventType.TOUCH_END,this.onEnterXianding,this)
 
+        this.node.getChildByName("UserInfoContainer").getChildByName("headIcon").on(cc.Node.EventType.TOUCH_END,this.onOpenProfilePanel,this)
+
         Advertise.instance.ShowHengfuAd();
 
         let hand = this.btn_entryJiaoyiMode.getChildByName("hand2");
@@ -202,6 +205,12 @@ export default class EntrancePanel extends BaseUI {
     private onEnterJiaoyi(){
         UIManager.getInstance().closeUI(EntrancePanel);
         UIManager.getInstance().openUI(MainPanel, 0, (ui: MainPanel) => {
+            ui.onShow();
+        })
+    }
+
+    private onOpenProfilePanel(){
+        UIManager.getInstance().openUI(ProfilePanel, 1, (ui: ProfilePanel) => {
             ui.onShow();
         })
     }

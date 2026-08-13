@@ -83,7 +83,7 @@ export default class ChooseLocationPanel extends BaseUI {
     }
 
     private setDefaultDisplay(){
-        if(GameMain.instance.mainRuntime.ctx.currentLocation == "oldStreet"){
+        if(GameMain.instance.mainRuntime.ctx.currentLocation == "oldStreet" || GameMain.instance.mainRuntime.ctx.currentLocation == ""){
             this.laojieNode.getChildByName("check").active = true;
         }
         if(GameMain.instance.mainRuntime.ctx.currentLocation == "seaside"){
@@ -99,6 +99,7 @@ export default class ChooseLocationPanel extends BaseUI {
     }
 
     private chooseLaojie() {
+        if(GameMain.instance.mainRuntime.ctx.currentLocation === "oldStreet")return;
         UIManager.getInstance().openUI(DialogPanel, 1, (ui: DialogPanel) => {
             ui.onShow();
             ui.setContent("是否花费500路费前往该地点?", () => {
@@ -122,6 +123,7 @@ export default class ChooseLocationPanel extends BaseUI {
         })
     }
     private chooseHaibian(){
+        if(GameMain.instance.mainRuntime.ctx.currentLocation === "seaside")return;
         UIManager.getInstance().openUI(DialogPanel, 1, (ui: DialogPanel) => {
             ui.onShow();
             ui.setContent("是否花费500路费前往该地点?", () => {
@@ -146,6 +148,7 @@ export default class ChooseLocationPanel extends BaseUI {
 
     }
     private chooseJiuZhai() {
+        if(GameMain.instance.mainRuntime.ctx.currentLocation === "oldHouse")return;
         UIManager.getInstance().openUI(DialogPanel, 1, (ui: DialogPanel) => {
             ui.onShow();
             ui.setContent("是否花费500路费前往该地点?", () => {
@@ -170,6 +173,7 @@ export default class ChooseLocationPanel extends BaseUI {
 
     }
     private chooseChangQu() {
+        if(GameMain.instance.mainRuntime.ctx.currentLocation === "factory")return;
         UIManager.getInstance().openUI(DialogPanel, 1, (ui: DialogPanel) => {
             ui.onShow();
             ui.setContent("你的背包里没有任何藏品\n去交易行购买一些吧", () => {

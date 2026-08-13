@@ -15,6 +15,7 @@ export default class GameContext{
     totalPoints:number = 0;
     totalMoney:number = 0;// 总收入
     nickName:string = "";// 昵称
+    userid:number = -1;// 玩家id
     curSelected:ItemInstance = null!;
     curDisplaySelected:ItemInstance = null!;// 当前选中的要展示的物品
     curSelectedTableIndex:number = -1;// 当前选中的桌子id
@@ -57,31 +58,49 @@ export default class GameContext{
         let u = cc.sys.localStorage.getItem("userid");
         if(u == '' || u == null || u == 'undefined' || u === undefined){
 
-        }else{
+        } else {
             let uid = parseInt(u)
             const postData = {
                 totalmoney: this.totalMoney
             };
 
-            fetch('https://jianbao.dxstudio.site/api/player/'+uid+"/money", {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json', // 告诉服务器发送的是JSON
-                },
-                body: JSON.stringify(postData), // 将JS对象转为JSON字符串
-            })
-            .then((response: Response) => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                return response.json(); // 或 response.text()
-            })
-            .then((data) => {
-                console.log('更新金币成功!:', data);
-            })
-            .catch((error) => {
-                console.error('POST 请求失败:', error);
-            });
+            if (cc.sys.platform === cc.sys.WECHAT_GAME) {
+                wx.request({
+                    url: 'https://jianbao.dxstudio.site/api/player/' + uid + "/money",
+                    data: postData,
+                    header: { 'content-type': 'application/json' },
+                    method: 'POST',
+                    dataType: 'json',
+                    responseType: 'text',
+                    success: (result) => {
+                        console.log('更新金币成功!:', result);
+                    },
+                    fail: () => {
+                        console.error('POST 更新金币失败:', error);
+                    },
+                    complete: () => { }
+                });
+            } else {
+                fetch('https://jianbao.dxstudio.site/api/player/' + uid + "/money", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json', // 告诉服务器发送的是JSON
+                    },
+                    body: JSON.stringify(postData), // 将JS对象转为JSON字符串
+                })
+                    .then((response: Response) => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        return response.json(); // 或 response.text()
+                    })
+                    .then((data) => {
+                        console.log('更新金币成功!:', data);
+                    })
+                    .catch((error) => {
+                        console.error('POST 请求失败:', error);
+                    });
+            }
         }
     }
 
@@ -114,29 +133,55 @@ export default class GameContext{
             this.postProxy()
         }else{
             let uid = parseInt(u)
-            fetch('https://jianbao.dxstudio.site/api/player/'+uid, {
-                method: 'GET',
-            })
-            .then((response: Response) => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                // 根据返回数据类型选择解析方式
-                return response.json(); // 或 response.text() 获取纯文本
-            })
-            .then((data) => {
-                console.log('GET 请求成功:parseInt', data);
-                let tm = parseInt(data.data.totalmoney);
-                this.totalMoney = tm;
-                this.nickName = data.data.nickName;
-                cc.sys.localStorage.setItem("game_money",this.totalMoney);
-                if(callBack){
-                    callBack()
-                }
-            })
-            .catch((error) => {
-                console.error('GET 请求失败:', error);
-            });
+            if (cc.sys.platform === cc.sys.WECHAT_GAME) {
+                wx.request({
+                    url: 'https://jianbao.dxstudio.site/api/player/'+uid,
+                    data: {},
+                    header: {'content-type':'application/json'},
+                    method: 'GET',
+                    dataType: 'json',
+                    responseType: 'text',
+                    success: (result) => {
+                        console.log('GET 请求成功:parseInt', data);
+                        let tm = parseInt(data.data.totalmoney);
+                        this.totalMoney = tm;
+                        this.nickName = data.data.nickName;
+                        this.userid = uid;
+                        cc.sys.localStorage.setItem("game_money", this.totalMoney);
+                        if (callBack) {
+                            callBack()
+                        }
+                    },
+                    fail: ()=>{
+                        console.error('request GET 请求失败');
+                    },
+                    complete: ()=>{}
+                });
+            }else{
+                fetch('https://jianbao.dxstudio.site/api/player/'+uid, {
+                    method: 'GET',
+                })
+                .then((response: Response) => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    // 根据返回数据类型选择解析方式
+                    return response.json(); // 或 response.text() 获取纯文本
+                })
+                .then((data) => {
+                    console.log('GET 请求成功:parseInt', data);
+                    let tm = parseInt(data.data.totalmoney);
+                    this.totalMoney = tm;
+                    this.nickName = data.data.nickName;
+                    cc.sys.localStorage.setItem("game_money",this.totalMoney);
+                    if(callBack){
+                        callBack()
+                    }
+                })
+                .catch((error) => {
+                    console.error('GET 请求失败:', error);
+                });
+            }
         }
 
         if(this.budgetPenaltyNextRound > 0){
@@ -176,9 +221,10 @@ export default class GameContext{
 
         let locationData = cc.sys.localStorage.getItem("location");
         if(locationData == '' || locationData == null || locationData == 'undefined' || locationData === undefined){
-            this.currentLocation = ""
+            this.currentLocation = "oldStreet";
+            cc.sys.localStorage.setItem("location", "oldStreet");
         }else{
-            this.currentLocation = locationData
+            this.currentLocation = locationData;
         }
     };
 
@@ -189,26 +235,47 @@ export default class GameContext{
             totalmoney: 0
         };
 
-        fetch('https://jianbao.dxstudio.site/api/player/create', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json', // 告诉服务器发送的是JSON
-            },
-            body: JSON.stringify(postData), // 将JS对象转为JSON字符串
-        })
-            .then((response: Response) => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                return response.json(); // 或 response.text()
-            })
-            .then((data) => {
-                console.log('POST 请求成功:', data);
-                cc.sys.localStorage.setItem("userid",data.data.id);
-            })
-            .catch((error) => {
-                console.error('POST 请求失败:', error);
+        if (cc.sys.platform === cc.sys.WECHAT_GAME){
+            wx.request({
+                url: 'https://jianbao.dxstudio.site/api/player/create',
+                data: postData,
+                header: {'content-type':'application/json'},
+                method: 'POST',
+                dataType: 'json',
+                responseType: 'text',
+                success: (result)=>{
+                    cc.sys.localStorage.setItem("userid", result.data.id);
+                    this.nickName = 'player'+ _str
+                    this.userid = result.data.id
+                },
+                fail: ()=>{
+                    console.error('request POST 请求失败');
+                },
+                complete: ()=>{}
             });
+        }else{
+            fetch('https://jianbao.dxstudio.site/api/player/create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json', // 告诉服务器发送的是JSON
+                },
+                body: JSON.stringify(postData), // 将JS对象转为JSON字符串
+            })
+                .then((response: Response) => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json(); // 或 response.text()
+                })
+                .then((data) => {
+                    console.log('POST 请求成功:', data);
+                    cc.sys.localStorage.setItem("userid", data.data.id);
+                })
+                .catch((error) => {
+                    console.error('POST 请求失败:', error);
+                });
+        }
+
     }
 }
 
@@ -311,6 +378,10 @@ export function pickExperts(count: number, ownedExperts: ExpertDef[]): ExpertDef
 
 
 export function postMaiDian(_scene: string) {
+    if(CC_DEBUG){
+        console.log("开发模式，不走埋点");
+        return;
+    }
     const postData = {
         scene: _scene
     };
@@ -319,27 +390,45 @@ export function postMaiDian(_scene: string) {
 
     } else {
         let = parseInt(u);
-        ///api/player/:id/track
-        fetch('https://jianbao.dxstudio.site/api/player/' + uid + "/track", {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json', // 告诉服务器发送的是JSON
-            },
-            body: JSON.stringify(postData), // 将JS对象转为JSON字符串
-        })
-            .then((response: Response) => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                return response.json(); // 或 response.text()
-            })
-            .then((data) => {
-                console.log('POST 请求成功:', data);
-                cc.sys.localStorage.setItem("userid", data.data.id);
-            })
-            .catch((error) => {
-                console.error('POST 请求失败:', error);
+
+        if (cc.sys.platform === cc.sys.WECHAT_GAME) {
+            wx.request({
+                url: 'https://jianbao.dxstudio.site/api/player/' + uid + "/track",
+                data: postData,
+                header: {'content-type':'application/json'},
+                method: 'POST',
+                dataType: 'json',
+                responseType: 'text',
+                success: (result)=>{
+                    console.log('POST 请求成功:', data);
+                },
+                fail: ()=>{
+                    console.error('POST MaiDian 请求失败:', error);
+                },
+                complete: ()=>{}
             });
+        }
+        else {
+            fetch('https://jianbao.dxstudio.site/api/player/' + uid + "/track", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json', // 告诉服务器发送的是JSON
+                },
+                body: JSON.stringify(postData), // 将JS对象转为JSON字符串
+            })
+                .then((response: Response) => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json(); // 或 response.text()
+                })
+                .then((data) => {
+                    console.log('POST 请求成功:', data);
+                })
+                .catch((error) => {
+                    console.error('POST 请求失败:', error);
+                });
+        }
     }
 }
 // 通过查看rarity的值是否超过某个阈值，然后从库中直接给一个对应的ItemInstance
