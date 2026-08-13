@@ -1,6 +1,6 @@
 import { Advertise } from "../GameCodes/Advertise";
 import { ExpertDef } from "../GameCodes/Datas/GameData";
-import { getRoundTaskReward, getRoundTaskText, isRoundTaskFinished, pickExperts } from "../GameCodes/GameRules";
+import { getRoundTaskReward, getRoundTaskText, isRoundTaskFinished, pickExperts, postMaiDian } from "../GameCodes/GameRules";
 import GameMain from "../GameMain";
 import { FaynUtils } from "../Global/FaynUtils";
 import { BaseUI } from "../UIManager/BaseUI";
@@ -31,6 +31,7 @@ export default class ResultPanel extends BaseUI{
         this.btn_OpenHire.on(cc.Node.EventType.TOUCH_END,this.onOpenHire ,this);
         // this.node.getChildByName("btn_ShareWar").on(cc.Node.EventType.TOUCH_END,this.onShareBtnClick,this);
         this.upgradeTotalMoney();
+        postMaiDian("进入结算界面")
     }
 
     onShareBtnClick(num:number) {

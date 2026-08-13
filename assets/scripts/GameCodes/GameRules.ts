@@ -14,6 +14,7 @@ export default class GameContext{
     CurLevel:number=0;
     totalPoints:number = 0;
     totalMoney:number = 0;// 总收入
+    nickName:string = "";// 昵称
     curSelected:ItemInstance = null!;
     curDisplaySelected:ItemInstance = null!;// 当前选中的要展示的物品
     curSelectedTableIndex:number = -1;// 当前选中的桌子id
@@ -46,10 +47,42 @@ export default class GameContext{
     getUid():string{
         return `old_${this.UID++}`;
     }
-
+    // /api/player/:id/money
     addMoney(v:number){
+        // 本地记录一次金币
         this.totalMoney += v;
         cc.sys.localStorage.setItem("game_money",this.totalMoney);
+
+        // 往服务器上传一份金币
+        let u = cc.sys.localStorage.getItem("userid");
+        if(u == '' || u == null || u == 'undefined' || u === undefined){
+
+        }else{
+            let uid = parseInt(u)
+            const postData = {
+                totalmoney: this.totalMoney
+            };
+
+            fetch('https://jianbao.dxstudio.site/api/player/'+uid+"/money", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json', // 告诉服务器发送的是JSON
+                },
+                body: JSON.stringify(postData), // 将JS对象转为JSON字符串
+            })
+            .then((response: Response) => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json(); // 或 response.text()
+            })
+            .then((data) => {
+                console.log('更新金币成功!:', data);
+            })
+            .catch((error) => {
+                console.error('POST 请求失败:', error);
+            });
+        }
     }
 
     resetGame(){
@@ -70,17 +103,51 @@ export default class GameContext{
         this.curSelectedTableIndex = -1;
     }
 
-    startRound(){
+    startRound(callBack:any = null){
         this.curSelected = null!;
         this.totalPoints = ConstValue.TotalPoints;
         this.hiddenMarketActive = this.hiddenMarketNextRound;
         this.hiddenMarketNextRound = false;
+
+        let u = cc.sys.localStorage.getItem("userid");
+        if(u == '' || u == null || u == 'undefined' || u === undefined){
+            this.postProxy()
+        }else{
+            let uid = parseInt(u)
+            fetch('https://jianbao.dxstudio.site/api/player/'+uid, {
+                method: 'GET',
+            })
+            .then((response: Response) => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                // 根据返回数据类型选择解析方式
+                return response.json(); // 或 response.text() 获取纯文本
+            })
+            .then((data) => {
+                console.log('GET 请求成功:parseInt', data);
+                let tm = parseInt(data.data.totalmoney);
+                this.totalMoney = tm;
+                this.nickName = data.data.nickName;
+                cc.sys.localStorage.setItem("game_money",this.totalMoney);
+                if(callBack){
+                    callBack()
+                }
+            })
+            .catch((error) => {
+                console.error('GET 请求失败:', error);
+            });
+        }
+
         if(this.budgetPenaltyNextRound > 0){
             // 失败惩罚延迟到下一轮开始扣除，避免结算界面数值反复变化。
             this.totalMoney = Math.max(0,this.totalMoney - this.budgetPenaltyNextRound);
             cc.sys.localStorage.setItem("game_money",this.totalMoney);
             this.budgetPenaltyNextRound = 0;
         }
+
+
+
         this.targetInfo = ROUND_TARGETS_INFO[this.CurLevel]// 获得当前的目标收益
         this.roundTask = createRoundTask(this.CurLevel);
         this.taskRewardClaimed = false;
@@ -114,6 +181,35 @@ export default class GameContext{
             this.currentLocation = locationData
         }
     };
+
+    postProxy() {
+        const _str = Math.random().toString(16).slice(2,5);
+        const postData = {
+            nickName: 'player'+ _str,
+            totalmoney: 0
+        };
+
+        fetch('https://jianbao.dxstudio.site/api/player/create', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json', // 告诉服务器发送的是JSON
+            },
+            body: JSON.stringify(postData), // 将JS对象转为JSON字符串
+        })
+            .then((response: Response) => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json(); // 或 response.text()
+            })
+            .then((data) => {
+                console.log('POST 请求成功:', data);
+                cc.sys.localStorage.setItem("userid",data.data.id);
+            })
+            .catch((error) => {
+                console.error('POST 请求失败:', error);
+            });
+    }
 }
 
 export function createRoundTask(round:number):RoundTaskInfo{
@@ -213,6 +309,39 @@ export function pickExperts(count: number, ownedExperts: ExpertDef[]): ExpertDef
         .slice(0, count);
 }
 
+
+export function postMaiDian(_scene: string) {
+    const postData = {
+        scene: _scene
+    };
+    let u = cc.sys.localStorage.getItem("userid");
+    if (u == '' || u == null || u == 'undefined' || u === undefined) {
+
+    } else {
+        let = parseInt(u);
+        ///api/player/:id/track
+        fetch('https://jianbao.dxstudio.site/api/player/' + uid + "/track", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json', // 告诉服务器发送的是JSON
+            },
+            body: JSON.stringify(postData), // 将JS对象转为JSON字符串
+        })
+            .then((response: Response) => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json(); // 或 response.text()
+            })
+            .then((data) => {
+                console.log('POST 请求成功:', data);
+                cc.sys.localStorage.setItem("userid", data.data.id);
+            })
+            .catch((error) => {
+                console.error('POST 请求失败:', error);
+            });
+    }
+}
 // 通过查看rarity的值是否超过某个阈值，然后从库中直接给一个对应的ItemInstance
 export function createItemByRarityValue(rarityValue:number,excludeIds:string[] = []):ItemInstance{
     const targetRarity = getTargetRarityByValue(rarityValue);

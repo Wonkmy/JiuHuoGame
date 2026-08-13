@@ -1,4 +1,5 @@
 import { ItemInstance } from "../GameCodes/Datas/GameData";
+import { postMaiDian } from "../GameCodes/GameRules";
 import GameMain from "../GameMain";
 import { BaseUI } from "../UIManager/BaseUI";
 import { UIManager } from "../UIManager/UIManager";
@@ -42,6 +43,8 @@ export default class PintuPanel extends BaseUI {
         this.closeBtn.on(cc.Node.EventType.TOUCH_END, () => {
             UIManager.getInstance().closeUI(PintuPanel);
         }, this)
+
+        postMaiDian("进入拼图玩法")
     }
 
     setResultSprite(itenInstance: ItemInstance) {
@@ -291,6 +294,7 @@ export default class PintuPanel extends BaseUI {
         UIManager.getInstance().openUI(DialogPanel, 2, (ui: DialogPanel) => {
             ui.onShow();
             ui.setContent(`恭喜你获得${this.itemInstance.name}`, () => {
+                postMaiDian("拼图玩法成功")
                 this.itemInstance.isReward = true;
                 GameMain.instance.mainRuntime.ctx.inventoryItemInstance.push(this.itemInstance);
                 cc.sys.localStorage.setItem("bag_data",JSON.stringify(GameMain.instance.mainRuntime.ctx.inventoryItemInstance));

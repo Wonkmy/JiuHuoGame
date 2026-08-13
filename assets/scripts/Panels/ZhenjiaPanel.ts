@@ -7,6 +7,7 @@
 
 import { Advertise } from "../GameCodes/Advertise";
 import { ItemInstance } from "../GameCodes/Datas/GameData";
+import { postMaiDian } from "../GameCodes/GameRules";
 import ZhenJiaGoods from "../GameCodes/ZhenJiaGoods";
 import GameMain from "../GameMain";
 import { BaseUI } from "../UIManager/BaseUI";
@@ -53,6 +54,7 @@ export default class ZhenjiaPanel extends BaseUI {
         this.hideAllGoodsSelectedIcon();
         this.upgradeTotalMoney();
         this.node.getChildByName("btn_buy").on(cc.Node.EventType.TOUCH_END,this.onBuy ,this)
+        postMaiDian("真假鉴定界面")
     }
 
     refreshBoss_dialog(){
@@ -83,6 +85,7 @@ export default class ZhenjiaPanel extends BaseUI {
             _itemIns.buyPrice = price;
             GameMain.instance.mainRuntime.ctx.inventoryItemInstance.push(_itemIns);
             cc.sys.localStorage.setItem("bag_data",JSON.stringify(GameMain.instance.mainRuntime.ctx.inventoryItemInstance));
+            postMaiDian("入手鉴定物品")
             UIManager.getInstance().openUI(DialogPanel, 2, (ui: DialogPanel) => {
                 ui.onShow();
                 ui.setContent(`太棒了，你入手了${_itemIns.name}`, () => {

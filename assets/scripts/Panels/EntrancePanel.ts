@@ -130,6 +130,7 @@ export default class EntrancePanel extends BaseUI {
 
     override onShow(): void {
         this.upgradeTotalMoney();
+        this.node.getChildByName("UserInfoContainer").getChildByName("nickName").getComponent(cc.Label).string = GameMain.instance.mainRuntime.ctx.nickName;
         this.btn_entryJiaoyiMode.on(cc.Node.EventType.TOUCH_END,this.onEnterJiaoyi,this)
         this.btn_cangpinMode.on(cc.Node.EventType.TOUCH_END,this.onEnterCangpin,this)
         this.btn_xiandingMode.on(cc.Node.EventType.TOUCH_END,this.onEnterXianding,this)
@@ -137,8 +138,6 @@ export default class EntrancePanel extends BaseUI {
         Advertise.instance.ShowHengfuAd();
 
         let hand = this.btn_entryJiaoyiMode.getChildByName("hand2");
-
-
 
         cc.tween(hand)
             .repeatForever(
@@ -208,6 +207,7 @@ export default class EntrancePanel extends BaseUI {
     }
 
     private onEnterXianding(){
+        postMaiDian("限定馆")
         UIManager.getInstance().openUI(TipPanel, 1, (ui: TipPanel) => {
             ui.onShow();
             ui.showTip("敬请期待~", null, false, 1.5)

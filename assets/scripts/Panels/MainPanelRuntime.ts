@@ -13,21 +13,23 @@ export default class MainPanelRuntime{
     ctx:GameContext = null!;
 
     currentMarketTrend:MarketTrend = null!;
-    init(){
+    init(callBack){
         // this.mainPanel = mp;
         this.ctx = new GameContext();
         this.ctx.CurLevel = 0;
         this.ctx.totalPoints = ConstValue.TotalPoints;
-        this.ctx.startRound();
-        let m = cc.sys.localStorage.getItem("game_money");
-        let fm = 0;
+        this.ctx.startRound(callBack);
+        // let m = cc.sys.localStorage.getItem("game_money");
+        // let fm = 0;
 
-        if(m == '' || m == null || m == 'undefined' || m === undefined){
-            fm = ConstValue.defaultMoney;
-        }else{
-            fm = Number(m);
-        }
-        this.ctx.totalMoney = fm;
+        // if(m == '' || m == null || m == 'undefined' || m === undefined){
+        //     fm = ConstValue.defaultMoney;
+        // }else{
+        //     fm = Number(m);
+        // }
+        // this.ctx.totalMoney = fm;
+
+
         if (cc.sys.platform === cc.sys.WECHAT_GAME) {
             // 监听微信的未捕获错误
             //@ts-ignore

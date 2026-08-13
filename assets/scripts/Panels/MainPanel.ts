@@ -1,5 +1,5 @@
 import {CATEGORY_NAME, ItemCategory, ItemInstance } from "../GameCodes/Datas/GameData";
-import { createMarketItems,createMarketItemsByLocation} from "../GameCodes/GameRules";
+import { createMarketItems,createMarketItemsByLocation, postMaiDian} from "../GameCodes/GameRules";
 import GameContext from "../GameCodes/GameRules";
 import GameMain from "../GameMain";
 import { ConstValue } from "../Global/ConstValue";
@@ -56,6 +56,7 @@ export default class MainPanel extends BaseUI {
         this.marketItemContainer = this.node.getChildByName("ItemContainers").getChildByName("sview").getChildByName("view").getChildByName("content")
         GameMain.instance.mainRuntime.createMarketTrend();
         this.onCreateItems();
+        this.upgradeTotalMoney();
 
         this.btn_YJ.on(cc.Node.EventType.TOUCH_END,this.onYiJia ,this)
         this.btn_ReRoll.on(cc.Node.EventType.TOUCH_END,this.onReRoll ,this)
@@ -83,6 +84,7 @@ export default class MainPanel extends BaseUI {
 
         this.node.getChildByName("share").on(cc.Node.EventType.TOUCH_END,this.onShareBtnClick,this);
         this.node.getChildByName("tuijian").on(cc.Node.EventType.TOUCH_END,this.onTuijianBtnClick,this);
+        postMaiDian("买货主场景");
     }
     public onShareBtnClick() {
         //@ts-ignore
@@ -94,6 +96,7 @@ export default class MainPanel extends BaseUI {
             query: 'from=button',
         });
         this.addMoneyProcess(200);
+        postMaiDian("share");
     }
 
     onTuijianBtnClick(){
@@ -103,6 +106,7 @@ export default class MainPanel extends BaseUI {
         setTimeout(()=>{
             this.addMoneyProcess(50);
         },1000)
+        postMaiDian("tuijian");
     }
 
     onBackLaojie(){
@@ -167,7 +171,6 @@ export default class MainPanel extends BaseUI {
             GameMain.instance.mainRuntime.applyHiddenMarket(itemIns);
             GameMain.instance.mainRuntime.applyMarketTrend(itemIns);// 本轮行情只影响卖价预期，不影响买入价
         });
-        this.upgradeTotalMoney();
         let marketName = String(GameMain.instance.mainRuntime.ctx.targetInfo.marketName);
         if(GameMain.instance.mainRuntime.ctx.hiddenMarketActive){
             marketName += "·熟客引荐";
@@ -243,6 +246,7 @@ export default class MainPanel extends BaseUI {
                         UIManager.getInstance().closeUI(DialogPanel);
                         FaynUtils.PlayMusic("click", false, 1);
                         this.onCreateItems();
+                        postMaiDian("刷新店铺一次");
                     }
                     else if (res == 2) {
                         UIManager.getInstance().openUI(TipPanel, 0, (ui: TipPanel) => {

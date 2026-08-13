@@ -6,6 +6,7 @@
 //  - https://docs.cocos.com/creator/2.4/manual/en/scripting/life-cycle-callbacks.html
 
 import { ItemInstance } from "../GameCodes/Datas/GameData";
+import { postMaiDian } from "../GameCodes/GameRules";
 import TableEnt from "../GameCodes/TableEnt";
 import GameMain from "../GameMain";
 import { ConstValue } from "../Global/ConstValue";
@@ -125,6 +126,8 @@ export default class CangpinPanel extends BaseUI {
         this.upgradeTotalMoney();
 
         cc.game.on("on_display_select",this.onDisplaySelect,this)
+
+        postMaiDian("进入藏品馆")
     }
 
     private onDisplaySelect(itemCellYj: ItemCellYJ){

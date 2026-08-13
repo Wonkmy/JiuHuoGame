@@ -6,6 +6,7 @@ const {ccclass, property} = cc._decorator;
 import { UIManager } from "../UIManager/UIManager";
 import { FaynUtils } from "../Global/FaynUtils";
 import { Advertise } from "../GameCodes/Advertise";
+import { postMaiDian } from "../GameCodes/GameRules";
 
 @ccclass
 export default class BagPanel extends BaseUI {
@@ -29,7 +30,7 @@ export default class BagPanel extends BaseUI {
             UIManager.getInstance().closeUI(BagPanel);
         }, this)
 
-
+        postMaiDian("打开了背包界面");
     }
 
     setInventoryData(inventortType: string,readyDisplay:boolean = false) {

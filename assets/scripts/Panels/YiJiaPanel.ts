@@ -1,5 +1,5 @@
 import { AppraiseKind, ItemInstance,TargetInfo,ROUND_TARGETS_INFO } from "../GameCodes/Datas/GameData";
-import { appraise,AppraiseResult, getItemSellValue, getRoundTaskText, recordRoundTaskProgress } from "../GameCodes/GameRules";
+import { appraise,AppraiseResult, getItemSellValue, getRoundTaskText, postMaiDian, recordRoundTaskProgress } from "../GameCodes/GameRules";
 import GameMain from "../GameMain";
 import { FaynUtils } from "../Global/FaynUtils";
 import { BaseUI } from "../UIManager/BaseUI";
@@ -118,6 +118,8 @@ export default class YiJiaPanel extends BaseUI {
 
         this.sell_Node.on(cc.Node.EventType.TOUCH_END,this.onSell ,this)
         this.node.getChildByName("back").on(cc.Node.EventType.TOUCH_END,this.onFinishedYijia ,this)
+
+        postMaiDian("进入议价界面")
     }
 
     private onSelectItem = (itemCellYj: ItemCellYJ) => {

@@ -7,7 +7,7 @@ import ExpertCell from "../UIManager/ExpertCell";
 import { UIManager } from "../UIManager/UIManager";
 import MainPanel from "./MainPanel";
 import ResultPanel from "./ResultPanel";
-import { pickExperts } from "../GameCodes/GameRules";
+import { pickExperts, postMaiDian } from "../GameCodes/GameRules";
 import DialogPanel from "./DialogPanel";
 
 const {ccclass, property} = cc._decorator;
@@ -34,6 +34,7 @@ export default class HirePanel extends BaseUI {
                 ui.onShow();
                 ui.setContent("是否重新结识一位顾问?", () => {
                     UIManager.getInstance().closeUI(DialogPanel);
+                    postMaiDian("重新结识一位顾问")
                     Advertise.instance.ShowVideoAd((res: number) => {
                         if (res === 1) {
                             this.refreshNewHireData()
@@ -42,12 +43,15 @@ export default class HirePanel extends BaseUI {
                 }, true)
             })
         },this)
+
+        postMaiDian("进入雇佣专家界面")
     }
 
     private onUseExpert(expertDef: ExpertDef) {
         console.log("雇佣专家:", expertDef);
         FaynUtils.PlayMusic("buff",false,1);
         GameMain.instance.mainRuntime.ctx.ownedExperts.push(expertDef);
+        postMaiDian("雇佣专家:"+ expertDef)
         UIManager.getInstance().closeUI(HirePanel);
     }
 
