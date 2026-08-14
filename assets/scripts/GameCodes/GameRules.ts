@@ -7,6 +7,8 @@
 
 import GameMain from "../GameMain";
 import { ConstValue } from "../Global/ConstValue";
+import EntrancePanel from "../Panels/EntrancePanel";
+import MainPanel from "../Panels/MainPanel";
 import { AppraiseKind, ExpertDef, ItemDef, ItemInstance,TargetInfo, ROUND_TARGETS_INFO, RoundTaskInfo, ItemCategory, CATEGORY_NAME } from "./Datas/GameData";
 
 export default class GameContext{
@@ -53,7 +55,7 @@ export default class GameContext{
         // 本地记录一次金币
         this.totalMoney += v;
         cc.sys.localStorage.setItem("game_money",this.totalMoney);
-
+        GameMain.instance.reportRankTotal(this.totalMoney);
         // 往服务器上传一份金币
         let u = cc.sys.localStorage.getItem("userid");
         if(u == '' || u == null || u == 'undefined' || u === undefined){
@@ -122,7 +124,7 @@ export default class GameContext{
         this.curSelectedTableIndex = -1;
     }
 
-    startRound(callBack:any = null){
+    startRound(){
         this.curSelected = null!;
         this.totalPoints = ConstValue.TotalPoints;
         this.hiddenMarketActive = this.hiddenMarketNextRound;
@@ -130,58 +132,12 @@ export default class GameContext{
 
         let u = cc.sys.localStorage.getItem("userid");
         if(u == '' || u == null || u == 'undefined' || u === undefined){
-            this.postProxy()
+            console.log("本地没有数据");
+            this.postProxy((uid)=>{
+                this.mylogin(uid)
+            })
         }else{
-            let uid = parseInt(u)
-            if (cc.sys.platform === cc.sys.WECHAT_GAME) {
-                wx.request({
-                    url: 'https://jianbao.dxstudio.site/api/player/'+uid,
-                    data: {},
-                    header: {'content-type':'application/json'},
-                    method: 'GET',
-                    dataType: 'json',
-                    responseType: 'text',
-                    success: (result) => {
-                        console.log('GET 请求成功:parseInt', data);
-                        let tm = parseInt(data.data.totalmoney);
-                        this.totalMoney = tm;
-                        this.nickName = data.data.nickName;
-                        this.userid = uid;
-                        cc.sys.localStorage.setItem("game_money", this.totalMoney);
-                        if (callBack) {
-                            callBack()
-                        }
-                    },
-                    fail: ()=>{
-                        console.error('request GET 请求失败');
-                    },
-                    complete: ()=>{}
-                });
-            }else{
-                fetch('https://jianbao.dxstudio.site/api/player/'+uid, {
-                    method: 'GET',
-                })
-                .then((response: Response) => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    // 根据返回数据类型选择解析方式
-                    return response.json(); // 或 response.text() 获取纯文本
-                })
-                .then((data) => {
-                    console.log('GET 请求成功:parseInt', data);
-                    let tm = parseInt(data.data.totalmoney);
-                    this.totalMoney = tm;
-                    this.nickName = data.data.nickName;
-                    cc.sys.localStorage.setItem("game_money",this.totalMoney);
-                    if(callBack){
-                        callBack()
-                    }
-                })
-                .catch((error) => {
-                    console.error('GET 请求失败:', error);
-                });
-            }
+            this.mylogin(u)
         }
 
         if(this.budgetPenaltyNextRound > 0){
@@ -228,7 +184,60 @@ export default class GameContext{
         }
     };
 
-    postProxy() {
+    mylogin(u){
+        let uid = parseInt(u)
+            if (cc.sys.platform === cc.sys.WECHAT_GAME) {
+                wx.request({
+                    url: 'https://jianbao.dxstudio.site/api/player/'+uid,
+                    data: {},
+                    header: {'content-type':'application/json'},
+                    method: 'GET',
+                    dataType: 'json',
+                    responseType: 'text',
+                    success: (result) => {
+                        console.log('GET 请求成功:parseInt', result);
+                        let tm = parseInt(result.data.data.totalmoney);
+                        this.totalMoney = tm;
+                        this.nickName = result.data.data.nickName;
+                        this.userid = uid;
+                        cc.sys.localStorage.setItem("game_money", this.totalMoney);
+                        GameMain.instance.reportRankTotal(this.totalMoney);
+                        EntrancePanel.instance.refreshNickNameAndMoney();
+                    },
+                    fail: (errMsg)=>{
+                        console.error('request GET 请求失败',errMsg);
+
+                    },
+                    complete: ()=>{}
+                });
+            }else{
+                fetch('https://jianbao.dxstudio.site/api/player/'+uid, {
+                    method: 'GET',
+                })
+                .then((response: Response) => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    // 根据返回数据类型选择解析方式
+                    return response.json(); // 或 response.text() 获取纯文本
+                })
+                .then((data) => {
+                    console.log('GET 请求成功:parseInt', data);
+                    let tm = parseInt(data.data.totalmoney);
+                    this.totalMoney = tm;
+                    this.nickName = data.data.nickName;
+                    this.userid = uid;
+                    cc.sys.localStorage.setItem("game_money",this.totalMoney);
+                    GameMain.instance.reportRankTotal(this.totalMoney);
+                    EntrancePanel.instance.refreshNickNameAndMoney();
+                })
+                .catch((error) => {
+                    console.error('GET 请求失败:', error);
+                });
+            }
+    }
+
+    postProxy(callback:function) {
         const _str = Math.random().toString(16).slice(2,5);
         const postData = {
             nickName: 'player'+ _str,
@@ -244,12 +253,16 @@ export default class GameContext{
                 dataType: 'json',
                 responseType: 'text',
                 success: (result)=>{
-                    cc.sys.localStorage.setItem("userid", result.data.id);
+                    console.log('request POST 请求成功啦',result);
+                    cc.sys.localStorage.setItem("userid", result.data.data.id);
                     this.nickName = 'player'+ _str
-                    this.userid = result.data.id
+                    this.userid = result.data.data.id;
+                    if(callback){
+                        callback(this.userid)
+                    }
                 },
-                fail: ()=>{
-                    console.error('request POST 请求失败');
+                fail: (errMsg)=>{
+                    console.error('request POST 请求失败',errMsg);
                 },
                 complete: ()=>{}
             });
@@ -270,6 +283,11 @@ export default class GameContext{
                 .then((data) => {
                     console.log('POST 请求成功:', data);
                     cc.sys.localStorage.setItem("userid", data.data.id);
+                    this.nickName = 'player'+ _str
+                    this.userid = result.data.data.id;
+                    if(callback){
+                        callback(this.userid)
+                    }
                 })
                 .catch((error) => {
                     console.error('POST 请求失败:', error);
@@ -389,7 +407,7 @@ export function postMaiDian(_scene: string) {
     if (u == '' || u == null || u == 'undefined' || u === undefined) {
 
     } else {
-        let = parseInt(u);
+        let uid = parseInt(u);
 
         if (cc.sys.platform === cc.sys.WECHAT_GAME) {
             wx.request({
@@ -400,10 +418,10 @@ export function postMaiDian(_scene: string) {
                 dataType: 'json',
                 responseType: 'text',
                 success: (result)=>{
-                    console.log('POST 请求成功:', data);
+                    console.log('POST 请求成功:', result);
                 },
-                fail: ()=>{
-                    console.error('POST MaiDian 请求失败:', error);
+                fail: (errMsg)=>{
+                    console.error('POST MaiDian 请求失败:', errMsg);
                 },
                 complete: ()=>{}
             });

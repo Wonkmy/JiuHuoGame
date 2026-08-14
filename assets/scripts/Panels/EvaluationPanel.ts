@@ -5,9 +5,11 @@
 // Learn life-cycle callbacks:
 //  - https://docs.cocos.com/creator/2.4/manual/en/scripting/life-cycle-callbacks.html
 
+import { postMaiDian } from "../GameCodes/GameRules";
 import GameMain from "../GameMain";
 import { BaseUI } from "../UIManager/BaseUI";
 import { UIManager } from "../UIManager/UIManager";
+import MainPanel from "./MainPanel";
 
 const {ccclass, property} = cc._decorator;
 
@@ -40,12 +42,78 @@ export default class EvaluationPanel extends BaseUI {
 
 
         this.nickName.string = GameMain.instance.mainRuntime.ctx.nickName;
+
+        postMaiDian("进入评价界面");
     }
 
 
     private onConfirm(){
         // 上传内容到服务器即可
-        let uid = GameMain.instance.mainRuntime.ctx.userid;
+        if(this.content.string!=""){
+            this.confirmProxy(this.content.string);
 
+            let guideKey = "JiuHuoGuide_openComment";
+            if(cc.sys.localStorage.getItem(guideKey) === "1")return;
+            cc.sys.localStorage.setItem(guideKey,"1");
+
+            GameMain.instance.mainRuntime.ctx.addMoney(200);
+            MainPanel.instance.upgradeTotalMoney();
+        }
     }
+
+    private confirmProxy(_content:string){
+            const postData = {
+                content: _content
+            };
+
+            if (cc.sys.platform === cc.sys.WECHAT_GAME){
+                wx.request({
+                    url: 'https://jianbao.dxstudio.site/api/player/'+GameMain.instance.mainRuntime.ctx.userid+"/comment",
+                    data: postData,
+                    header: {'content-type':'application/json'},
+                    method: 'POST',
+                    dataType: 'json',
+                    responseType: 'text',
+                    success: (result)=>{
+                        console.log("评价成功");
+                        GameMain.instance.mainRuntime.ctx.nickName = newnickName
+                        this.input_nickName.string = GameMain.instance.mainRuntime.ctx.nickName;
+                        UIManager.getInstance().openUI(TipPanel, 2, (ui: TipPanel) => {
+                            ui.onShow();
+                            ui.showTip("评价成功", false)
+                        })
+                    },
+                    fail: (errMsg)=>{
+                        console.error('request POST 请求失败',errMsg);
+                    },
+                    complete: ()=>{}
+                });
+            }else{
+                fetch('https://jianbao.dxstudio.site/api/player/'+GameMain.instance.mainRuntime.ctx.userid+"/comment", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json', // 告诉服务器发送的是JSON
+                    },
+                    body: JSON.stringify(postData), // 将JS对象转为JSON字符串
+                })
+                    .then((response: Response) => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        return response.json(); // 或 response.text()
+                    })
+                    .then((data) => {
+                        console.log("评价成功");
+                        GameMain.instance.mainRuntime.ctx.nickName = newnickName
+                        this.input_nickName.string = GameMain.instance.mainRuntime.ctx.nickName;
+                        UIManager.getInstance().openUI(TipPanel, 2, (ui: TipPanel) => {
+                            ui.onShow();
+                            ui.showTip("评价成功", false)
+                        })
+                    })
+                    .catch((error) => {
+                        console.error('POST 请求失败:', error);
+                    });
+            }
+        }
 }

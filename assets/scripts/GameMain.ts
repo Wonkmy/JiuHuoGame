@@ -90,6 +90,26 @@ export default class GameMain extends cc.Component {
         FaynUtils.PlayMusic("marketbgm",true,0.35);
     }
 
+    public reportRankTotal(totle:number){
+        if (cc.sys.platform != cc.sys.WECHAT_GAME) {
+            return;
+        }
+        // @ts-ignore
+        wx.setUserCloudStorage({ //调用微信接口上报关卡等级信息，用于好友圈排行
+            KVDataList: [
+                { key: 'rktotal', value: `${totle}` }
+            ],
+
+            success: () => {
+                console.log('总收益上报成功：' + totle);
+            },
+
+            fail: (err: any) => {
+                console.error('上报失败：', err);
+            }
+        });
+    }
+
     public reportRanksingle(level: number) {
         if (cc.sys.platform != cc.sys.WECHAT_GAME) {
             return;

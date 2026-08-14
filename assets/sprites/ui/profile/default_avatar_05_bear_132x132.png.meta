@@ -1,0 +1,38 @@
+{
+  "ver": "2.3.7",
+  "uuid": "b68adf4a-7f54-450d-b444-9234eeba2924",
+  "importer": "texture",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "premultiplyAlpha": false,
+  "genMipmaps": false,
+  "packable": true,
+  "width": 132,
+  "height": 132,
+  "platformSettings": {},
+  "subMetas": {
+    "default_avatar_05_bear_132x132": {
+      "ver": "1.0.6",
+      "uuid": "f6efd89a-9741-421d-8f3b-7a6c43a8f57c",
+      "importer": "sprite-frame",
+      "rawTextureUuid": "b68adf4a-7f54-450d-b444-9234eeba2924",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0.5,
+      "offsetY": -0.5,
+      "trimX": 4,
+      "trimY": 4,
+      "width": 125,
+      "height": 125,
+      "rawWidth": 132,
+      "rawHeight": 132,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}

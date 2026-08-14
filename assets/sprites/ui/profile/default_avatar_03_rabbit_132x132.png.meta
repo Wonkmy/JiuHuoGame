@@ -1,0 +1,38 @@
+{
+  "ver": "2.3.7",
+  "uuid": "69c7fc6c-6403-42e5-8839-9578b98451ed",
+  "importer": "texture",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "premultiplyAlpha": false,
+  "genMipmaps": false,
+  "packable": true,
+  "width": 132,
+  "height": 132,
+  "platformSettings": {},
+  "subMetas": {
+    "default_avatar_03_rabbit_132x132": {
+      "ver": "1.0.6",
+      "uuid": "ff3f7733-4582-49af-a3f8-4d064dca9d92",
+      "importer": "sprite-frame",
+      "rawTextureUuid": "69c7fc6c-6403-42e5-8839-9578b98451ed",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0.5,
+      "offsetY": -0.5,
+      "trimX": 4,
+      "trimY": 4,
+      "width": 125,
+      "height": 125,
+      "rawWidth": 132,
+      "rawHeight": 132,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}

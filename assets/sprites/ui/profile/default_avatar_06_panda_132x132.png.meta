@@ -1,0 +1,38 @@
+{
+  "ver": "2.3.7",
+  "uuid": "3f2203e3-3d80-423c-97bf-8989bdcf0693",
+  "importer": "texture",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "premultiplyAlpha": false,
+  "genMipmaps": false,
+  "packable": true,
+  "width": 132,
+  "height": 132,
+  "platformSettings": {},
+  "subMetas": {
+    "default_avatar_06_panda_132x132": {
+      "ver": "1.0.6",
+      "uuid": "8e01144c-4e16-4b0b-ab28-c8a5eed4a4e8",
+      "importer": "sprite-frame",
+      "rawTextureUuid": "3f2203e3-3d80-423c-97bf-8989bdcf0693",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0.5,
+      "offsetY": -0.5,
+      "trimX": 4,
+      "trimY": 4,
+      "width": 125,
+      "height": 125,
+      "rawWidth": 132,
+      "rawHeight": 132,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}

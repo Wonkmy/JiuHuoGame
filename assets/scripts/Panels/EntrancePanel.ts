@@ -12,6 +12,7 @@ import ZhenjiaPanel from "./ZhenjiaPanel";
 import DialogPanel from "./DialogPanel";
 import ChooseLocationPanel from "./ChooseLocationPanel";
 import ProfilePanel from "./ProfilePanel";
+import EvaluationPanel from "./EvaluationPanel";
 
 const {ccclass, property} = cc._decorator;
 
@@ -27,6 +28,11 @@ export default class EntrancePanel extends BaseUI {
 
     @property({type:cc.Node})
     btn_xiandingMode:cc.Node = null!;
+
+    @property({type:cc.Node})
+    userInfoContainerIcon:cc.Node = null!;
+
+    pingjiaNode:cc.Node = null!;
 
     @property({type:cc.Label})
     noADNodeTimer:cc.Label = null!;
@@ -50,6 +56,7 @@ export default class EntrancePanel extends BaseUI {
         this.rkTotalNode = this.node.getChildByName("rktotal");
         this.noADNode = this.node.getChildByName("noADNode");
         this.paotanNode = this.node.getChildByName("paotan");
+        this.pingjiaNode = this.node.getChildByName("pingjiaNode");
 
         this.gongfangNode = this.node.getChildByName("scroll").getChildByName("view").getChildByName("content").getChildByName("gongfang");
 
@@ -63,6 +70,10 @@ export default class EntrancePanel extends BaseUI {
         this.zhenjiaNode.on(cc.Node.EventType.TOUCH_END,this.onOpenZhenjia,this)
         this.noADNode.on(cc.Node.EventType.TOUCH_END,this.onNoAd,this)
         this.paotanNode.on(cc.Node.EventType.TOUCH_END,this.onOpenPaotan,this)
+        this.pingjiaNode.on(cc.Node.EventType.TOUCH_END,this.onComment,this)
+
+
+
 
 
         setTimeout(() => {
@@ -75,6 +86,18 @@ export default class EntrancePanel extends BaseUI {
                 this.noADNodeTimer.string = `剩余 ${min}:${sec < 10 ? "0" + sec : sec}`
             }
         }, 1000);
+    }
+
+    /**
+     * 打开评价窗口
+     */
+    private onComment(){
+        let guideKey = "JiuHuoGuide_openComment";
+        if(cc.sys.localStorage.getItem(guideKey) === "1")return;
+        cc.sys.localStorage.setItem(guideKey,"1");
+        UIManager.getInstance().openUI(EvaluationPanel, 1, (ui: EvaluationPanel) => {
+            ui.onShow();
+        })
     }
 
     private onOpenPaotan(){
@@ -130,13 +153,10 @@ export default class EntrancePanel extends BaseUI {
     }
 
     override onShow(): void {
-        this.upgradeTotalMoney();
-        this.node.getChildByName("UserInfoContainer").getChildByName("nickName").getComponent(cc.Label).string = GameMain.instance.mainRuntime.ctx.nickName;
         this.btn_entryJiaoyiMode.on(cc.Node.EventType.TOUCH_END,this.onEnterJiaoyi,this)
         this.btn_cangpinMode.on(cc.Node.EventType.TOUCH_END,this.onEnterCangpin,this)
         this.btn_xiandingMode.on(cc.Node.EventType.TOUCH_END,this.onEnterXianding,this)
-
-        this.node.getChildByName("UserInfoContainer").getChildByName("headIcon").on(cc.Node.EventType.TOUCH_END,this.onOpenProfilePanel,this)
+        this.userInfoContainerIcon.on(cc.Node.EventType.TOUCH_END,this.onOpenProfilePanel,this)
 
         Advertise.instance.ShowHengfuAd();
 
@@ -159,6 +179,11 @@ export default class EntrancePanel extends BaseUI {
             .start()
 
         this.playWorkshopBtnAnim()
+    }
+
+    refreshNickNameAndMoney(){
+        this.upgradeTotalMoney();
+        this.node.getChildByName("UserInfoContainer").getChildByName("nickName").getComponent(cc.Label).string = GameMain.instance.mainRuntime.ctx.nickName;
     }
 
     private playWorkshopBtnAnim() {
@@ -210,7 +235,7 @@ export default class EntrancePanel extends BaseUI {
     }
 
     private onOpenProfilePanel(){
-        UIManager.getInstance().openUI(ProfilePanel, 1, (ui: ProfilePanel) => {
+        UIManager.getInstance().openUI(ProfilePanel, 2, (ui: ProfilePanel) => {
             ui.onShow();
         })
     }

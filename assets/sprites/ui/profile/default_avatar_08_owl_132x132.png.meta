@@ -1,0 +1,38 @@
+{
+  "ver": "2.3.7",
+  "uuid": "430b4d6b-9c0e-43d6-b321-5bca450323df",
+  "importer": "texture",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "premultiplyAlpha": false,
+  "genMipmaps": false,
+  "packable": true,
+  "width": 132,
+  "height": 132,
+  "platformSettings": {},
+  "subMetas": {
+    "default_avatar_08_owl_132x132": {
+      "ver": "1.0.6",
+      "uuid": "9f817a83-053a-4660-936e-f347b7da6446",
+      "importer": "sprite-frame",
+      "rawTextureUuid": "430b4d6b-9c0e-43d6-b321-5bca450323df",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0.5,
+      "offsetY": -0.5,
+      "trimX": 4,
+      "trimY": 4,
+      "width": 125,
+      "height": 125,
+      "rawWidth": 132,
+      "rawHeight": 132,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}

@@ -13,12 +13,12 @@ export default class MainPanelRuntime{
     ctx:GameContext = null!;
 
     currentMarketTrend:MarketTrend = null!;
-    init(callBack){
+    init(){
         // this.mainPanel = mp;
         this.ctx = new GameContext();
         this.ctx.CurLevel = 0;
         this.ctx.totalPoints = ConstValue.TotalPoints;
-        this.ctx.startRound(callBack);
+        this.ctx.startRound();
         // let m = cc.sys.localStorage.getItem("game_money");
         // let fm = 0;
 

@@ -1,0 +1,38 @@
+{
+  "ver": "2.3.7",
+  "uuid": "a550e43e-52c4-453f-9d4a-ae207ea858b5",
+  "importer": "texture",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "premultiplyAlpha": false,
+  "genMipmaps": false,
+  "packable": true,
+  "width": 132,
+  "height": 132,
+  "platformSettings": {},
+  "subMetas": {
+    "default_avatar_10_frog_132x132": {
+      "ver": "1.0.6",
+      "uuid": "d498d449-67e3-4e4f-93d2-07e9eb096010",
+      "importer": "sprite-frame",
+      "rawTextureUuid": "a550e43e-52c4-453f-9d4a-ae207ea858b5",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0.5,
+      "offsetY": -0.5,
+      "trimX": 4,
+      "trimY": 4,
+      "width": 125,
+      "height": 125,
+      "rawWidth": 132,
+      "rawHeight": 132,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}
