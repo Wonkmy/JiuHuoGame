@@ -92,9 +92,6 @@ export default class EntrancePanel extends BaseUI {
      * 打开评价窗口
      */
     private onComment(){
-        let guideKey = "JiuHuoGuide_openComment";
-        if(cc.sys.localStorage.getItem(guideKey) === "1")return;
-        cc.sys.localStorage.setItem(guideKey,"1");
         UIManager.getInstance().openUI(EvaluationPanel, 1, (ui: EvaluationPanel) => {
             ui.onShow();
         })
