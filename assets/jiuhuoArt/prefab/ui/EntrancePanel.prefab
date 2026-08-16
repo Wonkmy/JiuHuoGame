@@ -6221,8 +6221,8 @@
     ],
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
-    "_string": "单局榜",
-    "_N$string": "单局榜",
+    "_string": "排行榜",
+    "_N$string": "排行榜",
     "_fontSize": 15,
     "_lineHeight": 15,
     "_enableWrapText": true,
@@ -7070,7 +7070,7 @@
         "__id__": 185
       }
     ],
-    "_active": true,
+    "_active": false,
     "_components": [
       {
         "__id__": 188

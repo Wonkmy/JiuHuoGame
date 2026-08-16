@@ -138,14 +138,14 @@ export default class EntrancePanel extends BaseUI {
     private onOpenSingleRank(){
         UIManager.getInstance().openUI(RankPanel, 2, (ui: RankPanel) => {
             ui.onShow();
-            ui.showRank("rksingle");
+            ui.showRank();
         })
     }
 
     private onOpenTotalRank(){
         UIManager.getInstance().openUI(RankPanel, 2, (ui: RankPanel) => {
             ui.onShow();
-            ui.showRank("rktotal");
+            // ui.showRank("rktotal");
         })
     }
 
@@ -231,7 +231,7 @@ export default class EntrancePanel extends BaseUI {
         })
     }
 
-    private onOpenProfilePanel(){
+    onOpenProfilePanel(){
         UIManager.getInstance().openUI(ProfilePanel, 2, (ui: ProfilePanel) => {
             ui.onShow();
         })

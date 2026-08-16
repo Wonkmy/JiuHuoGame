@@ -698,7 +698,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "New Label",
+    "_name": "txt",
     "_objFlags": 0,
     "_parent": {
       "__id__": 16

@@ -37,12 +37,13 @@ export default class DialogPanel extends BaseUI {
             UIManager.getInstance().closeUI(DialogPanel);
         },this)
     }
-    setContent(content:string,yesAction:any,showAD:boolean = true)
+    setContent(content:string,yesAction:any,btnTxt:string = "确认",showAD:boolean = true)
     {
         if(this.adNode){
             this.adNode.active = showAD;
         }
         this.yesAction=yesAction;
+        this.yes_btnNode.getChildByName("txt").getComponent(cc.Label).string = btnTxt;
         this.contentLabel.string = content;
     }
 }
