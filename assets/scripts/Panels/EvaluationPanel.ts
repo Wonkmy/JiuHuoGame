@@ -9,7 +9,9 @@ import { postMaiDian } from "../GameCodes/GameRules";
 import GameMain from "../GameMain";
 import { BaseUI } from "../UIManager/BaseUI";
 import { UIManager } from "../UIManager/UIManager";
+import EntrancePanel from "./EntrancePanel";
 import MainPanel from "./MainPanel";
+import TipPanel from "./TipPanel";
 
 const {ccclass, property} = cc._decorator;
 
@@ -28,7 +30,7 @@ export default class EvaluationPanel extends BaseUI {
         this.btn_close = this.node.getChildByName("close");
         this.btn_ok = this.node.getChildByName("bg").getChildByName("btn_ok");
         this.nickName = this.node.getChildByName("bg").getChildByName("nickName").getComponent(cc.Label);
-        this.content = this.node.getChildByName("bg").getChildByName("input_content").getComponent(cc.Label);
+        this.content = this.node.getChildByName("bg").getChildByName("input_content").getComponent(cc.EditBox);
 
         this.btn_ok.on(cc.Node.EventType.TOUCH_END, this.onConfirm, this)
 
@@ -57,7 +59,7 @@ export default class EvaluationPanel extends BaseUI {
             cc.sys.localStorage.setItem(guideKey,"1");
 
             GameMain.instance.mainRuntime.ctx.addMoney(200);
-            MainPanel.instance.upgradeTotalMoney();
+            EntrancePanel.instance.upgradeTotalMoney();
         }
     }
 
@@ -76,8 +78,6 @@ export default class EvaluationPanel extends BaseUI {
                     responseType: 'text',
                     success: (result)=>{
                         console.log("评价成功");
-                        GameMain.instance.mainRuntime.ctx.nickName = newnickName
-                        this.input_nickName.string = GameMain.instance.mainRuntime.ctx.nickName;
                         UIManager.getInstance().openUI(TipPanel, 2, (ui: TipPanel) => {
                             ui.onShow();
                             ui.showTip("评价成功", false)
@@ -104,8 +104,6 @@ export default class EvaluationPanel extends BaseUI {
                     })
                     .then((data) => {
                         console.log("评价成功");
-                        GameMain.instance.mainRuntime.ctx.nickName = newnickName
-                        this.input_nickName.string = GameMain.instance.mainRuntime.ctx.nickName;
                         UIManager.getInstance().openUI(TipPanel, 2, (ui: TipPanel) => {
                             ui.onShow();
                             ui.showTip("评价成功", false)
