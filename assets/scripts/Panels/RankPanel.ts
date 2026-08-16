@@ -86,6 +86,7 @@ export default class RankPanel extends BaseUI {
     }
 
     onOpenSingleRank(){
+        this.node.getChildByName("top").getChildByName("list").removeAllChildren();
         this.currentPage = 1;
         this.btn_singleRank.color = cc.Color.RED;
         this.btn_total_friendRank.color = cc.Color.WHITE;
@@ -95,6 +96,7 @@ export default class RankPanel extends BaseUI {
         postMaiDian("进入单局榜")
     }
     onOpentotal_friendRank(){
+        this.node.getChildByName("top").getChildByName("list").removeAllChildren();
         this.currentPage = 1;
         this.btn_singleRank.color = cc.Color.WHITE;
         this.btn_total_friendRank.color = cc.Color.RED;
@@ -105,6 +107,17 @@ export default class RankPanel extends BaseUI {
     }
 
     onOpentotal_GlobalRank(){
+        if (cc.sys.platform !== cc.sys.WECHAT_GAME) {
+            return;
+        }
+
+        if (!Opendata.instance || !Opendata.instance.getOpencontext()) {
+            return;
+        }
+        Opendata.instance.getOpencontext().postMessage({
+            type: 'engine',
+            event: 'clear',
+        });
         UIManager.getInstance().openUI(DialogPanel, 3, (ui: DialogPanel) => {
             ui.onShow();
             ui.setContent("修改下昵称更容易在榜上找到自己", () => {
@@ -163,7 +176,6 @@ export default class RankPanel extends BaseUI {
             if (!Opendata.instance || !Opendata.instance.getOpencontext()) {
                 return;
             }
-
             Opendata.instance.getOpencontext().postMessage({
                 type: 'engine',
                 event: 'level',
@@ -186,8 +198,8 @@ export default class RankPanel extends BaseUI {
                 dataType: 'json',
                 responseType: 'text',
                 success: (result) => {
-                    console.log('GET 请求成功:getPlayer', result);
-                    var players = result.data.list;
+                    // console.log('GET 请求成功:getPlayer', result);
+                    var players = result.data.data.list;
                     callback(players);
                 },
                 fail: (errMsg) => {

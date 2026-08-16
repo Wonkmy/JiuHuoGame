@@ -6117,7 +6117,7 @@
       "__type__": "TypedArray",
       "ctor": "Float64Array",
       "array": [
-        270.975,
+        274.844,
         286.72,
         0,
         0,
@@ -6409,15 +6409,15 @@
       "__type__": "TypedArray",
       "ctor": "Float64Array",
       "array": [
-        -167.515,
-        281.888,
+        184.886,
+        285.291,
         0,
         0,
         0,
         0,
         1,
-        1.512,
-        1.512,
+        1.343,
+        1.343,
         0
       ]
     },
@@ -6461,7 +6461,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 32,
+      "width": 64,
       "height": 20.16
     },
     "_anchorPoint": {
@@ -6474,7 +6474,7 @@
       "ctor": "Float64Array",
       "array": [
         0,
-        -20.889,
+        -26.474,
         0,
         0,
         0,
@@ -6513,8 +6513,8 @@
     ],
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
-    "_string": "评价",
-    "_N$string": "评价",
+    "_string": "评价有奖",
+    "_N$string": "评价有奖",
     "_fontSize": 16,
     "_lineHeight": 16,
     "_enableWrapText": true,

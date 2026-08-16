@@ -31,7 +31,7 @@ env.onMessage(function (data) {
     if (data.type !== 'engine' && data.type !== 'rank') {
         return;
     }
-
+	console.log(data.event);
     switch (data.event || data.command) {
         case 'viewport':
             RankEngine.setViewPort(data);
@@ -47,6 +47,7 @@ env.onMessage(function (data) {
 
         case 'clear':
             RankEngine.clear();
+            console.log("清理榜单");
             break;
 
         default:
