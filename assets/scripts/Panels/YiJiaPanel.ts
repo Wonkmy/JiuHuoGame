@@ -220,8 +220,10 @@ export default class YiJiaPanel extends BaseUI {
         let expertBonus = finalPrice - noExpertPrice;
         this.showSellResultTip(soldItem,noExpertPrice,expertBonus,finalPrice,curShouyi);
         GameMain.instance.mainRuntime.ctx.addMoney(finalPrice);
+        GameMain.instance.mainRuntime.ctx.addActivityLevel(1);
 
         this.YijiaPrice += finalPrice;
+
         recordRoundTaskProgress(GameMain.instance.mainRuntime.ctx.curSelected);
         this.updateRoundTaskInfo();
         let _target = GameMain.instance.mainRuntime.ctx.targetInfo.target;

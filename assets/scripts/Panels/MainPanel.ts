@@ -43,6 +43,9 @@ export default class MainPanel extends BaseUI {
     @property({type:cc.Label})
     roundInfoLabel:cc.Label = null!;
 
+    @property({type:cc.Node})
+    activityLevelNode:cc.Node = null!;
+
     onLoad(): void {
         MainPanel.instance = this;
         GameMain.instance.mainRuntime.initAD();
@@ -84,6 +87,23 @@ export default class MainPanel extends BaseUI {
 
         this.node.getChildByName("share").on(cc.Node.EventType.TOUCH_END,this.onShareBtnClick,this);
         this.node.getChildByName("tuijian").on(cc.Node.EventType.TOUCH_END,this.onTuijianBtnClick,this);
+
+        let aLevel = GameMain.instance.mainRuntime.ctx.activityLevel;
+        let percent = (aLevel % GameMain.instance.mainRuntime.ctx.activityLimit) / GameMain.instance.mainRuntime.ctx.activityLimit;
+        this.activityLevelNode.getComponent(cc.Sprite).fillRange = percent;
+        this.activityLevelNode.parent.getChildByName("txt").getComponent(cc.Label).string = "售卖活跃度:"+aLevel % GameMain.instance.mainRuntime.ctx.activityLimit+"/"+GameMain.instance.mainRuntime.ctx.activityLimit
+
+        this.activityLevelNode.parent.getChildByName("reward").on(cc.Node.EventType.TOUCH_END, () => {
+            UIManager.getInstance().openUI(RewardPanel, 2, (ui: RewardPanel) => {
+                ui.onShow();
+            })
+        }, this);
+
+        this.activityLevelNode.parent.getChildByName("reward").active = false;
+        if (aLevel > 0 && aLevel % GameMain.instance.mainRuntime.ctx.activityLimit == 0) {
+            this.activityLevelNode.parent.getChildByName("reward").active = true
+        }
+
         postMaiDian("买货主场景");
     }
     public onShareBtnClick() {

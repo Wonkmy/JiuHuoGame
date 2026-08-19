@@ -1,5 +1,6 @@
 import TipPanel from "../Panels/TipPanel";
 import { UIManager } from "../UIManager/UIManager";
+import { postMaiDian } from "./GameRules";
 
 // 文件：GameCircleBtn.ts (或其他你喜欢的名字)
 const { ccclass, property } = cc._decorator;
@@ -34,6 +35,7 @@ export class GameCircleBtn extends cc.Component {
             console.log('游戏圈加载成功', res);
             // 加载成功后显示
             pageManager.show();
+            postMaiDian("展示游戏圈成功")
         }).catch((err:any) => {
             console.error('游戏圈加载失败', err);
             UIManager.getInstance().openUI(TipPanel, 0, (ui: TipPanel) => {

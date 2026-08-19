@@ -51,7 +51,7 @@ export default class HirePanel extends BaseUI {
         console.log("雇佣专家:", expertDef);
         FaynUtils.PlayMusic("buff",false,1);
         GameMain.instance.mainRuntime.ctx.ownedExperts.push(expertDef);
-        postMaiDian("雇佣专家:"+ expertDef)
+        postMaiDian("雇佣专家:"+ expertDef.name)
         UIManager.getInstance().closeUI(HirePanel);
     }
 

@@ -44,11 +44,17 @@ export default class GameContext{
     hiddenMarketNextRound:boolean = false;
     hiddenMarketActive:boolean = false;
     budgetPenaltyNextRound:number = 0;
+    activityLevel:number = 0;// 活跃度，每进行一次“出手”就+1
+    activityLimit:number = 5;// 如果次数等于5的倍数，则领取一次奖励
 
     currentLocation:string = "";// 当前选择的地点
 
     getUid():string{
         return `old_${this.UID++}`;
+    }
+    addActivityLevel(v:number){
+        this.activityLevel+=v;
+        cc.sys.localStorage.setItem("activityLevel",this.activityLevel);
     }
     // /api/player/:id/money
     addMoney(v:number){
@@ -122,6 +128,7 @@ export default class GameContext{
         this.hiddenMarketActive = false;
         this.budgetPenaltyNextRound = 0;
         this.curSelectedTableIndex = -1;
+        this.activityLevel = 0;
     }
 
     startRound(){
@@ -181,6 +188,14 @@ export default class GameContext{
             cc.sys.localStorage.setItem("location", "oldStreet");
         }else{
             this.currentLocation = locationData;
+        }
+
+        //
+        let activityLevelValue = cc.sys.localStorage.getItem("activityLevel");
+        if(activityLevelValue == '' || activityLevelValue == null || activityLevelValue == 'undefined' || activityLevelValue === undefined){
+            this.activityLevel = 0;
+        }else{
+            this.activityLevel = activityLevelValue;
         }
     };
 

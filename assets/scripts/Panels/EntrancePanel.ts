@@ -13,6 +13,7 @@ import DialogPanel from "./DialogPanel";
 import ChooseLocationPanel from "./ChooseLocationPanel";
 import ProfilePanel from "./ProfilePanel";
 import EvaluationPanel from "./EvaluationPanel";
+import RewardPanel from "./RewardPanel";
 
 const {ccclass, property} = cc._decorator;
 
@@ -36,6 +37,9 @@ export default class EntrancePanel extends BaseUI {
 
     @property({type:cc.Label})
     noADNodeTimer:cc.Label = null!;
+
+    @property({type:cc.Node})
+    activityLevelNode:cc.Node = null!;
 
     gongfangNode:cc.Node = null!;
 
@@ -157,6 +161,22 @@ export default class EntrancePanel extends BaseUI {
 
         Advertise.instance.ShowHengfuAd();
 
+        let aLevel = GameMain.instance.mainRuntime.ctx.activityLevel;
+        let percent = (aLevel % GameMain.instance.mainRuntime.ctx.activityLimit) / GameMain.instance.mainRuntime.ctx.activityLimit;
+        this.activityLevelNode.getComponent(cc.Sprite).fillRange = percent
+        this.activityLevelNode.parent.getChildByName("txt").getComponent(cc.Label).string = "售卖活跃度:"+ aLevel % GameMain.instance.mainRuntime.ctx.activityLimit+"/"+GameMain.instance.mainRuntime.ctx.activityLimit
+
+        this.activityLevelNode.parent.getChildByName("reward").on(cc.Node.EventType.TOUCH_END, () => {
+            UIManager.getInstance().openUI(RewardPanel, 2, (ui: RewardPanel) => {
+                ui.onShow();
+            })
+        }, this);
+
+        this.activityLevelNode.parent.getChildByName("reward").active=false;
+        if(aLevel > 0 && aLevel % GameMain.instance.mainRuntime.ctx.activityLimit == 0){
+            this.activityLevelNode.parent.getChildByName("reward").active=true
+        }
+
         let hand = this.btn_entryJiaoyiMode.getChildByName("hand2");
 
         cc.tween(hand)
@@ -176,6 +196,7 @@ export default class EntrancePanel extends BaseUI {
             .start()
 
         this.playWorkshopBtnAnim()
+        this.refreshNickNameAndMoney();
     }
 
     refreshNickNameAndMoney(){
