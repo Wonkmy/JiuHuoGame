@@ -28,9 +28,12 @@ export default class TableEnt extends cc.Component {
 
     allMoneyChildNodes:cc.Node[] =[]
 
-    init(unlock:boolean,id:number): void {
+    curBelongCangpingguanIndex:number = 0;// 当前桌子属于哪个藏品馆？
+
+    init(cangpingguanIndex:number,unlock:boolean,id:number): void {
         this.ID = id;
         this.isUnlock = unlock;
+        this.curBelongCangpingguanIndex = cangpingguanIndex;
         this.putBtn = this.node.getChildByName("put");
         this.unlockBtn = this.node.getChildByName("lock");
         this.goodsView = this.node.getChildByName("view").getComponent(cc.Sprite);
@@ -49,6 +52,28 @@ export default class TableEnt extends cc.Component {
             }
         },this)
     }
+
+    setCurBelongCangpingguanIndex(v:number){
+        this.curBelongCangpingguanIndex = v;
+        if (this.haveGoods) {
+            this.haveGoods = false;
+            this.goodsView.spriteFrame = null!;
+        }
+    }
+
+    // clearTable() {
+    //     const tdict = GameMain.instance.mainRuntime.ctx.tableInfoDataDict.find(t => t.tableIndex === tableIndex);
+    //     if(tdict){
+    //         var n = GameMain.instance.mainRuntime.ctx.tableInfoDataDict.indexOf(tdict);
+    //         GameMain.instance.mainRuntime.ctx.tableInfoDataDict.splice(n,1);
+    //         cc.sys.localStorage.setItem("tableInfoDataDict",JSON.stringify(GameMain.instance.mainRuntime.ctx.tableInfoDataDict))
+    //     }
+    //     const item = GameMain.instance.mainRuntime.ctx.inventoryItemInstance.find(i => i.uid === tdict?.itemData.uid);
+    //     if(item){
+    //         cc.sys.localStorage.setItem("bag_data",JSON.stringify(GameMain.instance.mainRuntime.ctx.inventoryItemInstance));
+    //         this.putBtn.active = true;
+    //     }
+    // }
 
     private onPut(){
         // 放置背包中的货物进行展览
@@ -114,7 +139,7 @@ export default class TableEnt extends cc.Component {
         }
     }
 
-    onTakeBackGoods(tableIndex:number){
+    onTakeBackGoods(tableIndex:number,showTip:boolean = true){
         const tdict = GameMain.instance.mainRuntime.ctx.tableInfoDataDict.find(t => t.tableIndex === tableIndex);
         if(tdict){
             var n = GameMain.instance.mainRuntime.ctx.tableInfoDataDict.indexOf(tdict);
@@ -126,10 +151,12 @@ export default class TableEnt extends cc.Component {
             item.display = false;
             cc.sys.localStorage.setItem("bag_data",JSON.stringify(GameMain.instance.mainRuntime.ctx.inventoryItemInstance));
             this.putBtn.active = true;
-            UIManager.getInstance().openUI(TipPanel, 1, (ui: TipPanel) => {
-                ui.onShow();
-                ui.showTip(`将${item.name} 拿回背包`, null)
-            })
+            if(showTip){
+                UIManager.getInstance().openUI(TipPanel, 1, (ui: TipPanel) => {
+                    ui.onShow();
+                    ui.showTip(`将${item.name} 拿回背包`, null)
+                })
+            }
         }
     }
 
@@ -145,6 +172,7 @@ export default class TableEnt extends cc.Component {
             this.unlockBtn.active = false;
             this.putBtn.active = false;
             itemData.display = true;
+            itemData.displayCangpingguanIndex = this.curBelongCangpingguanIndex;
             this.haveGoods = true;
             this.curItemData = itemData;
             const found = GameMain.instance.mainRuntime.ctx.tableInfoDataDict.find(

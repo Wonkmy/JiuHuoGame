@@ -83,11 +83,15 @@ export default class EntrancePanel extends BaseUI {
         setTimeout(() => {
             let left = GameMain.instance.getNoAdLeftSeconds();
             if(left<=0){
-                this.noADNodeTimer.string = ""
+                if(this.noADNodeTimer){
+                    this.noADNodeTimer.string = ""
+                }
             }else{
                 let min = Math.floor(left / 60);
                 let sec = left % 60;
-                this.noADNodeTimer.string = `剩余 ${min}:${sec < 10 ? "0" + sec : sec}`
+                if(this.noADNodeTimer){
+                    this.noADNodeTimer.string = `剩余 ${min}:${sec < 10 ? "0" + sec : sec}`
+                }
             }
         }, 1000);
     }
@@ -241,6 +245,7 @@ export default class EntrancePanel extends BaseUI {
         UIManager.getInstance().closeUI(EntrancePanel);
         Advertise.instance.HideHengfuAd();
         UIManager.getInstance().openUI(CangpinPanel, 1, (ui: CangpinPanel) => {
+            ui.setIndex(0)
             ui.onShow();
         })
     }

@@ -81,9 +81,9 @@ export default class ResultPanel extends BaseUI{
             GameMain.instance.mainRuntime.ctx.CurLevel++;
         }
         GameMain.instance.mainRuntime.ctx.startRound();
-        UIManager.getInstance().closeUI(ResultPanel);
         UIManager.getInstance().openUI(MainPanel, 0, (ui: MainPanel) => {
             ui.onShow();
+            UIManager.getInstance().closeUI(ResultPanel);
         })
     }
 

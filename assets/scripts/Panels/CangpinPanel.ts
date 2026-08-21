@@ -32,6 +32,8 @@ export default class CangpinPanel extends BaseUI {
     btn_left:cc.Node = null!;
     btn_right:cc.Node = null!;
 
+    curCangpinguanIndex:number = 0;
+
     protected onLoad(): void {
         CangpinPanel.instance = this;
     }
@@ -49,14 +51,14 @@ export default class CangpinPanel extends BaseUI {
             table.ID = i;
             if(table){
                 if(i <= ConstValue.unLockedTabelLimit){
-                    table.init(true,table.ID);
+                    table.init(this.curCangpinguanIndex,true,table.ID);
                     if(!GameMain.instance.mainRuntime.ctx.unLockedTableIndex.includes(table.ID)){
                         GameMain.instance.mainRuntime.ctx.unLockedTableIndex.push(table.ID)
                         cc.sys.localStorage.setItem("unlocked_table_list",JSON.stringify(GameMain.instance.mainRuntime.ctx.unLockedTableIndex))
                     }
                 }else{
                     const isUnlocked = GameMain.instance.mainRuntime.ctx.unLockedTableIndex.includes(table.ID);
-                    table.init(isUnlocked,table.ID);
+                    table.init(this.curCangpinguanIndex,isUnlocked,table.ID);
                 }
             }
         }
@@ -130,8 +132,13 @@ export default class CangpinPanel extends BaseUI {
         postMaiDian("进入藏品馆")
     }
 
+    setIndex(id:number){
+        this.curCangpinguanIndex = id;
+    }
+
     private onDisplaySelect(itemCellYj: ItemCellYJ){
         console.log("准备显示啦");
+
         if (!itemCellYj.itemIns.display) {
             this.tables[GameMain.instance.mainRuntime.ctx.curSelectedTableIndex].onDisplayGoods(itemCellYj.itemIns);
         }
@@ -151,6 +158,21 @@ export default class CangpinPanel extends BaseUI {
             ui.onShow();
             ui.showTip("更多展厅装修中!", false)
         })
+        // this.curCangpinguanIndex --;
+        // UIManager.getInstance().openUI(CangpinPanel, 1, (ui: CangpinPanel) => {
+        //     ui.setIndex(this.curCangpinguanIndex)
+        //     ui.onShow();
+        //     UIManager.getInstance().closeUI(CangpinPanel);
+        // })
+
+        // if(this.curCangpinguanIndex<0){
+        //     this.curCangpinguanIndex = 0;
+        // }
+        // for (let i = 0; i < this.tables.length; i++) {
+        //     const table = this.tables[i];
+        //     table.setCurBelongCangpingguanIndex(this.curCangpinguanIndex)
+        // }
+        // this.node.getChildByName("body").getChildByName("cangpin_title_panel").getChildByName("txt").getComponent(cc.Label).string = `${this.curCangpinguanIndex+ 1}号展厅`
     }
 
     private onNextCangpinGuan(){
@@ -158,6 +180,19 @@ export default class CangpinPanel extends BaseUI {
             ui.onShow();
             ui.showTip("更多展厅装修中!", false)
         })
+        // this.curCangpinguanIndex ++;
+        // UIManager.getInstance().openUI(CangpinPanel, 1, (ui: CangpinPanel) => {
+        //     ui.setIndex(this.curCangpinguanIndex)
+        //     ui.onShow();
+        //     UIManager.getInstance().closeUI(CangpinPanel);
+        // })
+
+
+        // for (let i = 0; i < this.tables.length; i++) {
+        //     const table = this.tables[i];
+        //     table.setCurBelongCangpingguanIndex(this.curCangpinguanIndex)
+        // }
+        // this.node.getChildByName("body").getChildByName("cangpin_title_panel").getChildByName("txt").getComponent(cc.Label).string = `${this.curCangpinguanIndex + 1}号展厅`
     }
 
     upgradeTotalMoney(){

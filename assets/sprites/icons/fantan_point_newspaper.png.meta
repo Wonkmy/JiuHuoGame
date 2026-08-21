@@ -1,0 +1,38 @@
+{
+  "ver": "2.3.7",
+  "uuid": "1ed4288c-e714-414d-b6a0-2cea83ee266c",
+  "importer": "texture",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "premultiplyAlpha": false,
+  "genMipmaps": false,
+  "packable": true,
+  "width": 344,
+  "height": 303,
+  "platformSettings": {},
+  "subMetas": {
+    "fantan_point_newspaper": {
+      "ver": "1.0.6",
+      "uuid": "47d4ec91-dec2-4fbc-a91b-115ec21b88d3",
+      "importer": "sprite-frame",
+      "rawTextureUuid": "1ed4288c-e714-414d-b6a0-2cea83ee266c",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0,
+      "offsetY": 0,
+      "trimX": 16,
+      "trimY": 18,
+      "width": 312,
+      "height": 267,
+      "rawWidth": 344,
+      "rawHeight": 303,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}

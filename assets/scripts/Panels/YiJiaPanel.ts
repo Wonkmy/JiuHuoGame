@@ -376,6 +376,9 @@ export default class YiJiaPanel extends BaseUI {
     }
 
     override onDestroy(): void {
+        if(this.sell_Node!=null && this.sell_Node!=undefined){
+            this.sell_Node.off(cc.Node.EventType.TOUCH_END,this.onSell ,this)
+        }
         cc.game.off("on_select", this.onSelectItem,this)
     }
 }

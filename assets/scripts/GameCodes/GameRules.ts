@@ -9,6 +9,7 @@ import GameMain from "../GameMain";
 import { ConstValue } from "../Global/ConstValue";
 import EntrancePanel from "../Panels/EntrancePanel";
 import MainPanel from "../Panels/MainPanel";
+import { UIManager } from "../UIManager/UIManager";
 import { AppraiseKind, ExpertDef, ItemDef, ItemInstance,TargetInfo, ROUND_TARGETS_INFO, RoundTaskInfo, ItemCategory, CATEGORY_NAME } from "./Datas/GameData";
 
 export default class GameContext{
@@ -21,6 +22,7 @@ export default class GameContext{
     curSelected:ItemInstance = null!;
     curDisplaySelected:ItemInstance = null!;// 当前选中的要展示的物品
     curSelectedTableIndex:number = -1;// 当前选中的桌子id
+    curCangpingguanIndex:number = 0;// 当前展馆编号
     /**
      * 玩家拥有的鉴定专家列表
      */
@@ -128,6 +130,7 @@ export default class GameContext{
         this.hiddenMarketActive = false;
         this.budgetPenaltyNextRound = 0;
         this.curSelectedTableIndex = -1;
+        this.curCangpingguanIndex = 0;
         this.activityLevel = 0;
     }
 
@@ -136,67 +139,67 @@ export default class GameContext{
         this.totalPoints = ConstValue.TotalPoints;
         this.hiddenMarketActive = this.hiddenMarketNextRound;
         this.hiddenMarketNextRound = false;
-
-        let u = cc.sys.localStorage.getItem("userid");
-        if(u == '' || u == null || u == 'undefined' || u === undefined){
-            console.log("本地没有数据");
-            this.postProxy((uid)=>{
-                this.mylogin(uid)
-            })
-        }else{
-            this.mylogin(u)
-        }
-
         if(this.budgetPenaltyNextRound > 0){
             // 失败惩罚延迟到下一轮开始扣除，避免结算界面数值反复变化。
-            this.totalMoney = Math.max(0,this.totalMoney - this.budgetPenaltyNextRound);
-            cc.sys.localStorage.setItem("game_money",this.totalMoney);
+            // this.totalMoney = Math.max(0,this.totalMoney - this.budgetPenaltyNextRound);
+            // cc.sys.localStorage.setItem("game_money",this.totalMoney);
+            this.addMoney(-this.budgetPenaltyNextRound)
             this.budgetPenaltyNextRound = 0;
         }
+        setTimeout(() => {
+            let u = cc.sys.localStorage.getItem("userid");
+            if(u == '' || u == null || u == 'undefined' || u === undefined){
+                console.log("本地没有数据");
+                this.postProxy((uid)=>{
+                    this.mylogin(uid)
+                })
+            }else{
+                this.mylogin(u)
+            }
 
 
+            this.targetInfo = ROUND_TARGETS_INFO[this.CurLevel]// 获得当前的目标收益
+            this.roundTask = createRoundTask(this.CurLevel);
+            this.taskRewardClaimed = false;
+            this.roundResultClaimed = false;
+            this.curSelectedTableIndex = -1;
+            let m = cc.sys.localStorage.getItem("bag_data");
+            if(m == '' || m == null || m == 'undefined' || m === undefined){
+                this.inventoryItemInstance = [];
+            }else{
+                this.inventoryItemInstance = JSON.parse(m);
+            }
 
-        this.targetInfo = ROUND_TARGETS_INFO[this.CurLevel]// 获得当前的目标收益
-        this.roundTask = createRoundTask(this.CurLevel);
-        this.taskRewardClaimed = false;
-        this.roundResultClaimed = false;
-        this.curSelectedTableIndex = -1;
-        let m = cc.sys.localStorage.getItem("bag_data");
-        if(m == '' || m == null || m == 'undefined' || m === undefined){
-            this.inventoryItemInstance = [];
-        }else{
-            this.inventoryItemInstance = JSON.parse(m);
-        }
+            let tableInfoData = cc.sys.localStorage.getItem("tableInfoDataDict");
+            if(tableInfoData == '' || tableInfoData == null || tableInfoData == 'undefined' || tableInfoData === undefined){
+                this.tableInfoDataDict = [];
+            }else{
+                this.tableInfoDataDict = JSON.parse(tableInfoData);
+            }
 
-        let tableInfoData = cc.sys.localStorage.getItem("tableInfoDataDict");
-        if(tableInfoData == '' || tableInfoData == null || tableInfoData == 'undefined' || tableInfoData === undefined){
-            this.tableInfoDataDict = [];
-        }else{
-            this.tableInfoDataDict = JSON.parse(tableInfoData);
-        }
+            let unlocked_table_list = cc.sys.localStorage.getItem("unlocked_table_list");
+            if(unlocked_table_list == '' || unlocked_table_list == null || unlocked_table_list == 'undefined' || unlocked_table_list === undefined){
+                this.unLockedTableIndex = [];
+            }else{
+                this.unLockedTableIndex = JSON.parse(unlocked_table_list);
+            }
 
-        let unlocked_table_list = cc.sys.localStorage.getItem("unlocked_table_list");
-        if(unlocked_table_list == '' || unlocked_table_list == null || unlocked_table_list == 'undefined' || unlocked_table_list === undefined){
-            this.unLockedTableIndex = [];
-        }else{
-            this.unLockedTableIndex = JSON.parse(unlocked_table_list);
-        }
+            let locationData = cc.sys.localStorage.getItem("location");
+            if(locationData == '' || locationData == null || locationData == 'undefined' || locationData === undefined){
+                this.currentLocation = "oldStreet";
+                cc.sys.localStorage.setItem("location", "oldStreet");
+            }else{
+                this.currentLocation = locationData;
+            }
 
-        let locationData = cc.sys.localStorage.getItem("location");
-        if(locationData == '' || locationData == null || locationData == 'undefined' || locationData === undefined){
-            this.currentLocation = "oldStreet";
-            cc.sys.localStorage.setItem("location", "oldStreet");
-        }else{
-            this.currentLocation = locationData;
-        }
-
-        //
-        let activityLevelValue = cc.sys.localStorage.getItem("activityLevel");
-        if(activityLevelValue == '' || activityLevelValue == null || activityLevelValue == 'undefined' || activityLevelValue === undefined){
-            this.activityLevel = 0;
-        }else{
-            this.activityLevel = activityLevelValue;
-        }
+            //
+            let activityLevelValue = cc.sys.localStorage.getItem("activityLevel");
+            if(activityLevelValue == '' || activityLevelValue == null || activityLevelValue == 'undefined' || activityLevelValue === undefined){
+                this.activityLevel = 0;
+            }else{
+                this.activityLevel = activityLevelValue;
+            }
+        }, 200);
     };
 
     mylogin(u){
@@ -217,11 +220,9 @@ export default class GameContext{
                         this.userid = uid;
                         cc.sys.localStorage.setItem("game_money", this.totalMoney);
                         GameMain.instance.reportRankTotal(this.totalMoney);
-                        EntrancePanel.instance.refreshNickNameAndMoney();
                     },
                     fail: (errMsg)=>{
                         console.error('request GET 请求失败',errMsg);
-
                     },
                     complete: ()=>{}
                 });
@@ -244,7 +245,6 @@ export default class GameContext{
                     this.userid = uid;
                     cc.sys.localStorage.setItem("game_money",this.totalMoney);
                     GameMain.instance.reportRankTotal(this.totalMoney);
-                    EntrancePanel.instance.refreshNickNameAndMoney();
                 })
                 .catch((error) => {
                     console.error('GET 请求失败:', error);
@@ -646,7 +646,8 @@ export function createItem(def: ItemDef, uid: string): ItemInstance {
         fake,
         repaired: false,
         sold: false,
-        display:false
+        display:false,
+        displayCangpingguanIndex:0
     };
 }
 export function getAppraiseCost(kind: AppraiseKind): number {

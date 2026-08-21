@@ -1,0 +1,38 @@
+{
+  "ver": "2.3.7",
+  "uuid": "3cfe8434-ff3a-4361-8d19-4e6ea8b72300",
+  "importer": "texture",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "premultiplyAlpha": false,
+  "genMipmaps": false,
+  "packable": true,
+  "width": 344,
+  "height": 383,
+  "platformSettings": {},
+  "subMetas": {
+    "fantan_point_bottles": {
+      "ver": "1.0.6",
+      "uuid": "14d71740-1f2b-4edb-9e5d-67e55acbe921",
+      "importer": "sprite-frame",
+      "rawTextureUuid": "3cfe8434-ff3a-4361-8d19-4e6ea8b72300",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0,
+      "offsetY": 0,
+      "trimX": 16,
+      "trimY": 18,
+      "width": 312,
+      "height": 347,
+      "rawWidth": 344,
+      "rawHeight": 383,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}
