@@ -91,7 +91,7 @@ export default class ZhenjiaPanel extends BaseUI {
                 ui.setContent(`太棒了，你入手了${_itemIns.name}`, () => {
                     UIManager.getInstance().closeUI(DialogPanel);
                     this.node.getChildByName("goods" + this.curSelectedGoodsIndex).getComponent(ZhenJiaGoods).clearData();
-                }, false)
+                }, "确认",false)
             })
         }else{
             UIManager.getInstance().openUI(DialogPanel, 2, (ui: DialogPanel) => {
@@ -107,7 +107,7 @@ export default class ZhenjiaPanel extends BaseUI {
                                 ui.setContent(`太棒了，你入手了${_itemIns.name}`, () => {
                                     UIManager.getInstance().closeUI(DialogPanel);
                                     this.node.getChildByName("goods" + this.curSelectedGoodsIndex).getComponent(ZhenJiaGoods).clearData();
-                                }, false)
+                                }, "确认",false)
                             })
                         }
                     })

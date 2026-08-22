@@ -121,7 +121,7 @@ export default class EntrancePanel extends BaseUI {
                         UIManager.getInstance().closeUI(DialogPanel);
                     }
                 });
-            }, true)
+            },"确认", true)
         })
     }
 

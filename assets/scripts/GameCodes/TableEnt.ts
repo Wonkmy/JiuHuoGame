@@ -134,7 +134,7 @@ export default class TableEnt extends cc.Component {
                 ui.onShow();
                 ui.setContent(`是否花费${ConstValue.UNLOCK_TABLE_COST}预算\n解锁此展桌?`, ()=>{
                     this.unlockProcess();
-                }, false)
+                }, "确认",false)
             })
         }
     }

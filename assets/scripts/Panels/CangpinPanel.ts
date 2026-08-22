@@ -71,7 +71,7 @@ export default class CangpinPanel extends BaseUI {
                     })
                     UIManager.getInstance().closeUI(CangpinPanel);
                     UIManager.getInstance().closeUI(DialogPanel);
-                },false)
+                },"确认",false)
             })
         }else{
             for (let i = 0; i < GameMain.instance.mainRuntime.ctx.inventoryItemInstance.length; i++) {

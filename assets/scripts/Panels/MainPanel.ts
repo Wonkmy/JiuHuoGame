@@ -171,7 +171,7 @@ export default class MainPanel extends BaseUI {
                 ui.onShow();
                 ui.setContent(`获得\n${n}\n预算`, () => {
                     UIManager.getInstance().closeUI(DialogPanel);
-                }, false)
+                }, "确认",false)
             })
         }else{
             UIManager.getInstance().openUI(TipPanel, 1, (ui: TipPanel) => {
@@ -229,7 +229,7 @@ export default class MainPanel extends BaseUI {
                     ui.onShow();
                     ui.setContent("你所有的货物都在展示中，无法进行鉴赏。", ()=>{
                         UIManager.getInstance().closeUI(DialogPanel);
-                    },false)
+                    },"确认",false)
                 })
             }else{
                 UIManager.getInstance().closeUI(MainPanel);

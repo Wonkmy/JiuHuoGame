@@ -44,7 +44,7 @@ export default class RewardPanel extends BaseUI {
                             postMaiDian(`看视频获得了${itemInstance.name}`)
                         }
                     })
-                }, true)
+                }, "确认",true)
             })
         }, this)
     }

@@ -108,6 +108,8 @@ export default class RankPanel extends BaseUI {
 
     onOpentotal_GlobalRank(){
         if (cc.sys.platform !== cc.sys.WECHAT_GAME) {
+            console.log("不是微信环境，直接return了");
+
             return;
         }
 

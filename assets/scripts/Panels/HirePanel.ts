@@ -40,7 +40,7 @@ export default class HirePanel extends BaseUI {
                             this.refreshNewHireData()
                         }
                     })
-                }, true)
+                },"确认", true)
             })
         },this)
 

@@ -119,7 +119,7 @@ export default class ChooseLocationPanel extends BaseUI {
                 }
                 this.upgradeTotalMoney();
                 UIManager.getInstance().closeUI(DialogPanel);
-            }, false)
+            }, "确认",false)
         })
     }
     private chooseHaibian(){
@@ -143,7 +143,7 @@ export default class ChooseLocationPanel extends BaseUI {
                 }
                 this.upgradeTotalMoney();
                 UIManager.getInstance().closeUI(DialogPanel);
-            }, false)
+            }, "确认",false)
         })
 
     }
@@ -168,7 +168,7 @@ export default class ChooseLocationPanel extends BaseUI {
                 }
                 this.upgradeTotalMoney();
                 UIManager.getInstance().closeUI(DialogPanel);
-            }, false)
+            }, "确认",false)
         })
 
     }
@@ -193,7 +193,7 @@ export default class ChooseLocationPanel extends BaseUI {
                 }
                 this.upgradeTotalMoney();
                 UIManager.getInstance().closeUI(DialogPanel);
-            }, false)
+            }, "确认",false)
         })
     }
 

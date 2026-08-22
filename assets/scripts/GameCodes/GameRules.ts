@@ -220,6 +220,12 @@ export default class GameContext{
                         this.userid = uid;
                         cc.sys.localStorage.setItem("game_money", this.totalMoney);
                         GameMain.instance.reportRankTotal(this.totalMoney);
+                        if (UIManager.getInstance().getUI(EntrancePanel)) {
+                            var e = UIManager.getInstance().getUI(EntrancePanel)
+                            if (e != null) {
+                                EntrancePanel.instance.refreshNickNameAndMoney();
+                            }
+                        }
                     },
                     fail: (errMsg)=>{
                         console.error('request GET 请求失败',errMsg);
@@ -245,6 +251,12 @@ export default class GameContext{
                     this.userid = uid;
                     cc.sys.localStorage.setItem("game_money",this.totalMoney);
                     GameMain.instance.reportRankTotal(this.totalMoney);
+                    if(UIManager.getInstance().getUI(EntrancePanel)){
+                        var e = UIManager.getInstance().getUI(EntrancePanel)
+                        if(e!=null){
+                            EntrancePanel.instance.refreshNickNameAndMoney();
+                        }
+                    }
                 })
                 .catch((error) => {
                     console.error('GET 请求失败:', error);
@@ -299,7 +311,7 @@ export default class GameContext{
                     console.log('POST 请求成功:', data);
                     cc.sys.localStorage.setItem("userid", data.data.id);
                     this.nickName = 'player'+ _str
-                    this.userid = result.data.data.id;
+                    this.userid = data.data.id;
                     if(callback){
                         callback(this.userid)
                     }

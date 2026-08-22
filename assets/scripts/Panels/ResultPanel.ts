@@ -183,7 +183,7 @@ export default class ResultPanel extends BaseUI{
                     this.onShareBtnClick(displayProfit);
                     GameMain.instance.mainRuntime.ctx.addMoney(50);// 分享后奖励50预算
                     UIManager.getInstance().closeUI(DialogPanel);
-                },false)
+                },"确认",false)
             })
         }
         if(this.profitFormulaLabel){

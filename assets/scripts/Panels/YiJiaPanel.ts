@@ -321,7 +321,7 @@ export default class YiJiaPanel extends BaseUI {
             if(itemCellYj.itemIns.display){
                 UIManager.getInstance().openUI(DialogPanel,1,(ui:DialogPanel)=>{
                     ui.onShow();
-                    ui.setContent("当前货物正在展示中，无法进行鉴赏。",null,false);
+                    ui.setContent("当前货物正在展示中，无法进行鉴赏。",null,"确认",false);
                 })
                 return;
             }

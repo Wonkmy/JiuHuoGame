@@ -300,7 +300,7 @@ export default class PintuPanel extends BaseUI {
                 cc.sys.localStorage.setItem("bag_data",JSON.stringify(GameMain.instance.mainRuntime.ctx.inventoryItemInstance));
                 UIManager.getInstance().closeUI(DialogPanel);
                 UIManager.getInstance().closeUI(PintuPanel);
-            }, false)
+            },"确认", false)
         })
     }
 
@@ -315,7 +315,7 @@ export default class PintuPanel extends BaseUI {
             ui.setContent(`复原失败`, () => {
                 UIManager.getInstance().closeUI(DialogPanel);
                 UIManager.getInstance().closeUI(PintuPanel);
-            }, false)
+            }, "确认",false)
         })
     }
 
